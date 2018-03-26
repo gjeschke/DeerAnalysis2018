@@ -1,0 +1,18 @@
+Tikhonov validation for file deer_96_143_trimer_12p5uM_XIII_343905_342905_d2_3800_20130322_189sc
+
+Selected data set:
+
+Density calibrated: 0.088 uncalibrated: 0.014
+Background start:1500 ns
+Mod. depth: 0.342
+Dimension: 3.50
+r.m.s.d.: 0.013592
+Constraints: ( 1.84,  4.43) nm
+
+All data sets:
+
+Background start range: (300.000,1500.000) ns
+Density range: ( 0.088, 0.088)
+Mod. depth range: ( 0.342, 0.342)
+Dimension range: ( 2.50, 3.50)
+Best r.m.s.d.: 0.013592

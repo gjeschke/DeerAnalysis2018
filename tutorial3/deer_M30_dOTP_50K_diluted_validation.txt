@@ -1,0 +1,18 @@
+Tikhonov validation for file deer_M30_dOTP_50K_diluted
+
+Selected data set:
+
+Density calibrated: 0.682 uncalibrated: 0.106
+Background start:2700 ns
+Mod. depth: 0.330
+Dimension: 3.50
+r.m.s.d.: 0.004146
+Constraints: ( 3.96,  4.33) nm
+
+All data sets:
+
+Background start range: (400.000,5000.000) ns
+Density range: ( 0.682, 0.682)
+Mod. depth range: ( 0.330, 0.330)
+Dimension range: ( 3.35, 3.50)
+Best r.m.s.d.: 0.004146
