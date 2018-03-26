@@ -860,16 +860,16 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag,
     sel_model = get(handles.select_model,'Value');
     if sel_model
         my_model = get(handles.user_model_list,'Value');
-        my_models = get(handles.user_model_list,'Value');
-        my_model = my_models{my_model};
+        my_models = get(handles.user_model_list,'String');
+        my_model = strtrim(my_models(my_model,:));
         handles.A_curr_mode = sprintf('Model %s',my_model);
     end
 
 
     dlow=handles.A_low;
     dhigh=handles.A_high;
-    if error_flag && length(dlow)==length(distr) && length(dhigh)==length(distr),
-        for k=1:length(r),
+    if error_flag && length(dlow)==length(distr) && length(dhigh)==length(distr)
+        for k=1:length(r)
             plot([r(k) r(k)],sc_dist*[dlow(k) dhigh(k)],'Color',[0.65 0.65 0.65],'Linewidth',0.5);
         end;
         plot(r,sc_dist*distr,'k','LineWidth',1.5);

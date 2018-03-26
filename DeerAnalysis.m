@@ -1771,7 +1771,7 @@ function select_Tikhonov_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of select_Tikhonov
 flag=get(hObject,'Value');
-if flag,
+if flag
     handles.updated=0;
     handles.validation_mode=0;
     set(handles.select_APT,'Value',0);
@@ -1801,7 +1801,7 @@ function select_model_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of select_model
 flag=get(hObject,'Value');
-if flag,
+if flag
     handles.updated=0;
     handles.validation_mode=0;
     set(handles.select_APT,'Value',0);
@@ -1812,9 +1812,9 @@ if flag,
     if isfield(handles,'source_file')
         handles=sim_user_model(handles);
     end
+    handles.new_distr = 1;
 else
     handles.model_updated=1;
-    handles.new_distr = 1;
 end;
 guidata(hObject,handles);
 update_DA(handles);
