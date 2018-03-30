@@ -33,7 +33,7 @@ function varargout = DeerAnalysis(varargin)
 
 % Edit the above text to modify the response to help DeerAnalysis
 
-% Last Modified by GUIDE v2.5 25-Mar-2018 13:37:37
+% Last Modified by GUIDE v2.5 30-Mar-2018 11:11:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -322,6 +322,8 @@ end
 
 handles.net_sets = netsets;
 
+handles.new_bckg = 1;
+
 % Remaining default behaviour of GUI
 handles=set_defaults(handles);
 
@@ -588,11 +590,12 @@ pstr=sprintf('%d',bckg);
 set(handles.bckg_edit,'String',pstr);
 set(handles.main_figure,'Pointer','arrow');
 set(handles.status_line,'String','Ready.');
-if handles.bckg_start~=bckg0,
+if handles.bckg_start~=bckg0
 	handles.updated=0;
     handles.validation_mode=0;
 end;
 % Update handles structure
+handles.new_bckg = 1;
 guidata(hObject, handles);
 update_DA(handles);
 
@@ -608,6 +611,7 @@ if v~=handles.bckg_start,
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -646,6 +650,7 @@ if v~=handles.bckg_start
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -664,6 +669,7 @@ if v~=handles.bckg_start
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -683,6 +689,7 @@ if handles.cutoff~=cutoff0
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -700,7 +707,7 @@ if v~=handles.cutoff
     handles.updated=0;
     handles.validation_mode=0;
 end;
-
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -742,6 +749,7 @@ if v~=handles.cutoff
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -762,6 +770,7 @@ if v~=handles.cutoff
     handles.updated=0;
     handles.validation_mode=0;
 end
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -1690,6 +1699,7 @@ function bckg_density_Callback(hObject, eventdata, handles)
 [v,handles]=edit_update(handles,hObject,1e-6,1e6,handles.bckg_dens*handles.calib_density,'%5.2f',0);
 handles.calib_density=v/handles.bckg_dens;
 set(hObject,'ForegroundColor','g');
+handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2216,14 +2226,16 @@ function bckg_none_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of bckg_none
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.bckg_homogeneous,'Value',0);
     set(handles.bckg_poly,'Value',0);
     set(handles.bckg_exp,'Value',0);
+    set(handles.radiobutton_deernet_bckg,'Value',0);
 end;
 handles.updated=0;
 handles.model_updated=0;
 handles.validation_mode=0;
+handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2236,14 +2248,16 @@ function bckg_homogeneous_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of bckg_homogeneous
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.bckg_none,'Value',0);
     set(handles.bckg_poly,'Value',0);
     set(handles.bckg_exp,'Value',0);
+    set(handles.radiobutton_deernet_bckg,'Value',0);
 end;
 handles.updated=0;
 handles.model_updated=0;
 handles.validation_mode=0;
+handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2272,11 +2286,12 @@ function bckg_dim_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of bckg_dim_edit as text
 %        str2double(get(hObject,'String')) returns contents of bckg_dim_edit as a double
 [v,handles]=edit_update(handles,hObject,0.01,20,3,'%5.2f',0);
-if v~=handles.hom_dim,
+if v~=handles.hom_dim
 	handles.hom_dim=v;
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2291,6 +2306,7 @@ function bckg_fit_dim_Callback(hObject, eventdata, handles)
 
 handles.updated=0;
 handles.validation_mode=0;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2303,13 +2319,15 @@ function bckg_poly_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of bckg_poly
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.bckg_homogeneous,'Value',0);
     set(handles.bckg_none,'Value',0);
     set(handles.bckg_exp,'Value',0);
+    set(handles.radiobutton_deernet_bckg,'Value',0);
 end;
 handles.updated=0;
 handles.validation_mode=0;
+handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2338,11 +2356,12 @@ function bckg_poly_order_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of bckg_poly_order as text
 %        str2double(get(hObject,'String')) returns contents of bckg_poly_order as a double
 [v,handles]=edit_update(handles,hObject,0,15,3,'%d',1);
-if v~=handles.poly_order,
+if v~=handles.poly_order
 	handles.poly_order=v;
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2373,6 +2392,7 @@ poly=load(fullname);
 handles.polynomial=poly;
 handles.updated=0;
 handles.validation_mode=0;
+handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2406,6 +2426,7 @@ end;
 handles.polynomial=poly1;
 handles.updated=0;
 handles.validation_mode=0;
+handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2417,11 +2438,13 @@ function bckg_exp_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of bckg_exp
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.bckg_homogeneous,'Value',0);
     set(handles.bckg_none,'Value',0);
     set(handles.bckg_poly,'Value',0);
+    set(handles.radiobutton_deernet_bckg,'Value',0);
 end;
+handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2434,14 +2457,14 @@ function fit_Tikhonov_Callback(hObject, eventdata, handles)
 
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 flag=get(handles.select_Tikhonov,'Value');
-if flag,
+if flag
 	handles.Tikh_nfp_vector=[];
 	handles=fit_Tikhonov_new(handles);
 	% handles=fit_Tikhonov(handles);
 	handles.saved=0;
     handles.model_updated=0;
     handles.Tikh_updated=1;
-else,
+else
     set(handles.status_line,'String','### Select Tikhonov regularization before attempting to fit ###');
 end;
 % Update handles structure
@@ -2654,6 +2677,9 @@ if get(hObject,'Value') && isfield(handles,'source_file'),
     handles.man_depth=handles.A_depth;
     pstr=sprintf('%6.3f',handles.A_depth);
     set(handles.man_bckg_depth,'String',pstr);
+    set(handles.radiobutton_deernet_bckg,'Value',0);
+    set_bckg_mode(handles,handles.old_bckg_mode);
+    handles.new_bckg = 1;
 end;
 % Update handles structure
 guidata(hObject, handles);
@@ -2669,11 +2695,12 @@ function man_bckg_k_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of man_bckg_k as text
 %        str2double(get(hObject,'String')) returns contents of man_bckg_k as a double
 [v,handles]=edit_update(handles,hObject,0.0,20,0.2,'%5.3f',0);
-if v~=handles.man_depth,
+if v~=handles.man_depth
 	handles.man_k=v;
     handles.updated=0;
     handles.validation_mode=0;
 end;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2700,10 +2727,11 @@ function man_bckg_depth_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of man_bckg_depth as text
 %        str2double(get(hObject,'String')) returns contents of man_bckg_depth as a double
 [v,handles]=edit_update(handles,hObject,0.01,0.99,0.33,'%5.3f',0);
-if v~=handles.man_depth,
+if v~=handles.man_depth
 	handles.man_depth=v;
     handles.updated=0;
     handles.validation_mode=0;
+    handles.new_bckg = 1;
 end;
 % Update handles structure
 guidata(hObject, handles);
@@ -2730,10 +2758,11 @@ function man_k_minus_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_k,0,20,'%6.3f',handles.man_k,-0.02);
-if v~=handles.man_k,
+if v~=handles.man_k
 	handles.man_k=v;
     handles.updated=0;
     handles.validation_mode=0;
+    handles.new_bckg = 1;
 end;
 % Update handles structure
 guidata(hObject, handles);
@@ -2746,10 +2775,11 @@ function man_k_plus_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_k,0,20,'%6.3f',handles.man_k,0.02);
-if v~=handles.man_k,
+if v~=handles.man_k
 	handles.man_k=v;
     handles.updated=0;
     handles.validation_mode=0;
+    handles.new_bckg = 1;
 end;
 % Update handles structure
 guidata(hObject, handles);
@@ -2762,10 +2792,11 @@ function man_depth_minus_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_depth,0.01,0.99,'%6.3f',handles.man_depth,-0.02);
-if v~=handles.man_depth,
+if v~=handles.man_depth
 	handles.man_depth=v;
     handles.updated=0;
     handles.validation_mode=0;
+    handles.new_bckg = 1;
 end;
 % Update handles structure
 guidata(hObject, handles);
@@ -2778,10 +2809,11 @@ function man_depth_plus_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_depth,0.01,0.99,'%6.3f',handles.man_depth,0.02);
-if v~=handles.man_depth,
+if v~=handles.man_depth
 	handles.man_depth=v;
     handles.updated=0;
     handles.validation_mode=0;
+    handles.new_bckg = 1;
 end;
 % Update handles structure
 guidata(hObject, handles);
@@ -2797,7 +2829,7 @@ function opt_bckg_rms_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 flag=get(handles.manual_bckg,'Value');
-if ~flag,
+if ~flag
     return;
 end;
 set(handles.main_figure,'Pointer','watch');
@@ -2813,6 +2845,7 @@ set(handles.main_figure,'Pointer','arrow');
 set(handles.status_line,'String','Ready.');
 handles.updated=0;
 handles.validation_mode=0;
+handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2869,26 +2902,29 @@ if handles.saved,
 	delete(hObject);
 else
    answer=questdlg('Do you want to save now?','Fit data not saved');
-   if strncmp(answer,'Yes',2);
+   if strncmp(answer,'Yes',2)
 		return_path=pwd;
 		cd(handles.project_dir);
 		suggestion=[handles.bas_name '_res.txt']; 
 		[fname,pname]=uiputfile('*.txt','Save results',suggestion);
+        if isequal(fname,0) || isequal(pname,0)
+            return
+        end
 		% Remove (last) extension, if any
 		s=strfind(fname,'.');
-		if ~isempty(s),
+		if ~isempty(s)
 			fname=fname(1:s(length(s))-1);
 		end;
 		% Remove suffix '_res', if present
 		s=strfind(fname,'_res');
-		if ~isempty(s),
+		if ~isempty(s)
 			fname=fname(1:s(length(s))-1);
 		end;
 		save_result(handles,fname,pname);
 		cd(return_path);
     	delete(hObject);
    end;
-   if strncmp(answer,'No',2);
+   if strncmp(answer,'No',2)
         if ishandle(handles.original_fig),
             delete(handles.original_fig);
         end;
@@ -2911,7 +2947,7 @@ function text_download_ButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-web('http://www.epr.ethz.ch/software/index','-browser');
+web('http://www.epr.ethz.ch/software.html','-browser');
 
 
 
@@ -3576,3 +3612,37 @@ function checkbox_comparative_Callback(hObject, eventdata, handles)
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
+
+
+% --- Executes on button press in radiobutton_deernet_bckg.
+function radiobutton_deernet_bckg_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton_deernet_bckg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton_deernet_bckg
+
+
+% --- Executes on button press in checkbox_deernet_error_bckg.
+function checkbox_deernet_error_bckg_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_deernet_error_bckg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_deernet_error_bckg
+
+% Update handles structure
+guidata(hObject, handles);
+update_DA(handles);
+
+% --- Executes on button press in checkbox_comparative_bckg.
+function checkbox_comparative_bckg_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_comparative_bckg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_comparative_bckg
+% Update handles structure
+guidata(hObject, handles);
+update_DA(handles);
+

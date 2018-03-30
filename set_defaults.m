@@ -78,10 +78,15 @@ pstr=sprintf('%d',handles.hom_dim);
 set(handles.bckg_dim_edit,'String',pstr);
 set(handles.bckg_fit_dim,'Value',0);
 set(handles.bckg_poly,'Value',0);
+set(handles.bckg_poly,'Value',0);
 handles.poly_order=5;
 pstr=sprintf('%d',handles.poly_order);
 set(handles.bckg_poly_order,'String',pstr);
 set(handles.bckg_exp,'Value',0);
+set(handles.radiobutton_deernet_bckg,'Value',0);
+set(handles.checkbox_deernet_error_bckg,'Value',0);
+set(handles.radiobutton_deernet_bckg,'Enable','off');
+set(handles.checkbox_deernet_error_bckg,'Enable','off');
 
 % Control panel: Distance analysis
 handles.fit_rms_value=1.0e6;
@@ -127,5 +132,14 @@ handles.new_distr = 1;
 
 handback=read_user_model(handles);
 
+handback.A_prev_bckg_mode = '';
+handback.A_prev_bckg_details = '';
+handback.A_prev_bckg = [];
+handback.A_prev_bckg_t = [];
+
+handback.A_curr_bckg_mode = '';
+handback.A_curr_bckg_details = '';
+handback.A_curr_bckg = [];
+handback.A_curr_bckg_t = [];
 
 

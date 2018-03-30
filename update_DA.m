@@ -1,12 +1,13 @@
 function handback=update_DA(handles)
 %
-% Update all changed plots in DeerAnalysis 2004
+% Update all changed plots in DeerAnalysis
 %
 % Modified by H.C. Hyde, 2010 (Last updated: 2011-12-20)
 %  *Added display of RMS, model type, and distance constraints to workspace
 %  *Added call to new function 'stats_analysis' to get F-test results
 
 see_uncertainty = get(handles.error_estimate,'Value');
+see_uncertainty_bckg = get(handles.checkbox_deernet_error_bckg,'Value');
 if ~see_uncertainty
     set(handles.error_estimate,'ForegroundColor','r');
     set(handles.error_estimate,'FontWeight','bold');
@@ -25,9 +26,17 @@ if handles.new_distr
     handles.new_distr = 0;
 end
 
-stats = get(handles.checkbox_statistics,'Value');
-deernet_display = get(handles.select_deernet,'Value');
+if handles.new_bckg
+    handles.A_prev_bckg_mode = handles.A_curr_bckg_mode;
+    handles.A_prev_bckg_details = handles.A_curr_bckg_details;
+    handles.A_prev_bckg = handles.A_curr_bckg;
+    handles.A_prev_bckg_t = handles.A_curr_bckg_t;    
+end
 
+set(handles.text_comparative_bckg,'String',handles.A_prev_bckg_details);
+set(handles.text_comparative_bckg,'ForegroundColor',[0.2,0.4,0]);
+
+stats = get(handles.checkbox_statistics,'Value');
 
 full_depth=get(handles.checkbox_model_fit_depth,'Value');
 
@@ -44,30 +53,31 @@ guidance=get(handles.checkbox_guidance,'Value');
 
 if isempty(handles.v_orig), return; end;
 
-if handles.dt<=handles.min_dt,
+if handles.dt<=handles.min_dt
     set(handles.dt_minus,'Enable','off');
 else
     set(handles.dt_minus,'Enable','on');
 end;
-if handles.dt>=handles.max_dt,
+if handles.dt>=handles.max_dt
     set(handles.dt_plus,'Enable','off');
 else
     set(handles.dt_plus,'Enable','on');
 end;
 set(handles.dt_display,'String',sprintf('%i',handles.dt));
 
-man_bckg_flag=get(handles.manual_bckg,'Value');
+% man_bckg_flag=get(handles.manual_bckg,'Value');
 
 dual_flag=get(handles.dual_display,'Value'); % Dual display?
 if isempty(handles.B_vexp); dual_flag=0; end;
 residual_flag=get(handles.residual,'Value'); % show residuum
 error_flag=get(handles.error_estimate,'Value'); % show confidence interval for Tikhonov regularization
+comp_bckg = get(handles.checkbox_comparative_bckg,'Value');
 
 print=handles.print_request;
 handles.print_request=0;
 
-if ~locked,
-    [texp,vexp,zt,phi,imo,dt,renorm]=pre_process(handles.t_orig,handles.v_orig,handles.phase,handles.imo,handles.zerotime,handles.dt);
+if ~locked
+    [texp,vexp,~,~,imo]=pre_process(handles.t_orig,handles.v_orig,handles.phase,handles.imo,handles.zerotime,handles.dt);
 else
     texp=handles.t_orig;
     vexp=handles.v_orig;
@@ -80,27 +90,27 @@ texp=texp/1000;
 t_bckg=handles.bckg_start;
 t_cutoff=handles.cutoff;
 ttemp=texp-t_bckg*ones(size(texp))/1000;
-[tt,nofitp0]=min(abs(ttemp));
+[~,nofitp0]=min(abs(ttemp));
 ttemp=texp-t_cutoff*ones(size(texp))/1000;
-[tt,pcutoff]=min(abs(ttemp));
+[~,pcutoff]=min(abs(ttemp));
 
 imagflag=get(handles.imaginary,'Value');
 dcmplx=imagflag*handles.cmplx; % Complex data?
 
 % reference deconvolution for variable-time DEER, normalization for
 % constant-time DEER
-if handles.ctvt,
+if handles.ctvt
     z=handles.A_vexp;
     ref=vexp(1,:);
     sc=max(real(ref));
     sig=vexp(2,:);
     vexp=real(sig)./real(ref)+1i*imag(ref)/sc;
-elseif ~locked && ~smooth_scaled,
+elseif ~locked && ~smooth_scaled
 	vexp=vexp/max(real(vexp));
 end;
 
 % Prepare plot window
-if print,
+if print
     figure(1); clf;
     set(gca,'FontSize',24);
 else
@@ -113,20 +123,20 @@ handles.texp=texp;
 handles.vexp=vexp;
 
 % Plot data sets
-plot(texp,real(vexp),'k');
+hvexp = plot(texp,real(vexp),'k');
 set(gca,'FontSize',8);
 hold on;
-if dual_flag,
+if dual_flag
     B_vexp=real(handles.B_vplot);
-    if imagflag,
-        [texpn,trc0,B_vexp,stddev]=compare_modnorm(texp,real(vexp),handles.B_tplot,real(B_vexp));
+    if imagflag
+        [~,~,B_vexp,~]=compare_modnorm(texp,real(vexp),handles.B_tplot,real(B_vexp));
         cla;
         set(gca,'FontSize',8);
         plot(texp,real(vexp),'k');
     end;
     plot(handles.B_tplot,B_vexp,'b');
 end;
-if dcmplx && ~dual_flag,
+if dcmplx && ~dual_flag
 	plot(texp,0*vexp,'k:','LineWidth',1.5);
 	plot(texp,imag(vexp),'m');
     plot(texp,imo*ones(size(vexp)),'m:');
@@ -135,11 +145,11 @@ if dcmplx && ~dual_flag,
 else
     ma=max(real(vexp));
     mi=min(real(vexp));
-    if dual_flag,
-        if ma<max(B_vexp), 
+    if dual_flag
+        if ma<max(B_vexp)
             ma=max(B_vexp); 
         end;
-        if mi>min(B_vexp), 
+        if mi>min(B_vexp)
             mi=min(B_vexp); 
         end;
     end;
@@ -153,29 +163,42 @@ plot([t_bckg/1000,t_bckg/1000],[minv,maxv],'c');
 plot([t_cutoff/1000,t_cutoff/1000],[minv,maxv],'Color',[0.75 0.25 0]);
 xlabel('t (µs)');
 
+if comp_bckg
+    plot(handles.A_prev_bckg_t,handles.A_prev_bckg,'Color',[0.2,0.4,0],'Linewidth',1);
+end
 
-if isfield(handles,'bckg_request_h') && handles.bckg_request_h,
+bmode = get_bckg_mode(handles);
+if ~strcmp(bmode,'d')
+    handles.bckg_request_d = 0;
+end
+
+if isfield(handles,'bckg_request_h') && handles.bckg_request_h
     set(handles.bckg_homogeneous,'Value',1);
     set(handles.bckg_none,'Value',0);
-elseif isfield(handles,'bckg_request_p') && handles.bckg_request_p,
+elseif isfield(handles,'bckg_request_p') && handles.bckg_request_p
     set(handles.bckg_poly,'Value',1);
     set(handles.bckg_none,'Value',0);
-elseif isfield(handles,'bckg_request_e') && handles.bckg_request_e,
+elseif isfield(handles,'bckg_request_e') && handles.bckg_request_e
     set(handles.bckg_exp,'Value',1);
     set(handles.bckg_none,'Value',0);
+elseif isfield(handles,'bckg_request_d') && handles.bckg_request_d
+    set(handles.bckg_none,'Value',0);
+    set(handles.bckg_homogeneous,'Value',0);        
+    set(handles.bckg_poly,'Value',0);
+    set(handles.bckg_exp,'Value',0);
 end;
 
-if ~handles.validation_mode && ~deernet_display,
+if ~handles.validation_mode && ~handles.bckg_request_d
     % Background fit
     hflag=get(handles.bckg_homogeneous,'Value');
     pflag=get(handles.bckg_poly,'Value');
     eflag=get(handles.bckg_exp,'Value');
     set(handles.bckg_density,'String','n.a.');
     bckg=zeros(size(vexp)); % default background, no correction
-    if hflag || pflag || eflag, 
+    if hflag || pflag || eflag 
         t_fit=texp(nofitp0:pcutoff); % time window of baseline region
         td_fit=real(vexp(nofitp0:pcutoff)); % experimental data in this window
-        if min(td_fit)<0.02,
+        if min(td_fit)<0.02
             set(handles.bckg_none,'Value',1);
             set(handles.bckg_homogeneous,'Value',0);
             set(handles.bckg_poly,'Value',0);
@@ -191,7 +214,7 @@ if ~handles.validation_mode && ~deernet_display,
             pflag=false;
             eflag=false;
         else
-            if locked,
+            if locked
                 bckg=handles.loaded_bckg;
             else
                 [bckg,handles]=fit_bckg(handles,texp,t_fit,td_fit);
@@ -209,11 +232,11 @@ if ~handles.validation_mode && ~deernet_display,
         plot(texp,real(vexp),'k');
     end;
     
-    if ghost_suppression,
-        if hflag || pflag || eflag,
+    if ghost_suppression
+        if hflag || pflag || eflag
             cfac=bckg(1);
             cfac2=0;
-            if cfac>0,
+            if cfac>0
                 cfac2=(1-cfac)/cfac;
             end;
             raw_ff=real(vexp)./bckg;
@@ -221,7 +244,7 @@ if ~handles.validation_mode && ~deernet_display,
             raw_ff=real(vexp);
         end;
         cluster=raw_ff.^(1/(handles.spins_per_object-1));
-        if hflag || pflag || eflag,
+        if hflag || pflag || eflag
             dipevo=cluster-ones(size(cluster));
         else
             dipevo=cluster;
@@ -232,10 +255,10 @@ if ~handles.validation_mode && ~deernet_display,
         dipevo=real(vexp)-bckg; % subtract background, pure dipolar evolution of local part
         cluster=real(vexp); % without subtraction, retains modulation depth
 
-        if hflag || pflag || eflag,
+        if hflag || pflag || eflag
             cfac=bckg(1);
             cfac2=0;
-            if cfac>0,
+            if cfac>0
                 cfac2=(1-cfac)/cfac;
             end;
 
@@ -244,22 +267,22 @@ if ~handles.validation_mode && ~deernet_display,
         end;
         cluster=cluster/max(cluster);
     end;
-    [tmi,ztpoi]=min(abs(texp));
+    [~,ztpoi]=min(abs(texp));
 
     ttemp=texp-t_cutoff*ones(size(texp))/1000;
-    [tt,pcutoff]=min(abs(ttemp));
+    [~,pcutoff]=min(abs(ttemp));
 
     scale_dipevo=1;
     scale_cluster=1;
     scale_flag=get(handles.renormalize,'Value');
-    if scale_flag,
+    if scale_flag
         test=dipevo/max(dipevo)-0.5*ones(size(dipevo));
         test=test(ztpoi:length(test));
         flag=0;
         km=round(length(test)/2);
-        for k=1:length(test),
-            if ~flag,
-                if test(k)<0,
+        for k=1:length(test)
+            if ~flag
+                if test(k)<0
                     km=k+2;
                     flag=1;
                 end;
@@ -270,7 +293,7 @@ if ~handles.validation_mode && ~deernet_display,
 %         figure(15); clf;
 %         plot(test);
 
-        [mi,poi]=min(abs(test));
+        [~,poi]=min(abs(test));
 
         apoi=ztpoi-poi;
         epoi=ztpoi+poi;
@@ -279,7 +302,7 @@ if ~handles.validation_mode && ~deernet_display,
         if epoi>length(dipevo), epoi=length(dipevo); end;
         fit_range=dipevo(apoi:epoi)/max(dipevo);
         time_range=texp(apoi:epoi);
-        [poly,s]=polyfit(time_range,fit_range,5);
+        poly = polyfit(time_range,fit_range,5);
         smoothed=polyval(poly,time_range);
         scale_dipevo=1/max(smoothed);
 
@@ -291,7 +314,7 @@ if ~handles.validation_mode && ~deernet_display,
 
         fit_range=cluster(apoi:epoi)/max(cluster);
         time_range=texp(apoi:epoi);
-        [poly,s]=polyfit(time_range,fit_range,5);
+        poly=polyfit(time_range,fit_range,5);
         smoothed=polyval(poly,time_range);
         scale_cluster=1/max(smoothed);
 
@@ -313,7 +336,7 @@ if ~handles.validation_mode && ~deernet_display,
 
     % Long-pass filtering, if selected
     flag=get(handles.long_pass,'Value');
-    if flag,
+    if flag
         dipevo=long_pass_filter(handles,tdip,dipevo);
         cluster=long_pass_filter(handles,tdip,cluster);
     end;
@@ -321,7 +344,7 @@ if ~handles.validation_mode && ~deernet_display,
     dipevo=scale_dipevo*dipevo/max(dipevo);
     cluster=scale_cluster*cluster/max(cluster);
     
-    if locked,
+    if locked
         cluster=handles.loaded_ff;
         tdip=handles.loaded_tdip;
     end;
@@ -340,19 +363,27 @@ elseif handles.validation_mode
     dens=handles.bckg_dens;
     plot(tdip,bckg,'r','LineWidth',1.5);
     pstr=sprintf('%6.3f',dens*handles.calib_density);
-    if dens>=0,
+    if dens>=0
         set(handles.bckg_density,'String',pstr);
     else
         set(handles.bckg_density,'String','n.a.');
     end;
     handles.density_value=dens*handles.calib_density;
-elseif deernet_display
+elseif handles.bckg_request_d
     if ~isempty(handles.A_deernet_bckg)
         cluster = handles.A_deernet_vexp./handles.A_deernet_bckg;
         cluster = cluster/max(cluster);
         dipevo = cluster - handles.A_depth;
         dipevo = dipevo/max(dipevo);
         tdip = handles.A_deernet_t;
+        if see_uncertainty_bckg
+            delete(hvexp);
+            [me,~] = size(handles.deernet_ensemble_bckg);
+            for km = 1:me
+                plot(handles.A_deernet_t,handles.deernet_ensemble_bckg(km,:),'Color',[1,0.7,0.7],'LineWidth',1);
+            end
+            plot(texp,real(vexp),'k');
+        end
         plot(handles.A_deernet_t,handles.A_deernet_bckg,'r','LineWidth',1.5);
         handles.A_dipevo = dipevo;
         handles.A_cluster = cluster;
@@ -365,6 +396,16 @@ elseif deernet_display
 end;
 pstr=sprintf('%5.3f',handles.A_depth);
 set(handles.mod_depth_display,'String',pstr);
+
+if handles.new_bckg
+    [bmode,details] = get_bckg_mode(handles);
+    handles.A_curr_bckg_mode = bmode;
+    handles.A_curr_bckg_details = details;
+    handles.A_curr_bckg = handles.A_bckg;
+    handles.A_curr_bckg_t = handles.A_tdip;
+end
+
+handles.new_bckg = false;
 
 if exist('dipevo','var')
     test=dipevo-0.5*ones(size(dipevo));
@@ -387,7 +428,7 @@ if exist('dipevo','var')
     across=cluster(poi);
     handles.dist_est=dist_est;
 
-    if print,
+    if print
         figure(2); clf;
         set(gca,'FontSize',24);
     else
@@ -409,8 +450,8 @@ if exist('dipevo','var')
     handles.A_ny=faxges;
 
     flag=get(handles.dip_time_domain,'Value');
-    if flag,
-        if deernet_display && exist('cluster','var')
+    if flag
+        if handles.bckg_request_d && exist('cluster','var')
 %             handles.text_form_factor.String = 'Original data';
 %             handles.text_form_factor.ForegroundColor = [0,0,0.8];
 %             tdn = texp(ztpoi:pcutoff);
@@ -556,8 +597,8 @@ if exist('dipevo','var')
     sim0=sim-0.99*ones(size(sim)); % standard modulation depth 1 %
 
     spcflag=get(handles.dip_spectrum,'Value');
-    if handles.updated && ~deernet_display,
-        if ~full_depth,
+    if handles.updated && ~handles.bckg_request_d
+        if ~full_depth
             modsim=ones(size(sim))-sim;
             modexp=ones(size(cluster))-cluster;
             sc=sum(modexp.*modexp)/sum(modsim.*modexp);
@@ -757,7 +798,7 @@ if exist('dipevo','var')
     end;
 end
 
-if print,
+if print
     figure(3); clf;
     set(gca,'FontSize',24);
 else
@@ -769,18 +810,18 @@ end;
 
 LC_flag=get(handles.L_curve,'Value');
 
-if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag,
+if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
 	rmin=handles.rmin;
 	rmax=handles.rmax;
     mind=1;
     maxd=10;
     eflag=get(handles.distr_expand,'Value');
-    if eflag,
+    if eflag
         mind=rmin;
         maxd=rmax;
     end;
     dist_intg=sum(distr); % unscaled integral of distance distribution
-    if handles.n_spins>0,
+    if handles.n_spins>0
         sc_dist=real((handles.n_spins-1)/dist_intg); % scaling factor for distance distribution 
     else
         sc_dist=1;
@@ -806,18 +847,18 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag,
         rectangle('Position',[rel_mean,minv,recognize-rel_mean,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.8,0.8]);
     end;   
     sc=max(distr)-min(distr);
-    if sum(handles.mask) ~= length(handles.mask),
+    if sum(handles.mask) ~= length(handles.mask)
         plot(r,sc_dist*handles.mask.*distr,'g','LineWidth',1.5);
         set(gca,'FontSize',8);
     end;
 	hold on;
-	if dual_flag,
+	if dual_flag
         B_distr=handles.B_distr;
-        if ~imagflag,
+        if ~imagflag
             B_distr=B_distr*max(distr)/max(B_distr);
         end;
         plot(handles.B_r,sc_dist*B_distr,'b','LineWidth',1.5);
-        if minv>min(B_distr)-0.1*sc,
+        if minv>min(B_distr)-0.1*sc
             minv=min(B_distr)-0.1*sc;
         end;
         if maxv<max(B_distr)+0.1*sc
@@ -889,7 +930,7 @@ else
     sc_dist=1;
 end;
 
-if fit_flag && ~handles.updated && ~LC_flag,
+if fit_flag && ~handles.updated && ~LC_flag
     model_distr=handles.model_distr;
     plot(handles.r_APT,handles.APT,'k:','LineWidth',1);
     set(gca,'FontSize',8);
@@ -917,13 +958,13 @@ if fit_flag && ~handles.updated && ~LC_flag,
 	axis([mind,maxd,minv,maxv]);
 end;
 
-if LC_flag,
+if LC_flag
     h = plot(handles.Lcurve_rho,handles.Lcurve_eta,'k.');
     set(h,'PickableParts','none');
     set(gca,'FontSize',8);
 	hold on;
     poi=handles.regpar_sel;
-    if handles.regpar_sel == handles.regpar_opt,
+    if handles.regpar_sel == handles.regpar_opt
         mark = [1,0,0];
     else
         mark = [0,0.5,1];

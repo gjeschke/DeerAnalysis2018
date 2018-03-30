@@ -56,14 +56,14 @@ if LFlag
     % Compute L curve, it's corner, and make regularization at the L curve
     % corner and compute form factor ff2 corresponding to the Tikhonov solution
     [corner,rho,eta,reg_param] = l_curve_mod(U,sm,ff','Tikh',L,V,handles.fit_rms_value);
-    distr2 = tikhonov(U,sm,X,ff',reg_param(corner));
+    % distr2 = tikhonov(U,sm,X,ff',reg_param(corner));
 % %   Code for testing
 %     figure(8); clf;
 %     plot(rho,eta,'k.');
 %     hold on;
 %     plot(rho(corner),eta(corner),'ro');
 else
-    [distr2,rho,eta] = tikhonov(U,sm,X,ff',reg_param);
+    [~,rho,eta] = tikhonov(U,sm,X,ff',reg_param);
     corner = 1;
 end
 
