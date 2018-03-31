@@ -32,3 +32,4 @@ switch bmode
         set(handles.bckg_exp,'Value',0);
         set(handles.radiobutton_deernet_bckg,'Value',1);
 end
+guidata(handles.bckg_none,handles);

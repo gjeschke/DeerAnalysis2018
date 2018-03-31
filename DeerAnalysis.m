@@ -944,7 +944,7 @@ function dip_shrink_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.zoom=handles.zoom/sqrt(2);
-if handles.zoom<1, 
+if handles.zoom<1
     handles.zoom=1;
 end;
 pstr=sprintf('%5.1f',handles.zoom);
@@ -2653,7 +2653,7 @@ function dt_plus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 dt=handles.dt+8;
-if dt<=handles.max_dt,
+if dt<=handles.max_dt
     handles.dt=dt;
 end;
 guidata(hObject,handles);
@@ -2670,7 +2670,7 @@ function manual_bckg_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of manual_bckg
 handles.updated=0;
-if get(hObject,'Value') && isfield(handles,'source_file'),
+if get(hObject,'Value') && isfield(handles,'source_file')
     handles.man_k=handles.density_value/handles.calib_density;
     pstr=sprintf('%6.3f',handles.man_k);
     set(handles.man_bckg_k,'String',pstr);
@@ -2678,7 +2678,7 @@ if get(hObject,'Value') && isfield(handles,'source_file'),
     pstr=sprintf('%6.3f',handles.A_depth);
     set(handles.man_bckg_depth,'String',pstr);
     set(handles.radiobutton_deernet_bckg,'Value',0);
-    set_bckg_mode(handles,handles.old_bckg_mode);
+    handles = set_bckg_mode(handles,handles.old_bckg_mode);
     handles.new_bckg = 1;
 end;
 % Update handles structure
@@ -3621,7 +3621,19 @@ function radiobutton_deernet_bckg_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of radiobutton_deernet_bckg
+flag=get(hObject,'Value');
+if flag
+    set_bckg_mode(handles,'d');
+end;
+handles.updated=0;
+handles.model_updated=0;
+handles.validation_mode=0;
+handles.new_bckg = 1;
 
+
+% Update handles structure
+guidata(hObject, handles);
+update_DA(handles);
 
 % --- Executes on button press in checkbox_deernet_error_bckg.
 function checkbox_deernet_error_bckg_Callback(hObject, eventdata, handles)
@@ -3630,7 +3642,6 @@ function checkbox_deernet_error_bckg_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_deernet_error_bckg
-
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -3641,8 +3652,6 @@ function checkbox_comparative_bckg_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkbox_comparative_bckg
-% Update handles structure
-guidata(hObject, handles);
+guidata(hObject,handles);
 update_DA(handles);
 

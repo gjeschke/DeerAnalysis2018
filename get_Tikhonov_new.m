@@ -6,8 +6,6 @@ function [rout,distr,rho,eta,reg_param,corner] = get_Tikhonov_new(handles,reg_pa
 
 persistent kdim kernel r t U sm X V L
 
-test_mode = true;
-
 if ~exist('reg_param','var') || length(reg_param)~=1
     LFlag = true;
 else
@@ -39,7 +37,6 @@ else
     end
     ff = handles.A_dipevo;
     dt2 = tdip(2)-tdip(1);
-    tf = tdip;
 end
 
 dt = t(2)-t(1);

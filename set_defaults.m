@@ -116,12 +116,20 @@ handles.user_fit_rmin=1.5;
 handles.user_fit_rmax=10;
 handles.user_fit_dr=0.02;
 
+handles.A_low = [];
+handles.A_high= [];
+
 % initialize DEERNet
 handles.A_deernet_t = [];
 handles.A_deernet_sim = [];
 handles.A_deernet_ff = [];
 handles.A_deernet_bckg = [];
 handles.A_deernet_vexp = [];
+
+handles.deernet_ensemble_sim = [];
+handles.deernet_ensemble_ff = [];
+handles.deernet_ensemble_bckg = [];
+
 
 % prepare for comparative mode
 handles.A_curr_r = [];

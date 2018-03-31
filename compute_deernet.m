@@ -19,7 +19,13 @@ ttemp = handles.texp - handles.cutoff*ones(size(handles.texp))/1000;
 
 time_axis = handles.texp(ztpoi:pcutoff).';
 deer_trace = real(handles.vexp(ztpoi:pcutoff)).';
+deer_trace = deer_trace/max(deer_trace);
+deer_trace0 = deer_trace;
 
+ghost_suppression=get(handles.checkbox_ghost,'Value');
+if ghost_suppression
+    deer_trace = deer_trace.^(1/(handles.spins_per_object-1));
+end
 
 [dist_axis,outcomes] = deernet(deer_trace,time_axis,net_dir,silent);
 rexp = dist_axis.'/1000;
@@ -37,7 +43,7 @@ handles.A_high= max(sc*distr_ensemble);
 
 handles.A_deernet_t = time_axis.';
 handles.A_tdip =  time_axis.';
-handles.A_deernet_vexp = deer_trace.';
+handles.A_deernet_vexp = deer_trace0.';
 [handles.A_deernet_sim,handles.A_deernet_ff,handles.A_deernet_bckg] = fit_deernet_primary(handles,rexp,distr,time_axis.',deer_trace.');
 handles.A_depth = 1 - handles.A_deernet_bckg(1);
 handles.updated = 1;

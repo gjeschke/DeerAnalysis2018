@@ -11,6 +11,12 @@ v0 = [3 k0 depth0];
 v = fminsearch(@rms_net_bckg,v0,[],texp,vexp,dipevo);
 [sim,ff,bckg] = sim_net_bckg(v,texp,dipevo);
 
+ghost_suppression=get(handles.checkbox_ghost,'Value');
+if ghost_suppression
+    sim = sim.^(handles.spins_per_object-1);
+    bckg = bckg.^(handles.spins_per_object-1);
+end
+
 
 function [sim,ff,bckg] = sim_net_bckg(v,texp,simff)
 
