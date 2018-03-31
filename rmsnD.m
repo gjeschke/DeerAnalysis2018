@@ -7,7 +7,7 @@ function rms = rmsnD(v,x,y,logB,handles)
 %	Copyright (c) 1998 by Gunnar Jeschke
 
 if v(1)<0, rms=1.0e6; return; end;
-sim=decaynD(v,x,handles.hom_dim,handles);
+sim=decaynD(v,x,handles.hom_dim);
 diff=sim-y;
 rms=sum(diff.*diff);
 

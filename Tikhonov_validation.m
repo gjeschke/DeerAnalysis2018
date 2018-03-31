@@ -533,7 +533,7 @@ else
                         else
                             % Background simulation
                             v1=[dens (1-mod_depth)];
-                            bckg=decaynD(v1,texp,hom_dim,main_handles);
+                            bckg=decaynD(v1,texp,hom_dim);
                         end;
                         % bckg=(1-main_handles.man_depth)*bckg;
                         if handles.interactive,

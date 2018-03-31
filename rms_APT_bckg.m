@@ -23,7 +23,7 @@ end;
 
 v1(1)=v(1);
 v1(2)=1;
-bckg=decaynD(v1,texp,hom_dim,handles);
+bckg=decaynD(v1,texp,hom_dim);
 bckg=(1-v(2))*bckg;
 
 % targ=texp.^(dim/3);

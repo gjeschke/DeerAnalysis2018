@@ -51,7 +51,7 @@ switch back_model
         % distr=handles.Pake_r.^(v1(3)-1);
         % distr=0.01*distr/sum(distr);
         % logB=distr*handles.Pake_kernel;
-        bckg=decaynD(v1(1:2),texp,v1(3),handles);
+        bckg=decaynD(v1(1:2),texp,v1(3));
         density=v1(1);
         fdim=v1(3);
         pstr=sprintf('%5.2f',fdim);
@@ -63,7 +63,7 @@ switch back_model
         distr=0.01*distr/sum(distr);
         logB=distr*handles.Pake_kernel;
         v1=fminsearch(@rmsnD,v0,[],t_fit,data_fit,logB,handles);
-        bckg=decaynD(v1,texp,handles.hom_dim,handles);
+        bckg=decaynD(v1,texp,handles.hom_dim);
         density=v1(1);
         handles.bckg_dens=density;
     case 2
@@ -87,7 +87,7 @@ switch back_model
         %targ=texp.^(handles.hom_dim/3);
         v1(1)=handles.man_k;
         v1(2)=1;
-        bckg=decaynD(v1,texp,handles.hom_dim,handles);
+        bckg=decaynD(v1,texp,handles.hom_dim);
         bckg=(1-handles.man_depth)*bckg;
         % bckg=(1-handles.man_depth)*exp(-dens*targ);
         density=handles.man_k;
