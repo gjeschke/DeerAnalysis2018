@@ -295,7 +295,7 @@ handles.new_distr = 1;
 
 % DEERNet stuff
 handles.deernet_path = fullfile(deer_root,'deernet/');
-genpath(handles.deernet_path);
+addpath(genpath(handles.deernet_path));
 handles.net_set = 'net_set_any_peaks';
 handles.net_set_definitions = 'https://www.dropbox.com/s/z7zzvlxnash3kn3/current_netsets.txt?dl=0';
 netsets = get_netset_definitions('distributed_netsets.txt');
