@@ -15,7 +15,7 @@ function handles=fit_Tikhonov_new(handles)
 
 LFlag=get(handles.select_L_curve,'Value');
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
-if LFlag,
+if LFlag
     msg=sprintf('Computing Tikhonov regularization L curve and result at corner'); 
 else
     msg=sprintf('Computing Tikhonov regularization at alpha = %12.4f',handles.regpar);
@@ -23,12 +23,12 @@ end
 set(handles.status_line,'String',msg);
 set(handles.main_figure,'Pointer','watch');
 drawnow;
-if LFlag,
+if LFlag
     [r,distr,rho,eta,reg_param,corner] = get_Tikhonov_new(handles);
 else
     [r,distr,rho,eta,reg_param,corner] = get_Tikhonov_new(handles,handles.regpar);
 end;
-if LFlag,
+if LFlag
 	handles.regpar_vector = reg_param; % store Lcurve 
     handles.Lcurve_rho = rho;
     handles.Lcurve_eta = eta;
@@ -40,7 +40,7 @@ handles.A_r = r;
 pstr=num2str(handles.regpar);
 set(handles.regpar_edit,'String',pstr);
 set(handles.status_line,'String','Simulating DEER data...');
-if exflag || length(handles.A_tdip) > 1024,
+if exflag || length(handles.A_tdip) > 1024
     [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
 else
     sim=get_td_fit(handles,r,distr);
@@ -51,7 +51,7 @@ handles.A_sim=sim;
 handles.A_distr=distr';
 handles.A_low = distr';
 handles.A_high = distr';
-if length(r)*length(distr)>0,
+if length(r)*length(distr)>0
     handles.updated=1;
 end;
 set(handles.status_line,'String','Distance domain Tikhonov regularization succeeded.');
@@ -67,9 +67,9 @@ pstr=num2str(handles.regpar);
 set(handles.regpar_edit,'String',pstr);
 set(handles.main_figure,'Pointer','arrow');
 drawnow
-diff0=handles.A_cluster-sim1;
-deriv2=diff(distr,2);
-if LFlag,
+% diff0=handles.A_cluster-sim1;
+% deriv2=diff(distr,2);
+if LFlag
     set(handles.L_curve,'Enable','on');
     set(handles.L_curve,'Value',1);
     handles.Lcurve_distr=handles.A_distr;

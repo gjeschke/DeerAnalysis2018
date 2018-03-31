@@ -398,7 +398,7 @@ z=handles.v_orig;
 phi=handles.phase*pi/180;
 zt=get_zerotime(handles,t,real(z*exp(1i*phi)));
 handles.zerotime=zt;
-if zt~=zt0, 
+if zt~=zt0 
     handles.updated=0;     
     handles.validation_mode=0;
 end;
@@ -451,7 +451,7 @@ function zt_edit_Callback(hObject, eventdata, handles)
 
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 [v,handles]=edit_update(handles,hObject,min(handles.t_orig),max(handles.t_orig),0,'%d',1);
-if v~=handles.zerotime,
+if v~=handles.zerotime
 	handles.zerotime=v;
     handles.updated=0;
     handles.validation_mode=0;
@@ -469,7 +469,7 @@ function zt_plus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 [v,handles]=shift_cursor(handles,handles.zt_edit,min(handles.t_orig),max(handles.t_orig),'%d',handles.zerotime,handles.zt_min_shift);
-if v~=handles.zerotime,
+if v~=handles.zerotime
 	handles.zerotime=v;
     handles.updated=0;
     handles.validation_mode=0;
@@ -489,7 +489,7 @@ function phase_default_Callback(hObject, eventdata, handles)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 ph0=handles.phase;
 handles=get_phase(handles);
-if handles.phase~=ph0, 
+if handles.phase~=ph0
     handles.updated=0; 
     handles.validation_mode=0;
 end;
@@ -901,7 +901,7 @@ function exci_bandwidth_edit_Callback(hObject, eventdata, handles)
 v0=handles.bandwidth;
 [v,handles]=edit_update(handles,hObject,1.0,1e6,16,'%0.3g',0);
 handles.bandwidth=v;
-if v~=v0,
+if v~=v0
 	handles.updated=0;
     handles.validation_mode=0;
 end;
@@ -915,7 +915,7 @@ function dip_expand_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.zoom=handles.zoom*sqrt(2);
-if handles.zoom>1000, 
+if handles.zoom>1000 
     handles.zoom=1000;
 end;
 pstr=sprintf('%5.1f',handles.zoom);
@@ -2591,43 +2591,51 @@ function validate_Tikhonov_Callback(hObject, eventdata, handles)
 
 global main_handles
 
-main_handles=handles;
-% save validation_data main_handles
-h=Tikhonov_validation;
-waitfor(h);
-load validation_result
-if ~cancelled,
-    handles.A_tdip=tdip;
-    handles.A_distr=A_distr;
-    handles.A_r=A_r;
-    handles.A_sim=A_sim;
-    handles.Lcurve_distr=handles.A_distr;
-    handles.Lcurve_sim=handles.A_sim;
-    handles.bckg_dens=dens;
-    handles.bckg_start=bckg_start;
-    set(handles.bckg_edit,'String',sprintf('%i',bckg_start));
-    handles.A_depth=depth;
-    handles.A_dipevo=dipevo;
-    handles.A_cluster=clusterp;
-    handles.A_bckg=bckg;
-    handles.hom_dim=hom_dim;
-    handles.moddepth_suppression=moddepth_suppression;
-    dlow=A_distr-2*distr_std;
-    for k=1:length(dlow)
-        if dlow(k)<0; dlow(k)=0; end;
-    end;
-    dhigh=A_distr+2*distr_std;
-    handles.A_low=dlow;
-    handles.A_high=dhigh;
-    handles.mask=ones(size(handles.A_distr));
-    handles.updated=1;
-    handles.validation_mode=1;
-    set(handles.error_estimate,'Value',1);
+bmode = get_bckg_mode(handles);
+
+if strcmp(bmode,'d')
+    set(handles.main_figure,'Pointer','watch');
+    handles = Tikhonov_uncertainty_DEERNet_bckg(handles);
+    set(handles.main_figure,'Pointer','arrow');
 else
-    handles.updated=0;
-    handles.validation_mode=0;
-    set(handles.error_estimate,'Value',0);
-end;
+    main_handles=handles;
+    % save validation_data main_handles
+    h=Tikhonov_validation;
+    waitfor(h);
+    load validation_result
+    if ~cancelled
+        handles.A_tdip=tdip;
+        handles.A_distr=A_distr;
+        handles.A_r=A_r;
+        handles.A_sim=A_sim;
+        handles.Lcurve_distr=handles.A_distr;
+        handles.Lcurve_sim=handles.A_sim;
+        handles.bckg_dens=dens;
+        handles.bckg_start=bckg_start;
+        set(handles.bckg_edit,'String',sprintf('%i',bckg_start));
+        handles.A_depth=depth;
+        handles.A_dipevo=dipevo;
+        handles.A_cluster=clusterp;
+        handles.A_bckg=bckg;
+        handles.hom_dim=hom_dim;
+        handles.moddepth_suppression=moddepth_suppression;
+        dlow=A_distr-2*distr_std;
+        for k=1:length(dlow)
+            if dlow(k)<0; dlow(k)=0; end;
+        end;
+        dhigh=A_distr+2*distr_std;
+        handles.A_low=dlow;
+        handles.A_high=dhigh;
+        handles.mask=ones(size(handles.A_distr));
+        handles.updated=1;
+        handles.validation_mode=1;
+        set(handles.error_estimate,'Value',1);
+    else
+        handles.updated=0;
+        handles.validation_mode=0;
+        set(handles.error_estimate,'Value',0);
+    end
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2639,7 +2647,7 @@ function dt_minus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 dt=handles.dt-8;
-if dt>=handles.min_dt,
+if dt>=handles.min_dt
     handles.dt=dt;
 end;
 guidata(hObject,handles);
@@ -3024,7 +3032,7 @@ function radiobutton_DeerAnalysis_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of radiobutton_DeerAnalysis
 
-if get(hObject,'Value'),
+if get(hObject,'Value')
     set(handles.checkbox_no_analysis,'Value',1);
     set(handles.checkbox_no_analysis,'Enable','on');
     set(handles.format_elexsys,'Value',0);
@@ -3067,7 +3075,7 @@ function pushbutton_detach_original_Callback(hObject, eventdata, handles)
 
 global hMain
 
-if handles.original_attached,
+if handles.original_attached
     handles.original_attached = false;
     set(hObject,'TooltipString','Attach original data plot');
     handles.original_fig = figure('NumberTitle','off','Name','Original Data','Units','pixels');
@@ -3103,7 +3111,7 @@ function attach_original(hObject,callbackdata)
 global hMain
 
 hMain.original_attached = true;
-if ishandle(hMain.pushbutton_detach_original),
+if ishandle(hMain.pushbutton_detach_original)
     set(hMain.pushbutton_detach_original,'CData',hMain.detach_icon);
     set(hMain.original_data,'Parent', hMain.main_figure);
     set(hMain.original_data,'Units', 'normalized');
@@ -3120,7 +3128,7 @@ function pushbutton_detach_distribution_Callback(hObject, eventdata, handles)
 
 global hMain
 
-if handles.distribution_attached,
+if handles.distribution_attached
     handles.distribution_attached = false;
     set(hObject,'TooltipString','Attach distance distribution plot');
     handles.distribution_fig = figure('NumberTitle','off','Name','Distance distribution/ L curve','Units','pixels');
@@ -3156,7 +3164,7 @@ function attach_distribution(hObject,callbackdata)
 global hMain
 
 hMain.distribution_attached = true;
-if ishandle(hMain.pushbutton_detach_distribution),
+if ishandle(hMain.pushbutton_detach_distribution)
     set(hMain.pushbutton_detach_distribution,'CData',hMain.detach_icon);
     set(hMain.distance_distribution,'Parent', hMain.main_figure);
     set(hMain.distance_distribution,'Units', 'normalized');
@@ -3175,7 +3183,7 @@ function pushbutton_detach_dipolar_Callback(hObject, eventdata, handles)
 
 global hMain
 
-if handles.dipolar_attached,
+if handles.dipolar_attached
     handles.dipolar_attached = false;
     set(hObject,'TooltipString','Attach dipolar evolution plot');
     handles.dipolar_fig = figure('NumberTitle','off','Name','Dipolar evolution function/ spectrum','Units','pixels');
@@ -3211,7 +3219,7 @@ function attach_dipolar(hObject,callbackdata)
 global hMain
 
 hMain.dipolar_attached = true;
-if ishandle(hMain.pushbutton_detach_dipolar),
+if ishandle(hMain.pushbutton_detach_dipolar)
     set(hMain.pushbutton_detach_dipolar,'CData',hMain.detach_icon);
     set(hMain.dipolar_evolution,'Parent', hMain.main_figure);
     set(hMain.dipolar_evolution,'Units', 'normalized');
@@ -3396,7 +3404,7 @@ function checkbox_non_negativity_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_non_negativity
 
-if get(hObject,'Value'),
+if get(hObject,'Value')
     handles.non_negativity = true;
 else
     handles.non_negativity = false;

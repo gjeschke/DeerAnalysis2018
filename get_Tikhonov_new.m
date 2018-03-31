@@ -6,6 +6,8 @@ function [rout,distr,rho,eta,reg_param,corner] = get_Tikhonov_new(handles,reg_pa
 
 persistent kdim kernel r t U sm X V L
 
+tol_negativity = 0.05;
+
 if ~exist('reg_param','var') || length(reg_param)~=1
     LFlag = true;
 else
@@ -53,7 +55,7 @@ if LFlag
     % Compute L curve, it's corner, and make regularization at the L curve
     % corner and compute form factor ff2 corresponding to the Tikhonov solution
     [corner,rho,eta,reg_param] = l_curve_mod(U,sm,ff','Tikh',L,V,handles.fit_rms_value);
-    % distr2 = tikhonov(U,sm,X,ff',reg_param(corner));
+    % distr0 = tikhonov(U,sm,X,ff',reg_param(corner));
 % %   Code for testing
 %     figure(8); clf;
 %     plot(rho,eta,'k.');

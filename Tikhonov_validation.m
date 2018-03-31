@@ -175,7 +175,7 @@ function noise_factor_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of noise_factor as text
 %        str2double(get(hObject,'String')) returns contents of noise_factor as a double
 [v,handles]=edit_update(handles,hObject,1,10,2,'%5.2f',0);
-if v~=handles.factor_noise,
+if v~=handles.factor_noise
 	handles.factor_noise=v;
 end;
 % Update handles structure
@@ -203,7 +203,7 @@ function noise_trials_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of noise_trials as text
 %        str2double(get(hObject,'String')) returns contents of noise_trials as a double
 [v,handles]=edit_update(handles,hObject,1,50,5,'%d',1);
-if v~=handles.trials_noise,
+if v~=handles.trials_noise
 	handles.trials_noise=v;
 end;
 % Update handles structure
@@ -244,7 +244,7 @@ function bckg_min_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of bckg_min as a double
 [v,handles]=edit_update(handles,hObject,0,handles.max_bckg*handles.calib_density,0.1,'%6.4f',0);
 v=v/handles.calib_density;
-if v~=handles.min_bckg,
+if v~=handles.min_bckg
 	handles.min_bckg=v;
 end;
 % Update handles structure
@@ -274,7 +274,7 @@ function bckg_max_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of bckg_max as a double
 [v,handles]=edit_update(handles,hObject,handles.min_bckg*handles.calib_density,10,0.2,'%6.4f',0);
 v=v/handles.calib_density;
-if v~=handles.max_bckg,
+if v~=handles.max_bckg
 	handles.max_bckg=v;
 end;
 % Update handles structure
@@ -303,7 +303,7 @@ function bckg_trials_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of bckg_trials as text
 %        str2double(get(hObject,'String')) returns contents of bckg_trials as a double
 [v,handles]=edit_update(handles,hObject,1,50,5,'%d',1);
-if v~=handles.trials_bckg,
+if v~=handles.trials_bckg
 	handles.trials_bckg=v;
 end;
 % Update handles structure
@@ -343,7 +343,7 @@ function dim_trials_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of dim_trials as text
 %        str2double(get(hObject,'String')) returns contents of dim_trials as a double
 [v,handles]=edit_update(handles,hObject,1,50,5,'%d',1);
-if v~=handles.trials_dim,
+if v~=handles.trials_dim
 	handles.trials_dim=v;
 end;
 % Update handles structure
@@ -372,7 +372,7 @@ function dim_min_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of dim_min as text
 %        str2double(get(hObject,'String')) returns contents of dim_min as a double
 [v,handles]=edit_update(handles,hObject,1,handles.max_dim,3,'%5.2f',0);
-if v~=handles.min_dim,
+if v~=handles.min_dim
 	handles.min_dim=v;
 end;
 % Update handles structure
@@ -401,7 +401,7 @@ function dim_max_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of dim_max as text
 %        str2double(get(hObject,'String')) returns contents of dim_max as a double
 [v,handles]=edit_update(handles,hObject,handles.min_dim,4,3,'%5.2f',0);
-if v~=handles.max_dim,
+if v~=handles.max_dim
 	handles.max_dim=v;
 end;
 % Update handles structure
@@ -470,20 +470,20 @@ texp=main_handles.texp;
 handles.texp=texp;
 vexp=main_handles.vexp;
 handles.vexp=vexp;
-[tmi,ztpoi]=min(abs(texp));
+[~,ztpoi]=min(abs(texp));
 ttemp=texp-t_cutoff*ones(size(texp))/1000;
-[tt,pcutoff]=min(abs(ttemp));
+[~,pcutoff]=min(abs(ttemp));
 tdip=texp(ztpoi:pcutoff);
 handles.A_tdip=tdip;
 kc=1;
 total_trials=ntrials*btrials*ltrials*dtrials*strials;
-if total_trials<5,
+if total_trials<5
     set(handles.status_line,'String','### Validation requires at least 5 trial computations. ###');
     return
 else
     store_bckg_start=main_handles.bckg_start;
     store_hom_dim=main_handles.hom_dim;
-    if ~get(handles.statusbar_off,'Value'),
+    if ~get(handles.statusbar_off,'Value')
         status_figure('Validation. Close to stop.');
     else
         set(handles.Tikhonov_validation,'Pointer','watch');
@@ -491,7 +491,7 @@ else
     end;
     poi=0;
     npoi=0;
-    distr0=main_handles.A_distr;
+%     distr0=main_handles.A_distr;
     set(main_handles.select_L_curve,'Value',0);
     trial_bckg=zeros(total_trials,length(tdip));
     trial_dipevo=zeros(total_trials,length(tdip));
@@ -506,24 +506,24 @@ else
     sc_vals=zeros(1,total_trials);
     start_vals=zeros(1,total_trials);
     tic;
-    for kn=1:ntrials,
+    for kn=1:ntrials
         nfac=sqrt(nlev_vec(kn)^2-1);
         noise=nfac*handles.fit_rms_value*randn(size(vexp));
-        for kd=1:dtrials,
+        for kd=1:dtrials
             hom_dim=dim_vec(kd);
-            for kb=1:btrials,
+            for kb=1:btrials
                 dens=dens_vec(kb);
-                for kl=1:ltrials,
+                for kl=1:ltrials
                     mod_depth=depth_vec(kl);
-                    for ks=1:strials,
+                    for ks=1:strials
                         t_bckg=bckg_start_vec(ks);
                         npoi=npoi+1;
-                        if get(handles.checkbox_bckg_start,'Value'),
+                        if get(handles.checkbox_bckg_start,'Value')
                             t_cutoff=main_handles.cutoff;
                             ttemp=1000*texp-t_bckg*ones(size(texp));
-                            [tt,nofitp0]=min(abs(ttemp));
+                            [~,nofitp0]=min(abs(ttemp));
                             ttemp=1000*texp-t_cutoff*ones(size(texp));
-                            [tt,pcutoff]=min(abs(ttemp));
+                            [~,pcutoff]=min(abs(ttemp));
                             main_handles.bckg_start=t_bckg;
                             main_handles.hom_dim=hom_dim;
                             t_fit=texp(nofitp0:pcutoff); % time window of baseline region
@@ -536,7 +536,7 @@ else
                             bckg=decaynD(v1,texp,hom_dim);
                         end;
                         % bckg=(1-main_handles.man_depth)*bckg;
-                        if handles.interactive,
+                        if handles.interactive
                             axes(handles.axes1);
                             cla;
                             plot(texp,real(vexp),'k');
@@ -549,7 +549,7 @@ else
                         cluster=real(vexp)+noise;
                         dipevo=dipevo./bckg; % divide by background, eqn [13]
                         cluster=cluster./bckg;
-                        if handles.ghost_suppression,
+                        if handles.ghost_suppression
                             cluster=cluster.^(1/(handles.spins_per_object-1));
                             dipevo=cluster-ones(size(cluster));
                         end;                        
@@ -566,11 +566,11 @@ else
                         msg=sprintf('%s%i%s%i%s%5.2f%s%6.4f%s%5.3f%s%5.2f','Trial ',npoi,' of ',total_trials,', Noise: ',nlev_vec(kn),', Density: ',dens_vec(kb)*handles.calib_density,', Mod. depth: ',depth_vec(kl),', Dim.: ',dim_vec(kd));
                         set(handles.param_line,'String',msg);
                         [A_r,distr,sim,rms,sc]=get_Tikhonov(handles,main_handles);
-                        if ~isempty(distr),
+                        if ~isempty(distr)
                             poi=poi+1;
                             modsim=ones(size(sim))-sim;
                             sim1=ones(size(modsim))-sc*modsim;
-                            if handles.interactive,
+                            if handles.interactive
                                 axes(handles.axes2);
                                 cla;
                                 plot(tdip,cluster,'k');
@@ -691,7 +691,7 @@ else
     main_handles.bckg_start=store_bckg_start;
     main_handles.hom_dim=store_hom_dim;
 end;
-if handles.auto_save,
+if handles.auto_save
     fname=[handles.bas_name '_validation_sets'];
     save(fname,'trial_bckg','trial_dipevo','trial_distr','trial_sim','dens_vals','depth_vals','dim_vals','sc_vals','mean_depth','std_depth');
 end;

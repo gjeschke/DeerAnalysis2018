@@ -41,7 +41,7 @@ x(~passive) = 0;
 w = Atb - AtA*x; % negative gradient of error functional 0.5*||X*x-y||^2
 
 iIteration = 0;
-maxIterations = 5*N;
+maxIterations = 5*N; 
  
 % Outer loop: Add variables to positive set if w indicates that fit can be improved.
 while any(w>tol) && any(~passive)

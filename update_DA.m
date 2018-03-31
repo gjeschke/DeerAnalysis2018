@@ -380,7 +380,7 @@ elseif handles.bckg_request_d
             cluster=cluster.^(1/(handles.spins_per_object-1));
             my_offset = my_offset^(1/(handles.spins_per_object-1)); 
         end
-        dipevo = cluster - (1-my_offset);
+        dipevo = cluster - my_offset;
         dipevo = dipevo/max(dipevo);
         tdip = handles.A_deernet_t;
         if see_uncertainty_bckg
@@ -841,6 +841,21 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
         set(gca,'FontSize',8);
     end;
 	hold on;
+    
+    dlow=handles.A_low;
+    dhigh=handles.A_high;
+    if error_flag && length(dlow)==length(distr) && length(dhigh)==length(distr)
+%         for k=1:length(r)
+%             plot([r(k) r(k)],sc_dist*[dlow(k) dhigh(k)],'Color',[0.65 0.65 0.65],'Linewidth',0.5);
+%         end;
+        hunc = fill([r fliplr(r)],sc_dist*[dlow fliplr(dhigh)],[0.6,0.6,0.6]);
+        set(hunc,'EdgeColor','none','FaceAlpha',0.75);
+        plot(r,sc_dist*handles.mean_distr,'k','LineWidth',1.5);
+        sc=max(dhigh)-min(dlow);
+        maxv=max(dhigh)+0.1*sc;
+        minv=min(dlow)-0.1*sc;
+    end;
+
     if dual_flag
         B_distr=handles.B_distr;
         if ~imagflag
@@ -893,20 +908,8 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
         my_model = strtrim(my_models(my_model,:));
         handles.A_curr_mode = sprintf('Model %s',my_model);
     end
-
-
-    dlow=handles.A_low;
-    dhigh=handles.A_high;
-    if error_flag && length(dlow)==length(distr) && length(dhigh)==length(distr)
-        for k=1:length(r)
-            plot([r(k) r(k)],sc_dist*[dlow(k) dhigh(k)],'Color',[0.65 0.65 0.65],'Linewidth',0.5);
-        end;
-        plot(r,sc_dist*distr,'k','LineWidth',1.5);
-        sc=max(dhigh)-min(dlow);
-        maxv=max(dhigh)+0.1*sc;
-        minv=min(dlow)-0.1*sc;
-    end;
-	xlabel('r (nm)');
+    
+    xlabel('r (nm)');
 	
 	plot([rmin,rmin],sc_dist*[minv,maxv],'b');
 	plot([rmax,rmax],sc_dist*[minv,maxv],'m');
