@@ -717,7 +717,7 @@ function close_validation_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-if ~handles.computed, % if no result exists, Cancel instead of closing politely
+if ~handles.computed % if no result exists, Cancel instead of closing politely
     distr_std=0*handles.distr_std;
     cancelled=1;
     save validation_result distr_std cancelled
@@ -727,7 +727,11 @@ end;
 distr_std=handles.distr_std;
 cancelled=0;
 sel=handles.A_selected;
-A_distr=handles.trial_distr(sel,:);
+A_distr = mean(handles.trial_distr);
+A_distr(A_distr<0) = 0;
+dlow = min(handles.trial_distr);
+dhigh = max(handles.trial_distr);
+dlow(dlow<0) = 0;
 A_sim=handles.trial_sim(sel,:);
 A_r=handles.A_r;
 tdip=handles.A_tdip;
@@ -763,7 +767,7 @@ fprintf(wfile,'%s%5.2f%s%5.2f%s\n','Dimension range: (',dim_min,',',dim_max,')')
 fprintf(wfile,'%s%9.6f','Best r.m.s.d.:',min(handles.trial_rmsd));
 fclose(wfile);
 
-save validation_result distr_std cancelled A_r A_distr A_sim bckg dipevo clusterp tdip bckg_start dens depth hom_dim moddepth_suppression
+save validation_result distr_std cancelled A_r A_distr A_sim bckg dipevo clusterp tdip bckg_start dens depth hom_dim moddepth_suppression dlow dhigh 
 close(Tikhonov_validation);
 
 function update_trials(handles)

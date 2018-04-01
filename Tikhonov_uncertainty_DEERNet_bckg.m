@@ -91,7 +91,9 @@ endtime=toc;
 set(handles.status_line,'String',sprintf('Validation finished after %8.0f s',endtime));
 distr_std=std(trial_distr);
 mean_distr=mean(trial_distr);
+mean_distr(mean_distr<0) = 0;
 handles.mean_distr=mean_distr;
+handles.A_distr = mean_distr;
 handles.distr_std=distr_std;
 mean_depth=mean(mod_depths);
 std_depth=std(mod_depths);
@@ -105,9 +107,7 @@ handles.trial_dipevo=trial_dipevo;
 handles.trial_rmsd=rms_vec;
 
 dlow = min(trial_distr);
-% for k=1:length(dlow)
-%     if dlow(k)<0; dlow(k)=0; end;
-% end;
+dlow(dlow<0) = 0;
 dhigh = max(trial_distr);
 handles.A_low=dlow;
 handles.A_high=dhigh;

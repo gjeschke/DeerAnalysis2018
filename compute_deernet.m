@@ -32,6 +32,7 @@ rexp = dist_axis.'/1000;
 distr_ensemble = outcomes.';
 [nm,~] = size(distr_ensemble);
 distr = mean(distr_ensemble);
+distr(distr<0) = 0;
 sc = 1/sum(distr);
 distr = sc*distr;
 handles.mean_distr = distr;

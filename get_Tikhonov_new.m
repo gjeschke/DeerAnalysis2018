@@ -6,8 +6,6 @@ function [rout,distr,rho,eta,reg_param,corner] = get_Tikhonov_new(handles,reg_pa
 
 persistent kdim kernel r t U sm X V L
 
-tol_negativity = 0.05;
-
 if ~exist('reg_param','var') || length(reg_param)~=1
     LFlag = true;
 else
@@ -89,11 +87,4 @@ switch nonnegSolver
     Q = (kernel.'*kernel) + alpha^2*(L.'*L);
     distr = fnnls(Q,kernel.'*ff(:));
 end
-
-% % Code for testing
-% figure(19); clf;
-% plot(r,distr2,'r');
-% hold on;
-% plot(r,distr,'k');
-% disp('Tikhonov completed');
 

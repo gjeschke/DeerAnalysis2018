@@ -2605,6 +2605,7 @@ else
     load validation_result
     if ~cancelled
         handles.A_tdip=tdip;
+        handles.mean_distr=A_distr;
         handles.A_distr=A_distr;
         handles.A_r=A_r;
         handles.A_sim=A_sim;
@@ -2619,11 +2620,6 @@ else
         handles.A_bckg=bckg;
         handles.hom_dim=hom_dim;
         handles.moddepth_suppression=moddepth_suppression;
-        dlow=A_distr-2*distr_std;
-        for k=1:length(dlow)
-            if dlow(k)<0; dlow(k)=0; end;
-        end;
-        dhigh=A_distr+2*distr_std;
         handles.A_low=dlow;
         handles.A_high=dhigh;
         handles.mask=ones(size(handles.A_distr));

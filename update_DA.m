@@ -90,7 +90,7 @@ comp_bckg = get(handles.checkbox_comparative_bckg,'Value');
 print=handles.print_request;
 handles.print_request=0;
 
-if ~locked
+if ~logical(locked)
     [texp,vexp,~,~,imo]=pre_process(handles.t_orig,handles.v_orig,handles.phase,handles.imo,handles.zerotime,handles.dt);
 else
     texp=handles.t_orig;
@@ -118,7 +118,7 @@ if handles.ctvt
     sc=max(real(ref));
     sig=vexp(2,:);
     vexp=real(sig)./real(ref)+1i*imag(ref)/sc;
-elseif ~locked && ~smooth_scaled
+elseif ~logical(locked) && ~smooth_scaled
 	vexp=vexp/max(real(vexp));
 end;
 
@@ -149,7 +149,7 @@ if dual_flag
     end;
     plot(handles.B_tplot,B_vexp,'b');
 end;
-if dcmplx && ~dual_flag
+if logical(dcmplx) && ~dual_flag
 	plot(texp,0*vexp,'k:','LineWidth',1.5);
 	plot(texp,imag(vexp),'m');
     plot(texp,imo*ones(size(vexp)),'m:');
@@ -227,7 +227,7 @@ if ~handles.validation_mode && ~handles.bckg_request_d
             pflag=false;
             eflag=false;
         else
-            if locked
+            if logical(locked)
                 bckg=handles.loaded_bckg;
             else
                 [bckg,handles]=fit_bckg(handles,texp,t_fit,td_fit);
@@ -346,7 +346,7 @@ if ~handles.validation_mode && ~handles.bckg_request_d
     dipevo=scale_dipevo*dipevo/max(dipevo);
     cluster=scale_cluster*cluster/max(cluster);
     
-    if locked
+    if logical(locked)
         cluster=handles.loaded_ff;
         tdip=handles.loaded_tdip;
     end;
@@ -538,7 +538,7 @@ if exist('dipevo','var')
 
 
     APT_flag=get(handles.select_APT,'Value');
-    if APT_flag && ~locked
+    if APT_flag && ~logical(locked)
         [r,distr,sim]=APT(handles,tdip,dipevo);
         if ~handles.updated, handles.mask=ones(size(r)); end;
         handles.APT=distr;
@@ -551,7 +551,7 @@ if exist('dipevo','var')
         handles.A_sim=sim;
     end;
 
-    if locked
+    if logical(locked)
         handles.APT=distr;
         handles.r_APT=r;
         sim=handles.loaded_sim;
@@ -599,16 +599,20 @@ if exist('dipevo','var')
         handles.fit_rms_value=rms;
         pstr=sprintf('%8.6f',rms);
         set(handles.distr_rms,'String',pstr);
-        % modulation depth lambda is 0.01*sc
-        if sc>99
-            numspin=-1;
-            numspinstr='n.a.';
+        if ~handles.validation_mode
+            % modulation depth lambda is 0.01*sc
+            if sc>99
+                numspin=-1;
+                numspinstr='n.a.';
+            else
+                numspin=1+log((1-0.01*sc/handles.moddepth_suppression))/handles.calib_numspins;
+                numspinstr=sprintf('%4.2f',numspin);
+            end;
+            handles.n_spins=numspin;
+            set(handles.num_spins,'String',numspinstr);
         else
-            numspin=1+log((1-0.01*sc/handles.moddepth_suppression))/handles.calib_numspins;
-            numspinstr=sprintf('%4.2f',numspin);
-        end;
-        handles.n_spins=numspin;
-        set(handles.num_spins,'String',numspinstr);
+            numspin = handles.n_spins;
+        end
         sim0(1)=sim0(1)/2;
         simspc=real(fftshift(fft([private_hamming(sim0,1) zeros(1,zfm*length(sim0))])));
         sim0(1)=2*sim0(1);
