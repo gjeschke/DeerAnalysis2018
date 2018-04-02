@@ -50,4 +50,4 @@ distr2=r0/nu2/(sigma2*sqrt(2*pi)).*( ...
 distr2(distr2<0)=0;
 
 distr=p1*distr1+(1-p1)*distr2;
-end
+distr = distr/sum(distr);

@@ -23,5 +23,4 @@ distr=r0/nu/(sigma*sqrt(2*pi)).*( ...
 % The next line effectively multiplies the above with the heaviside
 % step function. The Rice distribution is zero for negative values.
 distr(distr<0)=0;
-
-end
+distr = distr/sum(distr);

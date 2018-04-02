@@ -1,4 +1,4 @@
-function distr=Chechik_2(r0,par),
+function distr=Chechik_2(r0,par)
 %
 % Model library of DeerAnalysis2006: Chechik_2
 %
@@ -26,29 +26,21 @@ gauss2=(r0-par(4)*ones(size(r0)))/par(5);
 gauss2=exp(-gauss2.^2);
 minr=par(4)-3*par(5);
 minarg=r0-minr*ones(size(r0));
-[mi,mipoi]=min(abs(minarg));
 maxr=par(4)+3*par(5);
 maxarg=r0-maxr*ones(size(r0));
-[ma,mapoi]=min(abs(maxarg));
-[mi,mipoi]=min(abs(minarg));
+[~,mapoi]=min(abs(maxarg));
+[~,mipoi]=min(abs(minarg));
 triangle=zeros(size(r0));
-for k=mipoi:mapoi,
+for k=mipoi:mapoi
     rac=r0(k);
     he=1/rac; % scale amplitude so that area is constant
     he=he*rac^2; % rescale amplitude, considering that number of labels scales with sphere surface
     ha=rstart*he/rac; % amplitude at first point
     triarg=r0-r0(k)*ones(size(r0));
-    [mi,poi]=min(abs(triarg));
+    [~,poi]=min(abs(triarg));
     triarg=linspace(ha,he,poi);
     triangle(1:poi)=triangle(1:poi)+gauss2(k)*triarg;
 end;
 triangle=triangle*intg1/sum(triangle);
 distr=par(3)*gauss1+(1-par(3))*triangle;
-% figure(13); clf;
-% plot(r0,gauss1,'b');
-% hold on;
-% plot(r0,triangle,'r');
-% plot(r0,gauss2,'m');
-% plot(r0,distr,'k');
-
-
+distr = distr/mean(distr);

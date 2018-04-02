@@ -3,7 +3,7 @@ function rms=rms_user_model(par,handles,r,lower_bounds,upper_bounds,exflag)
 %
 
 % Penalize parameters out of bounds
-for k=1:length(par),
+for k=1:length(par)
     if par(k)<lower_bounds(k), rms=1.0e6; return; end;
     if par(k)>upper_bounds(k), rms=1.0e6; return; end;
 end;
@@ -11,8 +11,8 @@ end;
 full_par=handles.model_pars;
 % Update parameters
 poi=0;
-for k=1:6,
-    if handles.model_mask(k),
+for k=1:8
+    if handles.model_mask(k)
         poi=poi+1;
         full_par(k)=par(poi);
     end;
@@ -29,8 +29,8 @@ else
     distr=0.01*distr/sum(distr); % normalization
 
     % Simulate fitted dipolar evolution function
-    if exflag,
-        [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    if exflag
+        sim = deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
     else
         sim=get_td_fit(handles,r,distr);
     end;
@@ -47,9 +47,11 @@ sim=ones(size(modsim))-sc*modsim;
 diff=sim-cluster;
 rms=sqrt(sum(diff.*diff)/(length(diff)-1));  %(HCH) fix;  %OLD: rms=sqrt(sum(diff.*diff))/(length(diff)-1);
 
-pstr=sprintf('%s%9.6f','Fitting user model. r.m.s. ',rms);
-set(handles.status_line,'String',pstr);
-drawnow;
+if ~handles.user_model_trial
+    pstr=sprintf('%s%9.6f','Fitting user model. r.m.s. ',rms);
+    set(handles.status_line,'String',pstr);
+    drawnow;
+end
 
 % figure(13); clf;
 % plot(handles.A_tdip,cluster,'k');

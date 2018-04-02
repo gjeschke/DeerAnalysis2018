@@ -31,7 +31,7 @@ ra=r0(1);
 re=r0(end);
 nr=length(r0)-1;
 
-for k=1:nmc,
+for k=1:nmc
     fi1=2*pi*rand; % uniform distribution of polar angle of vertex shift vector
     dv=sv*randn; % normal distribution of vertex distance from mean position
     p1=[0,rv]+[cos(fi1)*dv,sin(fi1)*dv]; % vertex 1 coordinates
@@ -43,17 +43,17 @@ for k=1:nmc,
     p3=[-sqrt(3)*rv/2,-rv/2]+[cos(fi1)*dv,sin(fi1)*dv]; % vertex 3 coordinates
     d12=norm(p1-p2); % side length 1,2
     poi12=1+round(nr*(d12-ra)/(re-ra)); % pointer into distance distribution
-    if poi12>0 && poi12<=nr+1,
+    if poi12>0 && poi12<=nr+1
         distr(poi12)=distr(poi12)+1;
     end;
     d13=norm(p1-p3); % side length 1,3
     poi13=1+round(nr*(d13-ra)/(re-ra)); % pointer into distance distribution
-    if poi13>0 && poi13<=nr+1,
+    if poi13>0 && poi13<=nr+1
       distr(poi13)=distr(poi13)+1;
     end;
     d23=norm(p2-p3); % side length 1,2
     poi23=1+round(nr*(d23-ra)/(re-ra)); % pointer into distance distribution
-    if poi23>0 && poi23<=nr+1,
+    if poi23>0 && poi23<=nr+1
       distr(poi23)=distr(poi23)+1;
     end;
     fi2=2*pi*rand;
@@ -73,7 +73,7 @@ for k=1:nmc,
     triple=triple+(mod1.*mod2+mod1.*mod3+mod2.*mod3)/3;
 end;
 
-distr=0.01*distr/sum(distr); % normalization
+distr=distr/sum(distr); % normalization
 deer=2*lambda*(1-lambda)*pair+lambda^2*triple;
 deer=deer/max(deer);
 

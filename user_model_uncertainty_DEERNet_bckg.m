@@ -1,5 +1,5 @@
-function handles = Tikhonov_uncertainty_DEERNet_bckg(handles)
-% Computes a Tikhonov regularization uncertainty estimate based on the
+function handles = user_model_uncertainty_DEERNet_bckg(handles)
+% Computes an uncertainty estimate for a parametrized model based on the
 % ensemble of background models from DEERNet, noise level in the Monte
 % Carlo procedure is twice the estimated noise level (adding as much noise
 % as is already there)
@@ -35,6 +35,7 @@ mod_depths = zeros(1,nt);
 set(handles.status_line,'String','Computing validation with DEERNet background ensemble...');
 
 tic;
+handles.user_model_trial = true;
 poi = 0;
 for kb = 1:mb
     for kn = 1:num_noise
@@ -60,13 +61,13 @@ for kb = 1:mb
         cla;
         set(gca,'FontSize',8);
         plot(handles.A_deernet_t,cluster,'k');
-        [A_r,distr,sim,rms,sc]=get_Tikhonov(handles);
+        [~,A_r,distr,sim,rms,sc] = fit_user_model(handles);
         axes(handles.distance_distribution);
         set(handles.distance_distribution,'NextPlot','replace');
         cla;
         plot(A_r,distr,'k');
         set(gca,'FontSize',8);
-        set(handles.status_line,'String',sprintf('Trial %i/%i finished.',(kb-1)*num_noise+kn,nt));
+        set(handles.status_line,'String',sprintf('Trial %i/%i finished with rmsd %8.5f.',(kb-1)*num_noise+kn,nt,rms));
         drawnow
         if ~isempty(distr)
             poi=poi+1;
@@ -81,6 +82,7 @@ for kb = 1:mb
         end;
     end
 end
+handles.user_model_trial = false;
 trial_dipevo = trial_dipevo(1:poi,:);
 trial_cluster = trial_cluster(1:poi,:);
 trial_distr = trial_distr(1:poi,1:length(distr));
@@ -99,6 +101,8 @@ mean_depth=mean(mod_depths);
 std_depth=std(mod_depths);
 handles.mean_depth=mean_depth;
 handles.std_depth=std_depth;
+pstr=sprintf('%8.6f',sqrt(mean(rms_vec.^2)));
+set(handles.distr_rms,'String',pstr);
 
 handles.trial_distr=trial_distr;
 handles.trial_sim=trial_sim;
@@ -119,30 +123,4 @@ handles.A_cluster=cluster0;
 if poi > 1
     set(handles.error_estimate,'Value',1);
 end
-
-function [r,distr,sim,rms,sc]=get_Tikhonov(handles)
-%
-% Tikhonov regularization, with or without excitation bandwidth correction
-% and with or without computation of a whole L curve
-% Matlab-internal version
-%
-% G. Jeschke, 2015-2018
-%
-
-
-[r,distr] = get_Tikhonov_new(handles,handles.regpar);
-exflag=get(handles.exci_bandwidth_corr,'Value');
-if exflag
-    sim = deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
-else
-    sim = get_td_fit(handles,r,distr);
-end;
-sim = real(sim);
-modsim=ones(size(sim))-sim;
-modexp=ones(size(handles.A_cluster))-handles.A_cluster;
-sc=sum(modexp.*modexp)/sum(modsim.*modexp);
-sc = real(sc);
-sim1=ones(size(modsim))-sc*modsim;
-diff0=handles.A_cluster-sim1;
-rms=sqrt(sum(diff0.*diff0)/(length(diff0)-1));
 

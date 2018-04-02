@@ -1,4 +1,4 @@
-function distr=WLC_rigid(r0,par);
+function distr=WLC_rigid(r0,par)
 %
 % Model library of DeerAnalysis2006: WLC_rigid
 %
@@ -22,17 +22,17 @@ kappa=Lp/L;
 rn=r0/L;
 distr=zeros(size(r0));
 terms=2;
-for pp=1:length(rn),
+for pp=1:length(rn)
     G=0;
     crit=kappa*(1-rn(pp));
-    if crit>0.2,
+    if crit>0.2
         fac=2*kappa/(4*pi);
-        for k=1:terms,
+        for k=1:terms
             G=G+fac*pi^2*k^2*(-1)^(k+1)*exp(-kappa*pi^2*k^2*(1-rn(pp)));
         end;
-    elseif crit>0,
+    elseif crit>0
         fac=kappa/(4*pi*2*sqrt(pi));
-        for l=1:terms,
+        for l=1:terms
             harg=(l-1/2)/sqrt(kappa*(1-rn(pp)));
             h2=4*harg^2-2;
             G=G+fac*1/(kappa*(1-rn(pp)))^(3/2)*exp(-(l-1/2)^2/(kappa*(1-rn(pp))))*h2;
@@ -41,5 +41,5 @@ for pp=1:length(rn),
     distr(pp)=G;
 end;
 
-
+distr = distr/sum(distr);
 

@@ -6,6 +6,13 @@ function handback=update_DA(handles)
 %  *Added display of RMS, model type, and distance constraints to workspace
 %  *Added call to new function 'stats_analysis' to get F-test results
 
+bmode = get_bckg_mode(handles);
+if strcmp(bmode,'d')
+    set(handles.pushbutton_validate_model,'Enable','on');
+else
+    set(handles.pushbutton_validate_model,'Enable','off');
+end
+
 if length(handles.A_low)==length(handles.A_distr)...
         && length(handles.A_high)==length(handles.A_distr)
     cstate = get(handles.error_estimate,'Value');
@@ -16,7 +23,6 @@ if length(handles.A_low)==length(handles.A_distr)...
         end
     end        
 else
-    set(handles.status_line,'String','Distance distribution error estimate not available (deactivated).');
     set(handles.error_estimate,'Value',0);
 end
 
@@ -392,6 +398,12 @@ elseif handles.bckg_request_d
             plot(texp,real(vexp),'k');
         end
         plot(handles.A_deernet_t,handles.A_deernet_bckg,'r','LineWidth',1.5);
+        pstr=sprintf('%6.3f',handles.bckg_dens*handles.calib_density);
+        if handles.bckg_dens>=0
+            set(handles.bckg_density,'String',pstr);
+        else
+            set(handles.bckg_density,'String','n.a.');
+        end;
         handles.A_dipevo = dipevo;
         handles.A_cluster = cluster;
         handles.A_bckg = handles.A_deernet_bckg;
@@ -597,6 +609,9 @@ if exist('dipevo','var')
         difference=sim-cluster;
         rms=sqrt(sum(difference.*difference)/(length(difference)-1));
         handles.fit_rms_value=rms;
+        if rms < handles.best_rmsd
+            handles.best_rmsd = rms;
+        end
         pstr=sprintf('%8.6f',rms);
         set(handles.distr_rms,'String',pstr);
         if ~handles.validation_mode
@@ -787,6 +802,14 @@ if exist('dipevo','var')
         else
             plot(tdip,model_sim,'r:','LineWidth',1.5);
             plot(tdip,cluster,'k');
+            difference=model_sim-cluster;
+            rms=sqrt(sum(difference.*difference)/(length(difference)-1));
+            handles.fit_rms_value=rms;
+            if rms < handles.best_rmsd
+                handles.best_rmsd = rms;
+            end
+            pstr=sprintf('%8.6f',rms);
+            set(handles.distr_rms,'String',pstr);
         end;
     end;
 end
@@ -833,11 +856,11 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
     rel_mean=sc*5;
     recognize=sc*6;
     if guidance
-        rectangle('Position',[min(r),minv,rel_shape-min(r),sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[0.9,1,0.9]);
+        rectangle('Position',[min(r),sc_dist*minv,rel_shape-min(r),sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[0.9,1,0.9]);
         set(gca,'FontSize',8);
-        rectangle('Position',[rel_shape,minv,rel_mean_width-rel_shape,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,1,0.8]);
-        rectangle('Position',[rel_mean_width,minv,rel_mean-rel_mean_width,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.9,0.7]);
-        rectangle('Position',[rel_mean,minv,recognize-rel_mean,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.8,0.8]);
+        rectangle('Position',[rel_shape,sc_dist*minv,rel_mean_width-rel_shape,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,1,0.8]);
+        rectangle('Position',[rel_mean_width,sc_dist*minv,rel_mean-rel_mean_width,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.9,0.7]);
+        rectangle('Position',[rel_mean,sc_dist*minv,recognize-rel_mean,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.8,0.8]);
     end;   
     sc=max(distr)-min(distr);
     if sum(handles.mask) ~= length(handles.mask)

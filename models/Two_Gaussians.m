@@ -36,4 +36,4 @@ gauss2=(r0-par(3)*ones(size(r0)))/par(4);
 gauss2=exp(-gauss2.^2);
 gauss2=gauss2*intg1/sum(gauss2);
 distr=par(5)*gauss1+(1-par(5))*gauss2;
-
+distr = distr/sum(distr);

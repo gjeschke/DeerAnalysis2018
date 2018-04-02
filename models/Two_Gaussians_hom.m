@@ -1,4 +1,4 @@
-function distr=Two_Gaussians_hom(r0,par),
+function distr=Two_Gaussians_hom(r0,par)
 %
 % Model library of DeerAnalysis2006: Two_Gaussians_hom
 %
@@ -43,3 +43,4 @@ r2=r0.^2;
 fac=sum(distr)/sum(r2); % normalization factor for hom. background rel to Gaussian
 hom=par(6)*fac*r2;
 distr=distr+hom;
+distr = distr/sum(distr);

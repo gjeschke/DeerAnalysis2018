@@ -20,7 +20,6 @@ R0=0.198; % 1.98 Å per residue
 N=par(1);
 nu=par(2);
 
-distr=zeros(size(r0));
 Rg=R0*N^nu;
 R2=6*Rg^2; % mean square end-to-end distance from radius of gyration
 c0=3/(2*pi*R2)^(3/2); % normalization prefactor
@@ -28,4 +27,4 @@ shell=4*pi*r0.^2; % spherical shell surface
 garg=3*r0.^2/(2*R2); % argument for Gaussian distribution
 gauss=exp(-garg);
 distr=c0*shell.*gauss;
-
+distr = distr/um(distr);

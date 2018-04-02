@@ -45,8 +45,11 @@ handles.A_high= max(sc*distr_ensemble);
 handles.A_deernet_t = time_axis.';
 handles.A_tdip =  time_axis.';
 handles.A_deernet_vexp = deer_trace0.';
-[handles.A_deernet_sim,handles.A_deernet_ff,handles.A_deernet_bckg] = fit_deernet_primary(handles,rexp,distr,time_axis.',deer_trace.');
+[handles.A_deernet_sim,handles.A_deernet_ff,handles.A_deernet_bckg,dim,dens] = fit_deernet_primary(handles,rexp,distr,time_axis.',deer_trace.');
 handles.A_depth = 1 - handles.A_deernet_bckg(1);
+handles.bckg_dens = dens;
+set(handles.bckg_dim_edit,'String',sprintf('%5.2f',dim));
+handles.hom_dim = dim;
 handles.updated = 1;
 
 deernet_ensemble_sim = zeros(nm,length(handles.A_deernet_sim));
@@ -72,6 +75,7 @@ set(handles.radiobutton_deernet_bckg,'Enable','on');
 set(handles.checkbox_deernet_error_bckg,'Enable','on');
 
 
+
 handles.bckg_request_h = 0;
 handles.bckg_request_e = 0;
 handles.bckg_request_p = 0;
@@ -80,6 +84,16 @@ set_bckg_mode(handles,'d');
 handles.comp_net_set = handles.net_set;
 handles.new_bckg = 1;
 handles.new_distr = 1;
+
+cluster = handles.A_deernet_vexp./handles.A_deernet_bckg;
+cluster = cluster/max(cluster);
+if ghost_suppression
+    cluster=cluster.^(1/(handles.spins_per_object-1));
+end
+difference= handles.A_deernet_ff-cluster;
+rms=sqrt(sum(difference.*difference)/(length(difference)-1));
+pstr=sprintf('%8.6f',rms);
+set(handles.distr_rms,'String',pstr);
 
 set(handles.status_line,'String','DEERNet analysis finished.');
 set(gcf,'Pointer','arrow');

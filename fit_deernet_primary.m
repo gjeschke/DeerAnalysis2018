@@ -1,4 +1,4 @@
-function [sim,ff,bckg] = fit_deernet_primary(handles,rexp,distr,texp,vexp)
+function [sim,ff,bckg,dim,dens,depth] = fit_deernet_primary(handles,rexp,distr,texp,vexp)
 
 simff = get_td_fit(handles,rexp,distr);
 
@@ -9,6 +9,9 @@ k0 = -log(vexp(end)/(1-depth0))/texp(end);
 v0 = [3 k0 depth0];
 
 v = fminsearch(@rms_net_bckg,v0,[],texp,vexp,dipevo);
+dim = v(1);
+dens = v(2);
+depth = v(3);
 [sim,ff,bckg] = sim_net_bckg(v,texp,dipevo);
 
 ghost_suppression=get(handles.checkbox_ghost,'Value');

@@ -11,5 +11,6 @@ function distr=Gaussian(r0,par)
 % par(1)  <r>    3.5     1.0         20         mean distance
 % par(2)  s(r)   0.5     0.02        5          standard deviation
 
-gauss0=(r0-par(1)*ones(size(r0)))/par(2);
+gauss0=(r0-par(1)*ones(size(r0)))/(2*par(2));
 distr=exp(-gauss0.^2);
+distr = distr/sum(distr);

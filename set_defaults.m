@@ -138,6 +138,9 @@ handles.A_prev_r = [];
 handles.A_prev_distr = [];
 handles.new_distr = 1;
 
+handles.best_rmsd = 1e6;
+handles.user_model_trial = false;
+
 handback=read_user_model(handles);
 
 handback.A_prev_bckg_mode = '';
@@ -149,5 +152,7 @@ handback.A_curr_bckg_mode = '';
 handback.A_curr_bckg_details = '';
 handback.A_curr_bckg = [];
 handback.A_curr_bckg_t = [];
+
+
 
 

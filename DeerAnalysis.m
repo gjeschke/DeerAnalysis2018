@@ -33,7 +33,7 @@ function varargout = DeerAnalysis(varargin)
 
 % Edit the above text to modify the response to help DeerAnalysis
 
-% Last Modified by GUIDE v2.5 30-Mar-2018 11:11:58
+% Last Modified by GUIDE v2.5 02-Apr-2018 07:11:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1638,9 +1638,9 @@ exflag=get(handles.exci_bandwidth_corr,'Value');
 APTflag=get(handles.select_APT,'Value');
 set(handles.status_line,'String','Simulating DEER data...');
 set(handles.main_figure,'Pointer','watch');
-if exflag & ~APTflag,
-    [sim,sc]=deer_sim(handles.A_r,mask_distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
-else,
+if exflag && ~APTflag
+    sim = deer_sim(handles.A_r,mask_distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+else
     sim=get_td_fit(handles,handles.A_r,mask_distr);
 end;
 set(handles.status_line,'String','Ready.');
@@ -1731,7 +1731,7 @@ function select_APT_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of select_APT
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.select_Tikhonov,'Value',0);
     set(handles.select_model,'Value',0);
     set(handles.select_deernet,'Value',0);
@@ -1739,6 +1739,8 @@ if flag,
     set(handles.L_curve,'Value',0);
     set(handles.L_curve,'Enable','off');
     handles.new_distr = 1;
+    handles.validation_mode=0;
+    set(handles.error_estimate,'Value',0);
 end;
 guidata(hObject,handles);
 update_DA(handles);
@@ -1789,6 +1791,7 @@ if flag
     set(handles.select_deernet,'Value',0);
     handles.model_updated=1;
     handles.new_distr = 1;
+    set(handles.error_estimate,'Value',0);
 end;
 guidata(hObject,handles);
 update_DA(handles);
@@ -1823,6 +1826,7 @@ if flag
         handles=sim_user_model(handles);
     end
     handles.new_distr = 1;
+    set(handles.error_estimate,'Value',0);
 else
     handles.model_updated=1;
 end;
@@ -2480,7 +2484,8 @@ function fit_model_Callback(hObject, eventdata, handles)
 
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 flag=get(handles.select_model,'Value');
-if flag,
+if flag
+    set(handles.error_estimate,'Value',0);
 	handles=fit_user_model(handles);
 	handles.saved=0;
     handles.model_updated=1;
@@ -3510,8 +3515,10 @@ if flag
     set(handles.select_APT,'Value',0);
     handles.model_updated=1;
     handles.new_distr = 1;
+    handles.validation_mode=0;
     set(handles.L_curve,'Value',0);
     set(handles.L_curve,'Enable','off');
+    set(handles.error_estimate,'Value',0);
 end;
 guidata(hObject,handles);
 update_DA(handles);
@@ -3659,3 +3666,23 @@ function checkbox_comparative_bckg_Callback(hObject, eventdata, handles)
 guidata(hObject,handles);
 update_DA(handles);
 
+
+
+% --- Executes on button press in pushbutton_validate_model.
+function pushbutton_validate_model_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_validate_model (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+bmode = get_bckg_mode(handles);
+
+if strcmp(bmode,'d')
+    set(handles.main_figure,'Pointer','watch');
+    handles = user_model_uncertainty_DEERNet_bckg(handles);
+    set(handles.main_figure,'Pointer','arrow');
+else
+    set(hObject,'Enable','off');
+end
+
+guidata(hObject,handles);
+update_DA(handles);

@@ -1,4 +1,4 @@
-    function handback=sim_user_model(handles)
+function handback=sim_user_model(handles)
 %
 % Simulates distance distribution and dipolar evolution function
 % for the currently selected user model to the 
@@ -24,12 +24,10 @@ r=linspace(rmin,rmax,numr);
 
 sim=[];
 
-t=handles.A_tdip;
 full_par=handles.model_pars;
 
 % Simulate fitted dipolar evolution function
-sc=1;
-if ~isempty(handles.A_tdip),
+if ~isempty(handles.A_tdip)
     if handles.model_mode || full_depth % for positive model mode identifiers
     my_model = handles.user_model;
     if strcmp(my_model,'Gaussian')
@@ -46,8 +44,8 @@ if ~isempty(handles.A_tdip),
         distr=0.01*distr/sum(distr); % normalization
 
         % Simulate fitted dipolar evolution function
-        if exflag,
-            [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+        if exflag
+            [sim,~]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
         else
             sim=get_td_fit(handles,r,distr);
         end;
