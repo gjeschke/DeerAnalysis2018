@@ -1,5 +1,5 @@
 function [corner_index,rho,eta,reg_param] = l_curve_mod(U,sm,b,method,L,V,noise) 
-%L_CURVE_MOD Plot the L-curve and find its "corner". 
+%L_CURVE_MOD Calculate the L-curve and find its "corner". 
 % 
 % [corner_index,rho,eta,reg_param] = 
 %                  l_curve(U,s,b,method) 
@@ -35,9 +35,9 @@ function [corner_index,rho,eta,reg_param] = l_curve_mod(U,sm,b,method,L,V,noise)
 % slightly modified for more stable corner localization in the context of
 % DEER data by G. Jeschke, Sept. 29, 2016
  
-if ~exist('noise','var'),
+if ~exist('noise','var')
     noise = 0;
-end;
+end
 % Set defaults. 
 if (nargin==3), method='Tikh'; end  % Tikhonov reg. is default. 
 npoints = 200;  % Number of points on the L-curve for Tikh and dsvd. 
@@ -117,7 +117,7 @@ elseif (strncmp(method,'mtsv',4))
  
   if (nargin~=6) 
     error('The matrices L and V must also be specified') 
-  end 
+  end
   [p,n] = size(L); rho = zeros(p,1); eta = rho; 
   [Q,R] = qr(L*V(:,n:-1:n-p),0); 
   for i=1:p 

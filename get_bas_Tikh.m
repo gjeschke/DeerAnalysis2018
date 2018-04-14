@@ -1,14 +1,12 @@
-function [kernel,r,t,U,sm,X,V,L] = get_bas_Tikh(dimension,dt,rmin,rmax,deriv)
-% [kernel,r,t,U,sm,X,V,L] = get_bas_Tikh(dimension,dt,rmin,rmax,deriv)
+function [kernel,r,t] = get_bas_Tikh(dimension,dt,rmin,rmax)
+% [kernel,r,t] = get_bas_Tikh(dimension,dt,rmin,rmax)
 %
-% On-the-fly computation of a kernel and its singular-value decomposition
-% for use with Tikhonov regularization routine
+% Computation of a kernel for use with Tikhonov regularization routine
 %
 % dimension     kernel dimension
 % dt            time increment, defaults to 0.008 microseconds
 % rmin          minimum distance, defaults to 1.5 nm
 % rmax          maximum distance, defaults to 10 nm
-% deriv         derivative order used in regularization, defaults to 2
 %
 % G. Jeschke, 2015
 %
@@ -30,38 +28,25 @@ if ~exist('rmax','var') || isempty(rmax)
     rmax = 6*(dimension*dt/2)^(1/3); % maximum detectable distance, 
                                      % 2 microseconds dipolar evolution
                                      % time correspond to 6 nm
-end;
-
-if ~exist('deriv','var') || isempty(deriv),
-    deriv = 2;
-end;
+end
 
 w0=2*pi*ny0; % angular frequencies
-t=0:dt:(dimension-1)*dt; % time axis in µs
-n=length(t); % length of time axis
+t=(0:dimension-1).'*dt; % time axis in µs
+nt=length(t); % length of time axis
 r=linspace(rmin,rmax,dimension); % distance axis in nm
-m=length(r); % length of distance axis
-wd=zeros(1,m); % vector dipolar frequencies as a function of distance
-kernel=zeros(m,n); % data array for kernel
-% fprintf(1,'%i data points in time domain\n',n);
-% fprintf(1,'%i data points in distance domain\n',m);
-for k=1:m
+nr=length(r); % length of distance axis
+%wd=zeros(1,nr); % vector dipolar frequencies as a function of distance
+kernel=zeros(nt,nr); % kernel matrix
+ntheta = 1001;
+costheta = linspace(0,1,ntheta);
+for k=1:nr
    rk=r(k); % current distance
    wdd=w0/rk^3; % current dipolar angular frequency
-   wd(k)=wdd/(2*pi); % current dipolar frequency
-%    if mod(k,10)==0,
-%         fprintf(1,'%5.1f%% of fit table done.\n',100*k/m);
-%    end;
-   for l=0:1000 % 1000 averages over cos(theta) angle (powder average)
-      x=l/1000; % current theta angle
-      ww=wdd*(3*x^2-1); % dipolar frequency at current theta angle
-      kernel(k,:)=kernel(k,:)+cos(ww*t); % add kernel contribution
+   %wd(k)=wdd/(2*pi); % current dipolar frequency
+   for l=1:ntheta % average over cos(theta) angle (powder average)
+      ww=wdd*(3*costheta(l)^2-1); % dipolar frequency at current theta angle
+      kernel(:,k)=kernel(:,k)+cos(ww*t); % add kernel contribution
    end
+   % normalize dipolar time evolution trace
+   kernel(:,k) = kernel(:,k)/kernel(1,k);
 end
-
-for k=1:m % loop form kernel normalization
-   kernel(k,:)=kernel(k,:)/kernel(k,1); % normalize dipolar time evolution traces
-end
-kernel = kernel';
-L = get_l(length(r),deriv); % differential operator matrix for derivative
-[U,sm,X,V] = cgsvd(kernel,L);
