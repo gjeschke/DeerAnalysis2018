@@ -34,84 +34,87 @@ function [corner_index,rho,eta,reg_param] = l_curve_mod(U,sm,b,method,L,V,noise)
 % Per Christian Hansen, IMM, Sep. 13, 2001.
 % slightly modified for more stable corner localization in the context of
 % DEER data by G. Jeschke, Sept. 29, 2016
- 
-if ~exist('noise','var')
-    noise = 0;
-end
-% Set defaults. 
+
+% Set defaults
+if ~exist('noise','var'), noise = 0; end
 if (nargin==3), method='Tikh'; end  % Tikhonov reg. is default. 
-npoints = 200;  % Number of points on the L-curve for Tikh and dsvd. 
-% smin_ratio = 16*eps;  % Smallest regularization parameter. 
+ 
+% Initialization. 
+[m,n] = size(U);
+[p,ps] = size(sm); 
+beta = U'*b;
+beta2 = norm(b)^2 - norm(beta)^2; 
+if (ps==1) 
+  s = sm;
+  beta = beta(1:p); 
+else
+  s = sm(p:-1:1,1)./sm(p:-1:1,2);
+  beta = beta(p:-1:1); 
+end 
+xi = beta(1:p)./s; 
+
+% Set alpha range
+lgregpar_inc = 0.1;  % resolution of log10(alpha)
 smin_ratio = 16*eps*1e6;  % Ratio of smallest to largest regularization parameter. 
 % The following scaling of the L curve range improves L curve corner detection for DEER
 % applications
 noise_rat = noise/0.0025;
 smin_ratio = smin_ratio*2^noise_rat;
+lgregpar_max = log10(s(1));
+lgregpar_min = log10(max([s(p),s(1)*smin_ratio]));
+lgregpar_max = floor(lgregpar_max/lgregpar_inc)*lgregpar_inc;
+lgregpar_min = ceil(lgregpar_min/lgregpar_inc)*lgregpar_inc;
+lgregpar = lgregpar_max:-lgregpar_inc:lgregpar_min;
+reg_param = 10.^lgregpar;
+npoints = numel(reg_param);
 
- 
-% Initialization. 
-[m,n] = size(U); [p,ps] = size(sm); 
-if (nargout > 0), locate = 1; else locate = 0; end 
-beta = U'*b; beta2 = norm(b)^2 - norm(beta)^2; 
-if (ps==1) 
-  s = sm; beta = beta(1:p); 
-else 
-  s = sm(p:-1:1,1)./sm(p:-1:1,2); beta = beta(p:-1:1); 
-end 
-xi = beta(1:p)./s; 
- 
 if (strncmp(method,'Tikh',4) || strncmp(method,'tikh',4)) 
- 
-  eta = zeros(npoints,1); rho = eta; reg_param = eta; s2 = s.^2;
-  reg_param(npoints) = max([s(p),s(1)*smin_ratio]);
-  ratio = (s(1)/reg_param(npoints))^(1/(npoints-1));
-  for i=npoints-1:-1:1, reg_param(i) = ratio*reg_param(i+1); end
-%   [~,start_reg] = min(abs(reg_param-1e5));
-%   [~,end_reg] = min(abs(reg_param-1e-3));
-%   reg_param = reg_param(start_reg:end_reg);
-%   npoints = length(reg_param);
-  for i=1:npoints 
+  
+  eta = zeros(npoints,1);
+  rho = zeros(npoints,1);
+  s2 = s.^2;
+  for i = 1:npoints 
     f = s2./(s2 + reg_param(i)^2); 
     eta(i) = norm(f.*xi); 
     rho(i) = norm((1-f).*beta(1:p)); 
   end 
-  if (m > n & beta2 > 0), rho = sqrt(rho.^2 + beta2); end 
-  marker = '-'; pos = .8; txt = 'Tikh.'; 
+  if (m > n && beta2 > 0), rho = sqrt(rho.^2 + beta2); end 
  
 elseif (strncmp(method,'tsvd',4) || strncmp(method,'tgsv',4)) 
  
-  eta = zeros(p,1); rho = eta; 
+  eta = zeros(p,1);
+  rho = zeros(p,1); 
   eta(1) = abs(xi(1))^2; 
   for k=2:p, eta(k) = eta(k-1) + abs(xi(k))^2; end 
   eta = sqrt(eta); 
   if (m > n) 
-    if (beta2 > 0), rho(p) = beta2; else rho(p) = eps^2; end 
+    if (beta2 > 0)
+      rho(p) = beta2;
+    else
+      rho(p) = eps^2;
+    end
   else 
     rho(p) = eps^2; 
   end 
   for k=p-1:-1:1, rho(k) = rho(k+1) + abs(beta(k+1))^2; end 
   rho = sqrt(rho); 
-  reg_param = [1:p]'; marker = 'o'; pos = .75; 
+  reg_param = (1:p)';
   if (ps==1) 
-    U = U(:,1:p); txt = 'TSVD'; 
+    U = U(:,1:p);
   else 
-    U = U(:,1:p); txt = 'TGSVD'; 
+    U = U(:,1:p);
   end 
  
 elseif (strncmp(method,'dsvd',4) || strncmp(method,'dgsv',4)) 
- 
-  eta = zeros(npoints,1); rho = eta; reg_param = eta; 
-  reg_param(npoints) = max([s(p),s(1)*smin_ratio]); 
-  ratio = (s(1)/reg_param(npoints))^(1/(npoints-1)); 
-  for i=npoints-1:-1:1, reg_param(i) = ratio*reg_param(i+1); end 
-  for i=1:npoints 
+    
+  eta = zeros(npoints,1);
+  rho = zeros(npoints,1);
+  for i = 1:npoints 
     f = s./(s + reg_param(i)); 
     eta(i) = norm(f.*xi); 
     rho(i) = norm((1-f).*beta(1:p)); 
   end 
-  if (m > n & beta2 > 0), rho = sqrt(rho.^2 + beta2); end 
-  marker = ':'; pos = .85; 
-  if (ps==1), txt = 'DSVD'; else txt = 'DGSVD'; end 
+  if (m > n && beta2 > 0), rho = sqrt(rho.^2 + beta2); end 
  
 elseif (strncmp(method,'mtsv',4)) 
  
@@ -131,23 +134,24 @@ elseif (strncmp(method,'mtsv',4))
       rho(i) = eps; 
     end 
   end 
-  if (m > n & beta2 > 0), rho = sqrt(rho.^2 + beta2); end 
-  reg_param = [n-p+1:n]'; txt = 'MTSVD'; 
-  U = U(:,reg_param); sm = sm(reg_param); 
-  marker = 'x'; pos = .7; ps = 2;  % General form regularization. 
+  if (m > n && beta2 > 0), rho = sqrt(rho.^2 + beta2); end 
+  reg_param = (n-p+1:n)';
+  U = U(:,reg_param);
+  sm = sm(reg_param); 
   
-else, error('Illegal method'), 
+else
+  error('Unknown method.');
+  
 end 
 
-
+% Determine corner of L-curve
+%-----------------------------------------
 eta = log(eta);
 rho = log(rho);
-etamin=min(eta);
-rhomin=min(rho);
-etamax=max(eta);
-rhomax=max(rho);
-
-eta1=(eta-etamin)/(etamax-etamin);
-rho1=(rho-rhomin)/(rhomax-rhomin);
-
-[~,corner_index]=min(eta1.^2+rho1.^2);
+etamin = min(eta);
+rhomin = min(rho);
+etamax = max(eta);
+rhomax = max(rho);
+eta_scaled = (eta-etamin)/(etamax-etamin);
+rho_scaled = (rho-rhomin)/(rhomax-rhomin);
+[~,corner_index]=min(eta_scaled.^2+rho_scaled.^2);
