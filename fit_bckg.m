@@ -67,19 +67,19 @@ switch back_model
         density=v1(1);
         handles.bckg_dens=density;
     case 2
-		    bckg=exp(polyval(poly,texp)); % background is exponential of that
+		    bckg=exp(polyval(poly,abs(texp))); % background is exponential of that
         density=v0(1);
         handles.bckg_dens=density;
     case 3
         poly=polyfit(t_fit,log(data_fit),handles.poly_order);
-        bckg=exp(polyval(poly,texp));
+        bckg=exp(polyval(poly,abs(texp)));
         handles.polynomial=poly;
         density=-1;
     case 4
-        bckg0=exp(polyval(handles.polynomial,t_fit));
+        bckg0=exp(polyval(handles.polynomial,abs(t_fit)));
         v0=[1 0.8];
         v1=fminsearch(@rms_ubckg,v0,[],data_fit,bckg0);
-        bckg1=exp(polyval(handles.polynomial,texp));
+        bckg1=exp(polyval(handles.polynomial,abs(texp)));
         bckg=v1(2)*exp(v1(1)*log(bckg1));
         density=v1(1)/handles.calib_density;
         handles.bckg_dens=density;
