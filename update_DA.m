@@ -936,7 +936,8 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
         handles.A_curr_mode = sprintf('Model %s',my_model);
     end
     
-    xlabel('r (nm)');
+    xlabel('{\itr} (nm)');
+    ylabel('{\itP} (nm^{-1})');
 	
 	plot([rmin,rmin],sc_dist*[minv,maxv],'b');
 	plot([rmax,rmax],sc_dist*[minv,maxv],'m');
@@ -955,7 +956,8 @@ if fit_flag && ~handles.updated && ~LC_flag
     hold on;
     model_distr=model_distr*max(handles.APT)/max(model_distr);
     plot(handles.model_r,model_distr,'r:','LineWidth',1.5);
-	xlabel('r (nm)');
+    xlabel('{\itr} (nm)');
+    ylabel('{\itP} (nm^{-1})');
 	
 	rmin=handles.rmin;
 	rmax=handles.rmax;
