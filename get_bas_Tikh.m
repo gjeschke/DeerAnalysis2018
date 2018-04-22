@@ -1,46 +1,71 @@
-function [K,r,t] = get_bas_Tikh(dimension,dt,rmin,rmax)
-% [K,r,t] = get_bas_Tikh(dimension,dt,rmin,rmax)
+function [K,t,r] = get_bas_Tikh(N,tmin,tmax,rmin,rmax)
+% [K,t,r] = get_bas_Tikh(dimension,dt,rmin,rmax)
 %
-% Compute dipolar kernel for use with Tikhonov regularization
+% Compute dipolar kernel matrix for use with Tikhonov regularization.
 %
 % Input:
-%   dimension     kernel dimension
-%   dt            time increment, defaults to 0.008 microseconds
-%   rmin          minimum distance, defaults to 1.5 nm
-%   rmax          maximum distance, defaults to 10 nm
+%   N        kernel dimension (N x N)
+%   tmin     minimum time in 탎, defaults to 0 microseconds
+%   tmax     maximum time in 탎, defaults to (N-1)*0.008 microseconds
+%   rmin     minimum distance in nm, defaults to 1.5 nm
+%   rmax     maximum distance in nm, defaults to 10 nm
 %
 % Output:
-%   r             distance vector, nm
-%   t             time vector, microseconds
-%   K             kernel
+%   K        kernel matrix, size N x N
+%   t        time vector, microseconds
+%   r        distance vector, nm
 
-ny0=52.04; % dipolar frequency at 1 nm for g=ge, MHz
+persistent cache
+cacheSize = 10;
 
-if ~exist('dt','var') || isempty(dt)
-    dt = 0.008;
+if nargin<1
+  error('Kernel matrix size required.');
 end
 
+if ~exist('tmin','var') || isempty(tmin)
+  tmin = 0;
+end
+
+if ~exist('tmax','var') || isempty(tmax)
+  tmax = (N-1)*0.008; % 탎
+end
+
+dt = (tmax-tmin)/(N-1); % time increment, in 탎
+nu_dip = 52.0410; % dipolar frequency at 1 nm for g=ge, MHz
+
 if ~exist('rmin','var') || isempty(rmin)
-    % minimum detectable distance, the largest dipolar frequency (shoulders of
-    % the Pake doublet is 85% of the Nyquist frequency)
-    rmin = (4*dt*ny0/0.85)^(1/3); 
+  % minimum detectable distance, the largest dipolar frequency (shoulders of
+  % the Pake doublet is 85% of the Nyquist frequency)
+  rmin = (4*dt*nu_dip/0.85)^(1/3);
 end
 
 if ~exist('rmax','var') || isempty(rmax)
-    % maximum detectable distance, 2 microseconds dipolar evolution time
-    % corresponds to 6 nm
-    rmax = 6*(dimension*dt/2)^(1/3);
+  % maximum detectable distance, 2 microseconds dipolar evolution time
+  % corresponds to 6 nm
+  rmax = 6*(N*dt/2)^(1/3);
 end
 
-t = (0:dimension-1).'*dt; % time axis in 탎
-nt = length(t); % length of time axis
-r = linspace(rmin,rmax,dimension); % distance axis in nm
-nr = length(r); % length of distance axis
-K = zeros(nt,nr); % kernel matrix
-wdd = 2*pi*ny0./r.^3; % perpendicular dipolar angular frequencyies for all r
+if ~isempty(cache)
+  for k = 1:numel(cache)
+    c = cache(k);
+    if all([N tmin tmax rmin rmax]==c.parameters)
+      K = c.K;
+      t = c.t;
+      r = c.r;
+      return
+    end
+  end
+end
 
-Method = 2;
-switch Method
+nt = N; % length of time axis
+nr = N; % length of distance axis
+t = linspace(tmin,tmax,nt).'; % time axis, in 탎
+r = linspace(rmin,rmax,nr).'; % distance axis in nm
+K = zeros(nt,nr); % kernel matrix
+wdd = 2*pi*nu_dip./r.^3; % perpendicular dipolar angular frequencyies for all r
+
+kernelCalcMethod = 2;
+switch kernelCalcMethod
   case 1
     % Method using explicit numerical powder average (slow)
     %----------------------------------------------------------
@@ -73,3 +98,17 @@ switch Method
   otherwise
     error('Unknown calculation method for dipolar kernel.')
 end
+
+% Update cache
+%-------------------------------------------------------------------------------
+% If cache is full, drop oldest cached result.
+if numel(cache)>=cacheSize
+  cache(1) = [];
+end
+
+% Store result in cache.
+idx = numel(cache)+1;
+cache(idx).parameters = [N tmin tmax rmin rmax];
+cache(idx).K = K;
+cache(idx).t = t;
+cache(idx).r = r;
