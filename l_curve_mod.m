@@ -3,34 +3,18 @@ function [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(K,L,S,noise)
 % determine the optimal ones based on several criteria.
 
 % Set defaults
-%-------------------------------------------------------------
 if ~exist('noise','var'), noise = 0; end
-lgregpar_inc = 0.1;  % resolution of log10(alpha)
 unconstrainedTikhonov = true;
 
+% Preparations
 L = full(L);
 nt = numel(S);
 KtK = K.'*K;
 LtL = L.'*L;
 KtS = K.'*S;
 
-% Set alpha range
-%-------------------------------------------------------------
-minmax_ratio = 16*eps*1e6;  % Max. ratio of smallest to largest alpha
-
-% The following scaling of the alpha range improves L curve corner detection
-% for DEER applications.
-minmax_ratio = minmax_ratio*2^(noise/0.0025);
-
-% Get singular values
-sv = gsvd(K,L,0);
-sv = sv(end-2:-1:1); % sort in decreasing order
-lgregpar_max = log10(sv(1));
-lgregpar_min = log10(max([sv(p),sv(1)*minmax_ratio]));
-lgregpar_max = floor(lgregpar_max/lgregpar_inc)*lgregpar_inc;
-lgregpar_min = ceil(lgregpar_min/lgregpar_inc)*lgregpar_inc;
-lgregpar = lgregpar_max:-lgregpar_inc:lgregpar_min;
-reg_param = 10.^lgregpar;
+% Get alpha range
+reg_param = get_regparamrange(K,L,noise);
 
 % Calculate all metrics over alpha range
 %-------------------------------------------------------------
