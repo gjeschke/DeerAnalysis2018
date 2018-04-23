@@ -1,9 +1,6 @@
-function [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(sm,K,L,S,noise)
+function [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(K,L,S,noise)
 %L_CURVE_MOD Solve Tikhonov for a range of regularization parameters and
 % determine the optimal ones based on several criteria.
-
-% [corner_index,rho,eta,reg_param] =
-%                  l_curve(U,sm,b)  ,  sm = [sigma,mu]
 
 % Set defaults
 %-------------------------------------------------------------
@@ -24,13 +21,10 @@ minmax_ratio = 16*eps*1e6;  % Max. ratio of smallest to largest alpha
 % The following scaling of the alpha range improves L curve corner detection
 % for DEER applications.
 minmax_ratio = minmax_ratio*2^(noise/0.0025);
+
 % Get singular values
-[p,ps] = size(sm);
-if (ps==1)
-  sv = sm;
-else
-  sv = sm(p:-1:1,1)./sm(p:-1:1,2);
-end
+sv = gsvd(K,L,0);
+sv = sv(end-2:-1:1); % sort in decreasing order
 lgregpar_max = log10(sv(1));
 lgregpar_min = log10(max([sv(p),sv(1)*minmax_ratio]));
 lgregpar_max = floor(lgregpar_max/lgregpar_inc)*lgregpar_inc;

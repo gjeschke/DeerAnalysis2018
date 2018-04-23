@@ -23,7 +23,7 @@ save test.dat data -ascii
 % Compute L curve, it's corner, and make regularization at the L curve
 % corner and compute form factor ff2 corresponding to the Tikhonov solution
 tic,
-[corner_index,rho,eta,reg_param] = l_curve_mod(U,sm,ff');
+[corner_index,rho,eta,reg_param] = l_curve_mod(kernel,L,ff');
 distr2 = tikhonov(kernel,L,ff(:),reg_param(corner_index));
 rho1 = norm(kernel*distr2-ff(:));
 eta1 = norm(L*distr2);

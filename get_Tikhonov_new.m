@@ -4,7 +4,7 @@ function [rout,distr,rho,eta,reg_param,idx_corner] = get_Tikhonov_new(handles,re
 % see: http://www2.compute.dtu.dk/~pcha/Regutools/index.html
 % as well as: http://ch.mathworks.com/matlabcentral/fileexchange/52-regtools
 
-persistent kdim kernel r t U sm X V L
+persistent kdim kernel r t L
 
 % Determine whether L curve should be calculated or not
 calcLcurve = ~exist('reg_param','var') || length(reg_param)~=1;
@@ -15,10 +15,6 @@ if length(tdip) > 2048 % use standard kernel for very long data sets
     kernel = handles.Tikh_kernel;
     r = handles.Tikh_r;
     t = handles.Tikh_t;
-    U = handles.Tikh_U;
-    sm = handles.Tikh_sm;
-    X = handles.Tikh_X;
-    V = handles.Tikh_V;
     L = handles.Tikh_L;
     kdim = length(r);
     n1 = length(t);
@@ -30,7 +26,6 @@ else
         kdim = length(tdip);
         [kernel,t,r] = get_bas_Tikh(kdim);
         L = get_l(length(r),2); % differential regularization operator matrix
-        [U,sm,X,V] = cgsvd(kernel,L);
     end
     S = handles.A_dipevo;
     dt2 = tdip(2)-tdip(1);
@@ -49,7 +44,7 @@ sc = (dt2/dt)^(1/3);
 S = S(:);
 if calcLcurve
     % Compute L curve rho and eta (without nonnegativity constraint) and its corner
-    [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(sm,kernel,L,S,handles.fit_rms_value);
+    [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(kernel,L,S,handles.fit_rms_value);
     alpha = reg_param(idx_corner);
 else
     % Compute rho and eta for single regularization parameter
