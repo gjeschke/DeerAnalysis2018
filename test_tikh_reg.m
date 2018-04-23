@@ -24,9 +24,11 @@ save test.dat data -ascii
 % corner and compute form factor ff2 corresponding to the Tikhonov solution
 tic,
 [corner_index,rho,eta,reg_param] = l_curve_mod(U,sm,ff');
-[distr2,rho1,eta1] = tikhonov(U,sm,X,ff',reg_param(corner_index));
+distr2 = tikhonov(kernel,L,ff(:),reg_param(corner_index));
+rho1 = norm(kernel*distr2-ff(:));
+eta1 = norm(L*distr2);
 ff2 = get_ff(r,distr2,t,kernel,r,t);
-toc,
+toc
 
 distr2p = distr2;
 distr2p(distr2<0)=0;

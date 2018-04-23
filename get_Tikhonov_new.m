@@ -53,7 +53,9 @@ if calcLcurve
     alpha = reg_param(idx_corner);
 else
     % Compute rho and eta for single regularization parameter
-    [~,rho,eta] = tikhonov(U,sm,X,S,reg_param);
+    Pfit = tikhonov(kernel,L,S,reg_param);
+    rho = norm(kernel*Pfit-S);
+    eta = norm(L*Pfit);
     alpha = reg_param(1);
     idx_corner = 1;
     idx_AIC = 1;
