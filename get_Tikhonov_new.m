@@ -1,6 +1,6 @@
 function [rout,distr,rho,eta,reg_param,idx_corner,idx_AIC] = get_Tikhonov_new(handles,reg_param)
 
-persistent kdim kernel r t L
+persistent kdim K r t L
 
 % Determine whether L curve should be calculated or not
 calcLcurve = ~exist('reg_param','var') || length(reg_param)~=1;
@@ -8,7 +8,7 @@ calcLcurve = ~exist('reg_param','var') || length(reg_param)~=1;
 tdip = handles.A_tdip;
 
 if length(tdip) > 2048 % use standard kernel for very long data sets
-    kernel = handles.Tikh_kernel;
+    K = handles.Tikh_kernel;
     r = handles.Tikh_r;
     t = handles.Tikh_t;
     L = handles.Tikh_L;
@@ -20,7 +20,7 @@ if length(tdip) > 2048 % use standard kernel for very long data sets
 else
     if isempty(kdim) || kdim ~= length(tdip) % use previously stored kernel if dimension matches
         kdim = length(tdip);
-        [kernel,t,r] = get_bas_Tikh(kdim);
+        [K,t,r] = get_bas_Tikh(kdim);
         L = get_l(length(r),2); % differential regularization operator matrix
     end
     S = handles.A_dipevo;
@@ -28,7 +28,7 @@ else
 end
 
 dt = t(2)-t(1);
-sc = (dt2/dt)^(1/3);
+rout = r * (dt2/dt)^(1/3);
 
 % % Code for testing
 % figure(17); clf;
@@ -40,19 +40,17 @@ sc = (dt2/dt)^(1/3);
 S = S(:);
 if calcLcurve
     % Compute L curve rho and eta (without nonnegativity constraint) and its corner
-    [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(kernel,L,S,handles.fit_rms_value);
+    [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(K,L,S,handles.fit_rms_value);
     alpha = reg_param(idx_corner);
 else
     % Compute rho and eta for single regularization parameter
-    Pfit = tikhonov(kernel,L,S,reg_param);
-    rho = norm(kernel*Pfit-S);
+    Pfit = tikhonov(K,L,S,reg_param);
+    rho = norm(K*Pfit-S);
     eta = norm(L*Pfit);
     alpha = reg_param(1);
     idx_corner = 1;
     idx_AIC = 1;
 end
-
-rout = sc*r;
 
 % Solve non-negativity-constrained Tikhonov problem
 %---------------------------------------------------------------
@@ -64,13 +62,13 @@ rout = sc*r;
 nonnegSolver = 2;
 switch nonnegSolver
   case 1
-    C = [kernel;alpha*L];
+    C = [K;alpha*L];
     % options = optimset('Display','off','TolX',10*eps*max(size(C))*norm(kernel,1));
     options = optimset('Display','off','TolX',1000*eps);
     [m,~] = size(L);
     d = [S;zeros(m,1)];
     distr = lsqnonneg(C,d,options);
   case 2
-    Q = (kernel.'*kernel) + alpha^2*(L.'*L);
-    distr = fnnls(Q,kernel.'*S);
+    Q = (K.'*K) + alpha^2*(L.'*L);
+    distr = fnnls(Q,K.'*S);
 end

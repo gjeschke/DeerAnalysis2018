@@ -66,7 +66,7 @@ function DeerAnalysis_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for DeerAnalysis
 handles.output = hObject;
 
-figname=['DeerAnalysis 2018 - [no data]']; % tell user, which file is current
+figname='DeerAnalysis 2018 - [no data]'; % tell user, which file is current
 set(handles.main_figure,'Name',figname);
 
 % check window size and screen size and resize if required
@@ -171,7 +171,7 @@ ksize=512;
 handles.kernel_size=ksize;
 p_string=sprintf('%d',ksize); % display
 fname=sprintf('%s%s','kernel',p_string); % generate filename
-load(fname);
+load(fname,'base','crosstalk','tnorm','ny','t');
 handles.APT_kernel=base;
 handles.APT_crosstalk=crosstalk;
 handles.APT_norm=tnorm;
@@ -199,14 +199,14 @@ handles.p2 = 0;
 handles.p3 = 0;
 handles.bandwidth = 16;
 
-load('pake_base40.mat');
+load('pake_base40.mat','base','t','r','wd');
 kernel=base-ones(size(base)); % kernel format for pcf2deer
 handles.Pake_kernel=kernel;
 handles.Pake_t=t;
 handles.Pake_r=r;
 handles.Pake_wd=wd;
 
-load('pake_base_tikh_512');
+load('pake_base_tikh_512','L','U','V','X','kernel','r','sm','t');
 handles.Tikh_kernel = kernel';
 handles.Tikh_r = r;
 handles.Tikh_t = t;
@@ -267,9 +267,9 @@ if m>=1
     for k=1:m
         item=models(k).name;
         model_list=[model_list item(1:length(item)-2)];
-        if k<m, model_list=[model_list '|']; end;
-    end;
-end;
+        if k<m, model_list=[model_list '|']; end
+    end
+end
 set(handles.user_model_list,'String',model_list);
 
 % determine if statistics toolbox is present
@@ -280,11 +280,11 @@ toolbox = regexp(which(n), pat, 'match', 'once');
 vers = ver(toolbox);
 if ~isempty(vers)
     set(handles.checkbox_statistics,'Enable','on');
-end;
+end
 fmp = which('fmincon');
 if isempty(fmp)
     set(handles.checkbox_statistics,'Enable','off');
-end;
+end
 handles.fit_constrained = false;
 
 % prepare for comparative mode
@@ -361,7 +361,7 @@ function dual_display_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of dual_display
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.imaginary,'String','mod. depth scaling');
     set(handles.imaginary,'TooltipString','Automatic modulation depth scaling on/off');
     handles.imag_memory=get(handles.imaginary,'Value');
@@ -373,7 +373,7 @@ else
     set(handles.imaginary,'TooltipString','Imaginary trace on/off');
     set(handles.imaginary,'Value',handles.imag_memory);
     set(handles.distr_suppress,'Enable','on');
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -404,7 +404,7 @@ handles.zerotime=zt;
 if zt~=zt0 
     handles.updated=0;     
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -423,7 +423,7 @@ if v~=handles.zerotime
     handles.validation_mode=0;
     handles.cutoff = max(handles.t_orig)-handles.zerotime;
     set(handles.cutoff_edit,'String',sprintf('%i',handles.cutoff));
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -460,7 +460,7 @@ if v~=handles.zerotime
     handles.validation_mode=0;
     handles.cutoff = max(handles.t_orig)-handles.zerotime;
     set(handles.cutoff_edit,'String',sprintf('%i',handles.cutoff));
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -478,7 +478,7 @@ if v~=handles.zerotime
     handles.validation_mode=0;
     handles.cutoff = max(handles.t_orig)-handles.zerotime;
     set(handles.cutoff_edit,'String',sprintf('%i',handles.cutoff));
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -495,7 +495,7 @@ handles=get_phase(handles);
 if handles.phase~=ph0
     handles.updated=0; 
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -507,11 +507,11 @@ function phase_minus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 [v,handles]=shift_cursor(handles,handles.phase_edit,-180,180,'%5.1f',180*handles.phase/pi,-1);
-if v~=handles.phase*180/pi,
-	handles.phase=pi*v/180;
+if v~=handles.phase*180/pi
+  	handles.phase=pi*v/180;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -539,17 +539,17 @@ function phase_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of phase_edit as text
 %        str2double(get(hObject,'String')) returns contents of phase_edit as a double
-if ~isfield(handles,'source_file'),
+if ~isfield(handles,'source_file')
     set(hObject,'String',handles.phase)  %return to previous value
     set(handles.status_line,'String','### Load data file ###'); 
     return;
 end
 [v,handles]=edit_update(handles,hObject,-180,180,0,'%5.1f',0);
-if v~=handles.phase*180/pi,
-	handles.phase=pi*v/180;
+if v~=handles.phase*180/pi
+    handles.phase=pi*v/180;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -563,11 +563,11 @@ function phase_plus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 [v,handles]=shift_cursor(handles,handles.phase_edit,-180,180,'%5.1f',180*handles.phase/pi,+1);
-if v~=handles.phase*180/pi,
+if v~=handles.phase*180/pi
 	handles.phase=pi*v/180;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -581,9 +581,7 @@ function bckg_default_Callback(hObject, eventdata, handles)
 
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 flag=get(handles.bckg_none,'Value');
-if flag,
-    return;
-end;
+if flag, return; end
 bckg0=handles.bckg_start;
 set(handles.main_figure,'Pointer','watch');
 drawnow;
@@ -594,9 +592,9 @@ set(handles.bckg_edit,'String',pstr);
 set(handles.main_figure,'Pointer','arrow');
 set(handles.status_line,'String','Ready.');
 if handles.bckg_start~=bckg0
-	handles.updated=0;
+    handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 handles.new_bckg = 1;
 guidata(hObject, handles);
@@ -609,11 +607,11 @@ function bckg_minus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 [v,handles]=shift_cursor(handles,handles.bckg_edit,0,handles.cutoff-handles.zerotime-handles.dt,'%d',handles.bckg_start,-handles.dt);
-if v~=handles.bckg_start,
-	handles.bckg_start=v;
+if v~=handles.bckg_start
+    handles.bckg_start=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -642,17 +640,17 @@ function bckg_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of bckg_edit as text
 %        str2double(get(hObject,'String')) returns contents of bckg_edit as a double
-if ~isfield(handles,'source_file'),
+if ~isfield(handles,'source_file')
     set(hObject,'String',handles.bckg_start)  %return to previous value
     set(handles.status_line,'String','### Load data file ###');
-    return;
+    return
 end
 [v,handles]=edit_update(handles,hObject,0,handles.cutoff,0,'%d',1);
 if v~=handles.bckg_start
 	handles.bckg_start=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -671,7 +669,7 @@ if v~=handles.bckg_start
 	handles.bckg_start=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -691,7 +689,7 @@ if handles.cutoff~=cutoff0
     set(handles.cutoff_edit,'String',pstr);
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -706,10 +704,10 @@ if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load d
 texp=pre_process(handles.t_orig,handles.v_orig,handles.phase,handles.imo,handles.zerotime,handles.dt);
 [v,handles]=shift_cursor(handles,handles.cutoff_edit,handles.zerotime,max(texp),'%d',handles.cutoff,-handles.dt);
 if v~=handles.cutoff
-	handles.cutoff=v;
+    handles.cutoff=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -743,7 +741,7 @@ function cutoff_edit_Callback(hObject, eventdata, handles)
 if ~isfield(handles,'source_file')
     set(hObject,'String',handles.cutoff)  %return to previous value
     set(handles.status_line,'String','### Load data file ###');
-    return;
+    return
 end
 texp=pre_process(handles.t_orig,handles.v_orig,handles.phase,handles.imo,handles.zerotime,handles.dt);
 [v,handles]=edit_update(handles,hObject,handles.bckg_start+handles.zerotime,max(texp),max(texp),'%d',1);
@@ -751,7 +749,7 @@ if v~=handles.cutoff
 	handles.cutoff=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -769,7 +767,7 @@ if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load d
 texp =pre_process(handles.t_orig,handles.v_orig,handles.phase,handles.imo,handles.zerotime,handles.dt);
 [v,handles]=shift_cursor(handles,handles.cutoff_edit,handles.zerotime,max(texp),'%d',handles.cutoff,handles.dt);
 if v~=handles.cutoff
-	handles.cutoff=v;
+    handles.cutoff=v;
     handles.updated=0;
     handles.validation_mode=0;
 end
@@ -789,7 +787,7 @@ flag=get(hObject,'Value');
 if flag
     set(handles.dip_spectrum,'Value',0);
     set(handles.text_form_factor,'String','Form factor');
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -806,7 +804,7 @@ flag=get(hObject,'Value');
 if flag
     set(handles.dip_time_domain,'Value',0);
     set(handles.text_form_factor,'String','Dipolar spectrum');
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -857,7 +855,7 @@ handles.longpass_min=v;
 if v~=v0
 	handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -905,9 +903,9 @@ v0=handles.bandwidth;
 [v,handles]=edit_update(handles,hObject,1.0,1e6,16,'%0.3g',0);
 handles.bandwidth=v;
 if v~=v0
-	handles.updated=0;
+    handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -920,7 +918,7 @@ function dip_expand_Callback(hObject, eventdata, handles)
 handles.zoom=handles.zoom*sqrt(2);
 if handles.zoom>1000 
     handles.zoom=1000;
-end;
+end
 pstr=sprintf('%5.1f',handles.zoom);
 set(handles.zoom_edit,'String',pstr);
 % Update handles structure
@@ -949,7 +947,7 @@ function dip_shrink_Callback(hObject, eventdata, handles)
 handles.zoom=handles.zoom/sqrt(2);
 if handles.zoom<1
     handles.zoom=1;
-end;
+end
 pstr=sprintf('%5.1f',handles.zoom);
 set(handles.zoom_edit,'String',pstr);
 % Update handles structure
@@ -1017,13 +1015,13 @@ function format_elexsys_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of format_elexsys
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.format_winepr,'Value',0);
     set(handles.format_ascii,'Value',0);
     set(handles.radiobutton_DeerAnalysis,'Value',0);
     set(handles.checkbox_no_analysis,'Enable','off');
     set(handles.checkbox_no_analysis,'Value',0);
-end;
+end
 guidata(hObject,handles);
 
 
@@ -1035,13 +1033,13 @@ function format_winepr_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of format_winepr
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.format_elexsys,'Value',0);
     set(handles.format_ascii,'Value',0);
     set(handles.radiobutton_DeerAnalysis,'Value',0);
     set(handles.checkbox_no_analysis,'Enable','off');
     set(handles.checkbox_no_analysis,'Value',0);
-end;
+end
 guidata(hObject,handles);
 
 % --- Executes on button press in format_ascii.
@@ -1052,13 +1050,13 @@ function format_ascii_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of format_ascii
 flag=get(hObject,'Value');
-if flag,
+if flag
     set(handles.format_elexsys,'Value',0);
     set(handles.format_winepr,'Value',0);
     set(handles.radiobutton_DeerAnalysis,'Value',0);
     set(handles.checkbox_no_analysis,'Enable','off');
     set(handles.checkbox_no_analysis,'Value',0);
-end;
+end
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -1192,14 +1190,14 @@ suggestion=[handles.bas_name '_res.txt'];
 [fname,pname]=uiputfile('*.txt','Save results',suggestion);
 % Remove (last) extension, if any
 s=strfind(fname,'.');
-if ~isempty(s),
+if ~isempty(s)
 	fname=fname(1:s(length(s))-1);
-end;
+end
 % Remove suffix '_res', if present
 s=strfind(fname,'_res');
-if ~isempty(s),
+if ~isempty(s)
 	fname=fname(1:s(length(s))-1);
-end;
+end
 handles=save_result(handles,fname,pname);
 cd(return_path);
 guidata(hObject, handles);
@@ -1372,12 +1370,10 @@ function regpar_up_Callback(hObject, eventdata, handles)
 % hObject    handle to regpar_up (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 if numel(handles.A_r)~=numel(handles.A_distr), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
 if length(handles.regpar_vector)<=1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
-v=handles.regpar_sel-1;
-if v<1, v=1; end;
+v = max(handles.regpar_sel-1,1);
 handles.regpar_sel=v;
 handles.regpar=handles.regpar_vector(v);
 
@@ -1387,7 +1383,8 @@ set(handles.main_figure,'Pointer','watch');
 drawnow
 [r,distr] = get_Tikhonov_new(handles,handles.regpar);
 set(handles.status_line,'String','Simulating form factor...');
-if exflag,
+exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
+if exflag
     [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
     sim = deer_sim_0(r,distr,handles.A_tdip);
@@ -1395,7 +1392,7 @@ elseif length(handles.A_tdip) > 1024
 else
     sim=get_td_fit(handles,r,distr);
     sc = 1;
-end;
+end
 handles.moddepth_suppression=sc;
 handles.A_sim=sim;
 set(handles.status_line,'String','Ready.');
@@ -1436,7 +1433,7 @@ function regpar_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of regpar_edit as text
 %        str2double(get(hObject,'String')) returns contents of regpar_edit as a double
 
-if ~isfield(handles,'source_file'),
+if ~isfield(handles,'source_file')
     set(hObject,'String',handles.regpar)  %return to previous value
     set(handles.status_line,'String','### Load data file ###');
     return;
@@ -1444,18 +1441,18 @@ end
 v0=handles.regpar;
 [v,handles]=edit_update(handles,hObject,1e-9,1e9,1,'%0.5g',0);
 handles.regpar=v;
-for k=1:length(handles.regpar_vector),
-    if abs(handles.regpar_vector(k)-v)/handles.regpar_vector(k)<1.0e-3,
+for k=1:length(handles.regpar_vector)
+    if abs(handles.regpar_vector(k)-v)/handles.regpar_vector(k)<1.0e-3
         handles.regpar=handles.regpar_vector(k);
         handles.regpar_sel = k;
         v0=v;
-    end;
-end;
-if v~=v0,
+    end
+end
+if v~=v0
     set(handles.L_curve,'Value',0);
     set(handles.L_curve,'Enable','off');
     set(handles.select_L_curve,'Value',0);
-end;
+end
 set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 set(handles.status_line,'String','Recomputing...');
 set(handles.main_figure,'Pointer','watch');
@@ -1463,7 +1460,7 @@ drawnow
 [r,distr] = get_Tikhonov_new(handles,handles.regpar);
 set(handles.status_line,'String','Simulating form factor...');
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
-if exflag,
+if exflag
     [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
     sim = deer_sim_0(r,distr,handles.A_tdip);
@@ -1471,7 +1468,7 @@ elseif length(handles.A_tdip) > 1024
 else
     sim=get_td_fit(handles,r,distr);
     sc = 1;
-end;
+end
 handles.moddepth_suppression=sc;
 handles.A_sim=sim;
 set(handles.status_line,'String','Ready.');
@@ -1492,13 +1489,11 @@ function regpar_down_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 if numel(handles.A_r)~=numel(handles.A_distr), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
 if length(handles.regpar_vector)==1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
-v=handles.regpar_sel+1;
 m=length(handles.regpar_vector);
-if v>m, v=m; end;
+v=min(handles.regpar_sel+1,m);
 handles.regpar_sel=v;
 handles.regpar=handles.regpar_vector(v);
 set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
@@ -1507,7 +1502,8 @@ set(handles.main_figure,'Pointer','watch');
 drawnow
 [r,distr] = get_Tikhonov_new(handles,handles.regpar);
 set(handles.status_line,'String','Simulating form factor...');
-if exflag,
+exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
+if exflag
     [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
     sim = deer_sim_0(r,distr,handles.A_tdip);
@@ -1515,7 +1511,7 @@ elseif length(handles.A_tdip) > 1024
 else
     sim=get_td_fit(handles,r,distr);
     sc = 1;
-end;
+end
 handles.moddepth_suppression=sc;
 handles.A_sim=sim;
 set(handles.status_line,'String','Ready.');
@@ -1685,9 +1681,9 @@ rmi=handles.A_r-handles.rmin*ones(size(handles.A_r));
 [mm,pmi]=min(abs(rmi));
 rma=handles.A_r-handles.rmax*ones(size(handles.A_r));
 [mm,pma]=min(abs(rma));
-for k=pmi:pma,
+for k=pmi:pma
     handles.mask(k)=0;
-end;
+end
 mask_distr=handles.A_distr.*handles.mask;
 exflag=get(handles.exci_bandwidth_corr,'Value');
 APTflag=get(handles.select_APT,'Value');
@@ -1697,7 +1693,7 @@ if exflag && ~APTflag
     sim = deer_sim(handles.A_r,mask_distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
 else
     sim=get_td_fit(handles,handles.A_r,mask_distr);
-end;
+end
 set(handles.status_line,'String','Ready.');
 set(handles.main_figure,'Pointer','arrow');
 modsim=ones(size(sim))-sim;
@@ -1796,7 +1792,7 @@ if flag
     handles.new_distr = 1;
     handles.validation_mode=0;
     set(handles.error_estimate,'Value',0);
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -1847,7 +1843,7 @@ if flag
     handles.model_updated=1;
     handles.new_distr = 1;
     set(handles.error_estimate,'Value',0);
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -1884,7 +1880,7 @@ if flag
     set(handles.error_estimate,'Value',0);
 else
     handles.model_updated=1;
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -1921,7 +1917,7 @@ if isfield(handles,'source_file')
     handles=sim_user_model(handles);
     guidata(hObject,handles);
     update_DA(handles);
-end;
+end
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2000,7 +1996,7 @@ handles.updated=0;
 handles.validation_mode=0;
 if isfield(handles,'source_file')
    handles=sim_user_model(handles); 
-end;
+end
 handles.model_updated=0;
 % Update handles structure
 guidata(hObject, handles);
@@ -2290,7 +2286,7 @@ if flag
     set(handles.bckg_poly,'Value',0);
     set(handles.bckg_exp,'Value',0);
     set(handles.radiobutton_deernet_bckg,'Value',0);
-end;
+end
 handles.updated=0;
 handles.model_updated=0;
 handles.validation_mode=0;
@@ -2312,7 +2308,7 @@ if flag
     set(handles.bckg_poly,'Value',0);
     set(handles.bckg_exp,'Value',0);
     set(handles.radiobutton_deernet_bckg,'Value',0);
-end;
+end
 handles.updated=0;
 handles.model_updated=0;
 handles.validation_mode=0;
@@ -2349,7 +2345,7 @@ if v~=handles.hom_dim
 	handles.hom_dim=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -2383,7 +2379,7 @@ if flag
     set(handles.bckg_none,'Value',0);
     set(handles.bckg_exp,'Value',0);
     set(handles.radiobutton_deernet_bckg,'Value',0);
-end;
+end
 handles.updated=0;
 handles.validation_mode=0;
 handles.new_bckg = 1;
@@ -2419,7 +2415,7 @@ if v~=handles.poly_order
 	handles.poly_order=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -2468,20 +2464,20 @@ fullname=[pname fname];
 poly=load(fullname);
 weight_str=inputdlg('Weighting','Weighting of new component');
 [weight,OK]=str2num(weight_str{1});
-if ~OK,
+if ~OK
     weight=1;
     set(handles.status_line,'String','### Not a number. Defaulting to weighting 1 ###');
-end;
+end
 n0=length(poly0);
 n=length(poly);
 nn=max([n n0]);
 poly1=zeros(1,nn);
-for k=1:n0,
+for k=1:n0
     poly1(nn+1-k)=poly1(nn+1-k)+poly0(n0+1-k);
-end;
-for k=1:n,
+end
+for k=1:n
     poly1(nn+1-k)=poly1(nn+1-k)+weight*poly(n+1-k);
-end;
+end
 handles.polynomial=poly1;
 handles.updated=0;
 handles.validation_mode=0;
@@ -2502,7 +2498,7 @@ if flag
     set(handles.bckg_none,'Value',0);
     set(handles.bckg_poly,'Value',0);
     set(handles.radiobutton_deernet_bckg,'Value',0);
-end;
+end
 handles.new_bckg = 1;
 guidata(hObject,handles);
 update_DA(handles);
@@ -2525,7 +2521,7 @@ if flag
     handles.Tikh_updated=1;
 else
     set(handles.status_line,'String','### Select Tikhonov regularization before attempting to fit ###');
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2548,7 +2544,7 @@ if flag
 else
     set(handles.status_line,'String','### Select Model fit before attempting to fit ###');
     handles.model_updated=0;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2662,7 +2658,7 @@ else
     % save validation_data main_handles
     h=Tikhonov_validation;
     waitfor(h);
-    load validation_result
+    load('validation_result');
     if ~cancelled
         handles.A_tdip=tdip;
         handles.mean_distr=A_distr;
@@ -2705,7 +2701,7 @@ if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load d
 dt=handles.dt-8;
 if dt>=handles.min_dt
     handles.dt=dt;
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2719,7 +2715,7 @@ if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load d
 dt=handles.dt+8;
 if dt<=handles.max_dt
     handles.dt=dt;
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -2744,7 +2740,7 @@ if get(hObject,'Value') && isfield(handles,'source_file')
     set(handles.radiobutton_deernet_bckg,'Value',0);
     handles = set_bckg_mode(handles,handles.old_bckg_mode);
     handles.new_bckg = 1;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2763,7 +2759,7 @@ if v~=handles.man_depth
 	handles.man_k=v;
     handles.updated=0;
     handles.validation_mode=0;
-end;
+end
 handles.new_bckg = 1;
 % Update handles structure
 guidata(hObject, handles);
@@ -2792,11 +2788,11 @@ function man_bckg_depth_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of man_bckg_depth as a double
 [v,handles]=edit_update(handles,hObject,0.01,0.99,0.33,'%5.3f',0);
 if v~=handles.man_depth
-	handles.man_depth=v;
+    handles.man_depth=v;
     handles.updated=0;
     handles.validation_mode=0;
     handles.new_bckg = 1;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2823,11 +2819,11 @@ function man_k_minus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_k,0,20,'%6.3f',handles.man_k,-0.02);
 if v~=handles.man_k
-	handles.man_k=v;
+    handles.man_k=v;
     handles.updated=0;
     handles.validation_mode=0;
     handles.new_bckg = 1;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2840,11 +2836,11 @@ function man_k_plus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_k,0,20,'%6.3f',handles.man_k,0.02);
 if v~=handles.man_k
-	handles.man_k=v;
+    handles.man_k=v;
     handles.updated=0;
     handles.validation_mode=0;
     handles.new_bckg = 1;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2857,11 +2853,11 @@ function man_depth_minus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_depth,0.01,0.99,'%6.3f',handles.man_depth,-0.02);
 if v~=handles.man_depth
-	handles.man_depth=v;
+    handles.man_depth=v;
     handles.updated=0;
     handles.validation_mode=0;
     handles.new_bckg = 1;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2874,11 +2870,11 @@ function man_depth_plus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [v,handles]=shift_cursor(handles,handles.man_bckg_depth,0.01,0.99,'%6.3f',handles.man_depth,0.02);
 if v~=handles.man_depth
-	handles.man_depth=v;
+    handles.man_depth=v;
     handles.updated=0;
     handles.validation_mode=0;
     handles.new_bckg = 1;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -2895,7 +2891,7 @@ if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load d
 flag=get(handles.manual_bckg,'Value');
 if ~flag
     return;
-end;
+end
 set(handles.main_figure,'Pointer','watch');
 drawnow;
 [k,depth]=get_manual_bckg(handles);
@@ -2953,16 +2949,16 @@ shh = get(0,'ShowHiddenHandles');
 set(0,'ShowHiddenHandles','on');
 delete(findobj(get(0,'Children'),'flat','Tag','StatusBar'));
 set(0,'ShowHiddenHandles',shh);
-if handles.saved,
-    if ishandle(handles.original_fig),
+if handles.saved
+    if ishandle(handles.original_fig)
         delete(handles.original_fig);
-    end;
-    if ishandle(handles.dipolar_fig),
+    end
+    if ishandle(handles.dipolar_fig)
         delete(handles.dipolar_fig);
-    end;
-    if ishandle(handles.distribution_fig),
+    end
+    if ishandle(handles.distribution_fig)
         delete(handles.distribution_fig);
-    end;
+    end
 	delete(hObject);
 else
    answer=questdlg('Do you want to save now?','Fit data not saved');
@@ -2978,29 +2974,29 @@ else
 		s=strfind(fname,'.');
 		if ~isempty(s)
 			fname=fname(1:s(length(s))-1);
-		end;
+    end
 		% Remove suffix '_res', if present
 		s=strfind(fname,'_res');
 		if ~isempty(s)
 			fname=fname(1:s(length(s))-1);
-		end;
+    end
 		save_result(handles,fname,pname);
 		cd(return_path);
     	delete(hObject);
-   end;
+   end
    if strncmp(answer,'No',2)
-        if ishandle(handles.original_fig),
+        if ishandle(handles.original_fig)
             delete(handles.original_fig);
-        end;
-        if ishandle(handles.dipolar_fig),
+        end
+        if ishandle(handles.dipolar_fig)
             delete(handles.dipolar_fig);
-        end;
-        if ishandle(handles.distribution_fig),
+        end
+        if ishandle(handles.distribution_fig)
             delete(handles.distribution_fig);
-        end;
+        end
        delete(hObject);
-   end;
-end;
+   end
+end
 
 
 
@@ -3096,7 +3092,7 @@ if get(hObject,'Value')
     set(handles.format_ascii,'Value',0);
 else
     set(handles.checkbox_no_analysis,'Enable','off');
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -3157,7 +3153,7 @@ else
     set(handles.original_data,'Units', 'normalized');
     set(handles.original_data,'Position', handles.original_pos);
     delete(handles.original_fig);
-end;    
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -3173,7 +3169,7 @@ if ishandle(hMain.pushbutton_detach_original)
     set(hMain.original_data,'Units', 'normalized');
     set(hMain.original_data,'Position', hMain.original_pos);
     guidata(hMain.pushbutton_detach_original, hMain);
-end;
+end
 delete(hObject);
 
 % --- Executes on button press in pushbutton_detach_distribution.
@@ -3210,7 +3206,7 @@ else
     set(handles.distance_distribution,'Units', 'normalized');
     set(handles.distance_distribution,'Position', handles.distribution_pos);
     delete(handles.distribution_fig);
-end;    
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -3226,7 +3222,7 @@ if ishandle(hMain.pushbutton_detach_distribution)
     set(hMain.distance_distribution,'Units', 'normalized');
     set(hMain.distance_distribution,'Position', hMain.distribution_pos);
     guidata(hMain.pushbutton_detach_distribution, hMain);
-end;
+end
 delete(hObject);
 
 
@@ -3265,7 +3261,7 @@ else
     set(handles.dipolar_evolution,'Units', 'normalized');
     set(handles.dipolar_evolution,'Position', handles.dipolar_pos);
     delete(handles.dipolar_fig);
-end;    
+end
 % Update handles structure
 guidata(hObject, handles);
 update_DA(handles);
@@ -3281,7 +3277,7 @@ if ishandle(hMain.pushbutton_detach_dipolar)
     set(hMain.dipolar_evolution,'Units', 'normalized');
     set(hMain.dipolar_evolution,'Position', hMain.dipolar_pos);
     guidata(hMain.pushbutton_detach_dipolar, hMain);
-end;
+end
 delete(hObject);
 
 
@@ -3464,7 +3460,7 @@ if get(hObject,'Value')
     handles.non_negativity = true;
 else
     handles.non_negativity = false;
-end;
+end
 handles.updated=0;
 handles.validation_mode=0;
 guidata(hObject, handles);
@@ -3493,8 +3489,8 @@ for k = 1:length(rho)
     if cdiff < diff
         select = k;
         diff = cdiff;
-    end;
-end;
+    end
+end
 handles.regpar = handles.regpar_vector(select); 
 handles.regpar_sel = select;
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
@@ -3509,7 +3505,7 @@ if exflag
 else
     sim=get_td_fit(handles,r,distr);
     sc = 1;
-end;
+end
 handles.moddepth_suppression=sc;
 handles.A_sim=sim;
 set(handles.status_line,'String','Ready.');
@@ -3573,7 +3569,7 @@ if flag
     set(handles.L_curve,'Value',0);
     set(handles.L_curve,'Enable','off');
     set(handles.error_estimate,'Value',0);
-end;
+end
 guidata(hObject,handles);
 update_DA(handles);
 
@@ -3689,7 +3685,7 @@ function radiobutton_deernet_bckg_Callback(hObject, eventdata, handles)
 flag=get(hObject,'Value');
 if flag
     set_bckg_mode(handles,'d');
-end;
+end
 handles.updated=0;
 handles.model_updated=0;
 handles.validation_mode=0;

@@ -266,7 +266,8 @@ for k=1:m,
 
         Tikh_flag=get(handles.select_Tikhonov,'Value');
 		if Tikh_flag,
-            handles=fit_Tikhonov(handles);
+            %handles=fit_Tikhonov(handles);
+            handles=fit_Tikhonov_new(handles);
 		end;
 
         model_flag=get(handles.select_model,'Value');
