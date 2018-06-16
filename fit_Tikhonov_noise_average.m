@@ -91,8 +91,7 @@ for rr=1:length(regpar_vector),
             cla;
     %         disp('0');
     %         disp(handles.regpar);
-            pstr=num2str(handles.regpar);
-            set(handles.regpar_edit,'String',pstr);
+            set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
             plot(r,distr,'k');
             if kn==1,
                 sum_distr=distr;
@@ -150,8 +149,7 @@ for rr=1:length(regpar_vector),
     plot(handles.A_tdip,handles.A_cluster,'k');
 %         disp('1');
 %         disp(handles.regpar);
-    pstr=num2str(handles.regpar);
-    set(handles.regpar_edit,'String',pstr);
+    set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
     set(handles.main_figure,'Pointer','arrow');
     diff0=handles.A_cluster-sim1;
     deriv2=diff(distr,2);
@@ -171,7 +169,7 @@ if length(regpar_vector)>1, % compute L curve and its corner
 	handles.Lcurve_eta=eta;
 	poi=get_l_corner(rho,eta);
 	handles.regpar_sel=poi;
-    handles.regpar_opt=poi;
+    handles.regpar_opt_Lc=poi;
     handles.regpar=regpar_vector(poi);
     handles.regpars=regpar_vector;
 	opt_reg=regpar_vector(poi);
@@ -194,13 +192,13 @@ else
     handles.Lcurve_sim=handles.A_sim;
     handles.regpars=handles.regpar;
     handles.regpar_sel=1;
-    handles.regpar_opt=1;
+    handles.regpar_opt_Lc=1;
+    handles.regpar_opt_AIC=1;
 end;
 handles.mask=ones(size(handles.A_distr));
 % disp('3');
 % disp(handles.regpar);
-pstr=num2str(handles.regpar);
-set(handles.regpar_edit,'String',pstr);
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 handles.updated=1;
 set(handles.validate_Tikhonov,'Enable','on');
 

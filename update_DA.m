@@ -986,7 +986,9 @@ if LC_flag
     ylabel(gca,'log(eta) (roughness)');
     hold on;
     poi=handles.regpar_sel;
-    if handles.regpar_sel == handles.regpar_opt
+    if handles.regpar_sel == handles.regpar_opt_Lc
+        mark = [1,0,0];
+    elseif handles.regpar_sel == handles.regpar_opt_AIC
         mark = [1,0,0];
     else
         mark = [0,0.5,1];

@@ -33,7 +33,7 @@ function varargout = DeerAnalysis(varargin)
 
 % Edit the above text to modify the response to help DeerAnalysis
 
-% Last Modified by GUIDE v2.5 02-Apr-2018 07:11:53
+% Last Modified by GUIDE v2.5 16-Jun-2018 11:22:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -98,6 +98,8 @@ handles = increaseFontSizesIfReq(handles);
 
 handles.margin = 30; % margin for detached plots in pixels
 handles.add_margin = 30; % additional margin for axes labels
+handles.regpar_edit_strformat = '%0.2e'; % string format for reg.param. display
+
 % all data sets are empty on new start
 handles.A_texp=linspace(0,1600,201); % time axis experimental data set A
 handles.A_vexp=[]; % complex time-domain data set A
@@ -224,7 +226,8 @@ handles.Lcurve_distr=zeros(length(handles.rpv),length(r));
 handles.Lcurve_low=zeros(length(handles.rpv),length(r));
 handles.Lcurve_high=zeros(length(handles.rpv),length(r));
 handles.Lcurve_sim=[];
-handles.regpar_opt=1;
+handles.regpar_opt_Lc=1;
+handles.regpar_opt_AIC=1;
 
 zf=load('zero_filling.dat');
 handles.zf=zf;
@@ -1266,38 +1269,92 @@ guidata(hObject, handles);
 update_DA(handles);
 
 
-% --- Executes on button press in regpar_default.
-function regpar_default_Callback(hObject, eventdata, handles)
-% hObject    handle to regpar_default (see GCBO)
+% --- Executes on button press in regpar_default_Lcorner.
+function regpar_default_Lcorner_Callback(hObject, eventdata, handles)
+% hObject    handle to regpar_default_Lcorner (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
 if isempty(handles.Lcurve_sim), set(handles.status_line,'String','### Tikhonov fit required. ###'); return; end
-if ~isequal(size(handles.A_r),size(handles.A_distr)), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
-if length(handles.regpar_vector)==1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
-v=handles.regpar_opt;
-handles.regpar_sel=v;
-handles.regpar=handles.regpar_vector(v);
-pstr=num2str(handles.regpar);
-set(handles.regpar_edit,'String',pstr);
+if numel(handles.A_r)~=numel(handles.A_distr), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+if numel(handles.regpar_vector)==1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+
+idxLc = handles.regpar_opt_Lc;
+handles.regpar_sel = idxLc;
+handles.regpar = handles.regpar_vector(idxLc);
+
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 set(handles.status_line,'String','Recomputing...');
 set(handles.main_figure,'Pointer','watch');
 drawnow
+
 [r,distr] = get_Tikhonov_new(handles,handles.regpar);
+
 set(handles.status_line,'String','Simulating form factor...');
-if exflag
-    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+% check if excitation bandwidth correction is selected
+exBWcorr = get(handles.exci_bandwidth_corr,'Value'); 
+if exBWcorr
+    [sim,scale] = deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
     sim = deer_sim_0(r,distr,handles.A_tdip);
-    sc = 1;
+    scale = 1;
 else
-    sim=get_td_fit(handles,r,distr);
-    sc = 1;
-end;
-handles.moddepth_suppression=sc;
-handles.A_sim=sim;
+    sim = get_td_fit(handles,r,distr);
+    scale = 1;
+end
+handles.moddepth_suppression = scale;
+handles.A_sim = sim;
+
+set(handles.status_line,'String','Ready.');
+set(handles.main_figure,'Pointer','arrow');
+drawnow
+handles.A_r=r;
+handles.A_distr=distr';
+handles.A_low=distr';
+handles.A_high=distr';
+handles.mask=ones(size(handles.A_distr));
+% Update handles structure
+guidata(hObject, handles);
+update_DA(handles);
+
+% --- Executes on button press in regpar_AIC.
+function regpar_AIC_Callback(hObject, eventdata, handles)
+% hObject    handle to regpar_AIC (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
+if isempty(handles.Lcurve_sim), set(handles.status_line,'String','### Tikhonov fit required. ###'); return; end
+if numel(handles.A_r)~=numel(handles.A_distr), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+if numel(handles.regpar_vector)==1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+
+idxAIC = handles.regpar_opt_AIC;
+handles.regpar_sel = idxAIC;
+handles.regpar = handles.regpar_vector(idxAIC);
+
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
+set(handles.status_line,'String','Recomputing...');
+set(handles.main_figure,'Pointer','watch');
+drawnow
+
+[r,distr] = get_Tikhonov_new(handles,handles.regpar);
+
+set(handles.status_line,'String','Simulating form factor...');
+% check if excitation bandwidth correction is selected
+exBWcorr = get(handles.exci_bandwidth_corr,'Value'); 
+if exBWcorr
+    [sim,scale] = deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+elseif length(handles.A_tdip) > 1024
+    sim = deer_sim_0(r,distr,handles.A_tdip);
+    scale = 1;
+else
+    sim = get_td_fit(handles,r,distr);
+    scale = 1;
+end
+handles.moddepth_suppression = scale;
+handles.A_sim = sim;
+
 set(handles.status_line,'String','Ready.');
 set(handles.main_figure,'Pointer','arrow');
 drawnow
@@ -1317,14 +1374,14 @@ function regpar_up_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
-if ~isequal(size(handles.A_r),size(handles.A_distr)), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+if numel(handles.A_r)~=numel(handles.A_distr), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
 if length(handles.regpar_vector)<=1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
 v=handles.regpar_sel-1;
 if v<1, v=1; end;
 handles.regpar_sel=v;
 handles.regpar=handles.regpar_vector(v);
-pstr=num2str(handles.regpar);
-set(handles.regpar_edit,'String',pstr);
+
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 set(handles.status_line,'String','Recomputing...');
 set(handles.main_figure,'Pointer','watch');
 drawnow
@@ -1399,14 +1456,13 @@ if v~=v0,
     set(handles.L_curve,'Enable','off');
     set(handles.select_L_curve,'Value',0);
 end;
-exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
-pstr=num2str(handles.regpar);
-set(handles.regpar_edit,'String',pstr);
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 set(handles.status_line,'String','Recomputing...');
 set(handles.main_figure,'Pointer','watch');
 drawnow
 [r,distr] = get_Tikhonov_new(handles,handles.regpar);
 set(handles.status_line,'String','Simulating form factor...');
+exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if exflag,
     [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
@@ -1438,15 +1494,14 @@ function regpar_down_Callback(hObject, eventdata, handles)
 
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
-if ~isequal(size(handles.A_r),size(handles.A_distr)), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+if numel(handles.A_r)~=numel(handles.A_distr), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
 if length(handles.regpar_vector)==1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
 v=handles.regpar_sel+1;
 m=length(handles.regpar_vector);
 if v>m, v=m; end;
 handles.regpar_sel=v;
 handles.regpar=handles.regpar_vector(v);
-pstr=num2str(handles.regpar);
-set(handles.regpar_edit,'String',pstr);
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 set(handles.status_line,'String','Recomputing...');
 set(handles.main_figure,'Pointer','watch');
 drawnow
@@ -3442,9 +3497,8 @@ for k = 1:length(rho)
 end;
 handles.regpar = handles.regpar_vector(select); 
 handles.regpar_sel = select;
-pstr=num2str(handles.regpar);
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
-set(handles.regpar_edit,'String',pstr);
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 set(handles.status_line,'String','Recomputing...');
 set(handles.main_figure,'Pointer','watch');
 drawnow

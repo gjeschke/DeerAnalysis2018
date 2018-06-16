@@ -57,8 +57,7 @@ set(handles.distr_end_edit,'String',pstr);
 set(handles.L_curve,'Value',0);
 
 handles.regpar=1.0;
-pstr=sprintf('%0.6g',handles.regpar);
-set(handles.regpar_edit,'String',pstr);
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 
 handles.regpar_sel=3;
 

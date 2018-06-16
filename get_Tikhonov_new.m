@@ -1,8 +1,4 @@
-function [rout,distr,rho,eta,reg_param,idx_corner] = get_Tikhonov_new(handles,reg_param)
-
-% Based on regularization tools by Per Christian Hansen
-% see: http://www2.compute.dtu.dk/~pcha/Regutools/index.html
-% as well as: http://ch.mathworks.com/matlabcentral/fileexchange/52-regtools
+function [rout,distr,rho,eta,reg_param,idx_corner,idx_AIC] = get_Tikhonov_new(handles,reg_param)
 
 persistent kdim kernel r t L
 
