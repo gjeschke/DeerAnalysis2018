@@ -809,7 +809,7 @@ set(handles.Tikhonov_validation,'Pointer','arrow');
 drawnow;
 exflag=get(main_handles.exci_bandwidth_corr,'Value');
 if exflag,
-    sim = deer_sim(r,distr,main_handles.A_tdip,main_handles.A_cluster,main_handles.bandwidth);
+    sim = deer_sim(r,distr,main_handles.A_tdip,main_handles.bandwidth);
 else
     sim = get_td_fit(main_handles,r,distr);
 end;

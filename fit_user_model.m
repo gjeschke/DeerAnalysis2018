@@ -317,7 +317,7 @@ else
     % Get distance distribution for fitted parameters
     distr=feval(str2func(handles.user_model),r,handles.model_pars);
     if exflag
-        [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+        [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
     else
         sim=get_td_fit(handles,r,distr);
     end;

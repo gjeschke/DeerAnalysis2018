@@ -92,7 +92,7 @@ if length(findstr('FTIKREG ENDED',result))>0,
     sig_distr=(dhigh-dlow)/2;
     exflag=get(handles.exci_bandwidth_corr,'Value');
     if exflag,
-        [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+        [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
     else,
         sim=get_td_fit(handles,r,distr);
     end;

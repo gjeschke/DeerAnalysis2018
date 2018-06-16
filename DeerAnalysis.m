@@ -1293,9 +1293,9 @@ set(handles.status_line,'String','Simulating form factor...');
 % check if excitation bandwidth correction is selected
 exBWcorr = get(handles.exci_bandwidth_corr,'Value'); 
 if exBWcorr
-    [sim,scale] = deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    [sim,scale] = deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
-    sim = deer_sim_0(r,distr,handles.A_tdip);
+    sim = deer_sim(r,distr,handles.A_tdip);
     scale = 1;
 else
     sim = get_td_fit(handles,r,distr);
@@ -1342,9 +1342,9 @@ set(handles.status_line,'String','Simulating form factor...');
 % check if excitation bandwidth correction is selected
 exBWcorr = get(handles.exci_bandwidth_corr,'Value'); 
 if exBWcorr
-    [sim,scale] = deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    [sim,scale] = deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
-    sim = deer_sim_0(r,distr,handles.A_tdip);
+    sim = deer_sim(r,distr,handles.A_tdip);
     scale = 1;
 else
     sim = get_td_fit(handles,r,distr);
@@ -1385,9 +1385,9 @@ drawnow
 set(handles.status_line,'String','Simulating form factor...');
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if exflag
-    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
-    sim = deer_sim_0(r,distr,handles.A_tdip);
+    sim = deer_sim(r,distr,handles.A_tdip);
     sc = 1;
 else
     sim=get_td_fit(handles,r,distr);
@@ -1461,9 +1461,9 @@ drawnow
 set(handles.status_line,'String','Simulating form factor...');
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if exflag
-    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
-    sim = deer_sim_0(r,distr,handles.A_tdip);
+    sim = deer_sim(r,distr,handles.A_tdip);
     sc = 1;
 else
     sim=get_td_fit(handles,r,distr);
@@ -1504,9 +1504,9 @@ drawnow
 set(handles.status_line,'String','Simulating form factor...');
 exflag=get(handles.exci_bandwidth_corr,'Value'); % check, if excitation bandwidth correction is selected
 if exflag
-    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 elseif length(handles.A_tdip) > 1024
-    sim = deer_sim_0(r,distr,handles.A_tdip);
+    sim = deer_sim(r,distr,handles.A_tdip);
     sc = 1;
 else
     sim=get_td_fit(handles,r,distr);
@@ -1690,7 +1690,7 @@ APTflag=get(handles.select_APT,'Value');
 set(handles.status_line,'String','Simulating DEER data...');
 set(handles.main_figure,'Pointer','watch');
 if exflag && ~APTflag
-    sim = deer_sim(handles.A_r,mask_distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    sim = deer_sim(handles.A_r,mask_distr,handles.A_tdip,handles.bandwidth);
 else
     sim=get_td_fit(handles,handles.A_r,mask_distr);
 end
@@ -3501,7 +3501,7 @@ drawnow
 [r,distr] = get_Tikhonov_new(handles,handles.regpar);
 set(handles.status_line,'String','Simulating form factor...');
 if exflag
-    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 else
     sim=get_td_fit(handles,r,distr);
     sc = 1;

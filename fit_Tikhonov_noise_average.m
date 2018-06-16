@@ -114,7 +114,7 @@ for rr=1:length(regpar_vector),
     set(handles.status_line,'String','Simulating DEER data...');
     set(handles.main_figure,'Pointer','watch');
     if exflag,
-        [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+        [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
     else,
         sim=get_td_fit(handles,r,distr);
     end;

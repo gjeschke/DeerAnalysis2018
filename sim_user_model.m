@@ -45,7 +45,7 @@ if ~isempty(handles.A_tdip)
 
         % Simulate fitted dipolar evolution function
         if exflag
-            [sim,~]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+            [sim,~]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
         else
             sim=get_td_fit(handles,r,distr);
         end;

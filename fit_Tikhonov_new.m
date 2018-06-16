@@ -40,7 +40,7 @@ handles.A_r = r;
 set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
 set(handles.status_line,'String','Simulating DEER data...');
 if exflag || length(handles.A_tdip) > 1024
-    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    [sim,sc]=deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 else
     sim=get_td_fit(handles,r,distr);
     sc = 1;

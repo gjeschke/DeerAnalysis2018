@@ -133,7 +133,7 @@ function [r,distr,sim,rms,sc]=get_Tikhonov(handles)
 [r,distr] = get_Tikhonov_new(handles,handles.regpar);
 exflag=get(handles.exci_bandwidth_corr,'Value');
 if exflag
-    sim = deer_sim(r,distr,handles.A_tdip,handles.A_cluster,handles.bandwidth);
+    sim = deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
 else
     sim = get_td_fit(handles,r,distr);
 end;

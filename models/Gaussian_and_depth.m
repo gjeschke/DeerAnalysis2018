@@ -15,7 +15,7 @@ function [sim,distr]=Gaussian_and_depth(r0,t,par)
 gauss0=(r0-par(1)*ones(size(r0)))/par(2);
 distr=exp(-gauss0.^2);
 
-[sim,sc]=deer_sim(r0,distr,t,[],20);
+[sim,sc]=deer_sim(r0,distr,t,20);
 sim=sim-0.99*ones(size(sim));
 sim=sim*par(3)/0.01;
 sim=sim+(1-par(3))*ones(size(sim));

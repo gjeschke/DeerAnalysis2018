@@ -1,34 +1,48 @@
-function [sim,sc]=deer_sim(r,distr,t,dipevo,exci)
+function [S,scale] = deer_sim(r,distr,t,exci)
 % Simulation of DEER signal sim(t) from distance distribution distr(r)
 % and scaling factor sc of distribution so that it fits original data set dipevo(t)
 %
-% (c) G. Jeschke, 2005
-%
-% r in nm
-% t in microseconds
-%
+% Input:
+%    r      distance vector, in nm
+%    distr  distance distribution
+%    t      time vector, in us
+%    exci   excitation bandwidth, in MHz
+% Output:
+%    S      time-domain DEER signal
+%    scale  scaling factor
 
-ny0=52.04; % dipolar frequency at 1 nm (MHz)
-level=1e-3*max(distr); % minimimum level for simulation of a point
-sim=zeros(size(t));
-mdepth=0;
-fdepth=0;
-neglect = distr<=level;
-for k=1:length(r)
+bwlimit = isvar('exci');
+
+ny0 = 52.04; % dipolar frequency at 1 nm (MHz)
+threshold = 1e-3*max(distr); % minimimum level for simulation of a point
+
+S = zeros(size(t));
+mdepth = 0;
+fdepth = 0;
+neglect = distr<=threshold;
+if ~bwlimit, weight = 1; end
+nTheta = 1000;
+costheta = (0:nTheta-1)/nTheta; % cos(theta)
+for k = 1:length(r)
     % simulate only for distances with significant contribution
-    if neglect(k), continue; end 
+    if neglect(k), continue; end
     
-    nydd=ny0/r(k)^3; % dipolar frequency at current distance
-    for m=1:1000 % theta loop for orientation dependence
-      costheta=m/1000; % cos(theta)
-      nyac=nydd*(3*costheta^2-1); % dipolar frequency at current orientation
-      weight=exp(-(nyac/exci)^2);
-      mdepth=mdepth+weight*distr(k);
-      fdepth=fdepth+distr(k);
-      sim=sim+distr(k)*cos(2*pi*nyac*t)*weight; % add contribution to deer signal
+    nydd = ny0/r(k)^3; % dipolar frequency at current distance
+    nyac = nydd*(3*costheta.^2-1); % dipolar frequency for all orientations
+    for m = 1:nTheta % theta loop for orientation dependence
+        if bwlimit
+            weight = exp(-(nyac(m)/exci)^2);
+            mdepth = mdepth + weight*distr(k);
+        end
+        fdepth = fdepth + distr(k);
+        S = S + distr(k)*cos(2*pi*nyac*t)*weight; % add contribution to deer signal
     end
 end
-sim=0.01*sim/mdepth;
-sim=sim+0.99*ones(size(sim));
-sc=mdepth/fdepth;
-
+if bwlimit
+    scale = mdepth/fdepth;
+    S = 0.01*S/mdepth;
+else
+    scale = 1;
+    S = 0.01*S/fdepth;
+end
+S = S + 0.99*ones(size(S));
