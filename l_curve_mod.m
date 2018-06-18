@@ -1,4 +1,4 @@
-function [idx_Lcorner,idx_AIC,rho,eta,alpha] = l_curve_mod(K,L,S,noise)
+function [idx_Lcorner,idx_AIC,idx_GCV,rho,eta,alpha] = l_curve_mod(K,L,S,noise)
 %L_CURVE_MOD Solve Tikhonov for a range of regularization parameters and
 % determine the optimal ones based on several criteria.
 
@@ -43,7 +43,7 @@ Lcorner_metric = rescaleL(eta).^2 + rescaleL(rho).^2;
 
 % Print results
 %-------------------------------------------------------------
-printResults = true;
+printResults = false;
 if printResults
   fprintf('Regularization parameter search:\n');
   fprintf('  range:    alpha = %g to %g  log10(alpha) = %g to %g  (%d values)\n',...

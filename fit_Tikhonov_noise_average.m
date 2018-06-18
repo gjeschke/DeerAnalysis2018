@@ -194,6 +194,7 @@ else
     handles.regpar_sel=1;
     handles.regpar_opt_Lc=1;
     handles.regpar_opt_AIC=1;
+    handles.regpar_opt_GCV=1;
 end;
 handles.mask=ones(size(handles.A_distr));
 % disp('3');

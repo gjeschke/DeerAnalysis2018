@@ -22,7 +22,7 @@
 function [x,w,passive] = fnnls(AtA,Atb,x0,tol)
 
 % Provide starting vector if not given.
-if (nargin<3)
+if (nargin<3) || isempty(x0)
   x0 = zeros(size(AtA,2),1);
 end
 

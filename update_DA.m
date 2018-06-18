@@ -982,13 +982,15 @@ if LC_flag
     h = plot(handles.Lcurve_rho,handles.Lcurve_eta,'k.');
     set(h,'PickableParts','none');
     set(gca,'FontSize',8);
-    xlabel(gca,'log(rho) (misfit)');
-    ylabel(gca,'log(eta) (roughness)');
+    xlabel(gca,'log(||S-KP||) (misfit)');
+    ylabel(gca,'log(||LP||) (roughness)');
     hold on;
     poi=handles.regpar_sel;
     if handles.regpar_sel == handles.regpar_opt_Lc
         mark = [1,0,0];
     elseif handles.regpar_sel == handles.regpar_opt_AIC
+        mark = [1,0,0];
+    elseif handles.regpar_sel == handles.regpar_opt_GCV
         mark = [1,0,0];
     else
         mark = [0,0.5,1];

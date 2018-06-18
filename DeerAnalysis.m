@@ -33,7 +33,7 @@ function varargout = DeerAnalysis(varargin)
 
 % Edit the above text to modify the response to help DeerAnalysis
 
-% Last Modified by GUIDE v2.5 16-Jun-2018 11:22:29
+% Last Modified by GUIDE v2.5 17-Jun-2018 22:09:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -228,6 +228,7 @@ handles.Lcurve_high=zeros(length(handles.rpv),length(r));
 handles.Lcurve_sim=[];
 handles.regpar_opt_Lc=1;
 handles.regpar_opt_AIC=1;
+handles.regpar_opt_GCV=1;
 
 zf=load('zero_filling.dat');
 handles.zf=zf;
@@ -3735,4 +3736,54 @@ else
 end
 
 guidata(hObject,handles);
+update_DA(handles);
+
+
+% --- Executes on button press in regpar_GCV.
+function regpar_GCV_Callback(hObject, eventdata, handles)
+% hObject    handle to regpar_GCV (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
+if isempty(handles.Lcurve_sim), set(handles.status_line,'String','### Tikhonov fit required. ###'); return; end
+if numel(handles.A_r)~=numel(handles.A_distr), set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+if numel(handles.regpar_vector)==1, set(handles.status_line,'String','### Tikhonov L curve fit required. ###'); return; end
+
+idxGCV = handles.regpar_opt_GCV;
+handles.regpar_sel = idxGCV;
+handles.regpar = handles.regpar_vector(idxGCV);
+
+set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));
+set(handles.status_line,'String','Recomputing...');
+set(handles.main_figure,'Pointer','watch');
+drawnow
+
+[r,distr] = get_Tikhonov_new(handles,handles.regpar);
+
+set(handles.status_line,'String','Simulating form factor...');
+% check if excitation bandwidth correction is selected
+exBWcorr = get(handles.exci_bandwidth_corr,'Value'); 
+if exBWcorr
+    [sim,scale] = deer_sim(r,distr,handles.A_tdip,handles.bandwidth);
+elseif length(handles.A_tdip) > 1024
+    sim = deer_sim(r,distr,handles.A_tdip);
+    scale = 1;
+else
+    sim = get_td_fit(handles,r,distr);
+    scale = 1;
+end
+handles.moddepth_suppression = scale;
+handles.A_sim = sim;
+
+set(handles.status_line,'String','Ready.');
+set(handles.main_figure,'Pointer','arrow');
+drawnow
+handles.A_r=r;
+handles.A_distr=distr';
+handles.A_low=distr';
+handles.A_high=distr';
+handles.mask=ones(size(handles.A_distr));
+% Update handles structure
+guidata(hObject, handles);
 update_DA(handles);

@@ -24,9 +24,9 @@ set(handles.status_line,'String',msg);
 set(handles.main_figure,'Pointer','watch');
 drawnow;
 if calcLcurve
-    [r,distr,rho,eta,reg_param,idx_Lcorner,idx_AIC] = get_Tikhonov_new(handles);
+    [r,distr,rho,eta,reg_param,idx_Lcorner,idx_AIC,idx_GCV] = get_Tikhonov_new(handles);
 else
-    [r,distr,rho,eta,reg_param,idx_Lcorner,idx_AIC] = get_Tikhonov_new(handles,handles.regpar);
+    [r,distr,rho,eta,reg_param,idx_Lcorner,idx_AIC,idx_GCV] = get_Tikhonov_new(handles,handles.regpar);
 end
 if calcLcurve
 	  handles.regpar_vector = reg_param; % store Lcurve 
@@ -76,6 +76,7 @@ if calcLcurve
     handles.regpar_sel=idx_Lcorner;
     handles.regpar_opt_Lc=idx_Lcorner;
     handles.regpar_opt_AIC=idx_AIC;
+    handles.regpar_opt_GCV=idx_GCV;
 else
     set(handles.L_curve,'Enable','off');
     set(handles.L_curve,'Value',0);
@@ -85,6 +86,7 @@ else
     handles.regpar_sel=1;
     handles.regpar_opt_Lc=1;
     handles.regpar_opt_AIC=1;
+    handles.regpar_opt_GCV=1;
 end
 handles.mask=ones(size(handles.A_distr));
 set(handles.regpar_edit,'String',num2str(handles.regpar,handles.regpar_edit_strformat));

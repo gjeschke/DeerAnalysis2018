@@ -1,4 +1,4 @@
-function [rout,distr,rho,eta,reg_param,idx_corner,idx_AIC] = get_Tikhonov_new(handles,reg_param)
+function [rout,distr,rho,eta,reg_param,idx_corner,idx_AIC,idx_GCV] = get_Tikhonov_new(handles,reg_param)
 
 persistent kdim K r t L
 
@@ -40,7 +40,7 @@ rout = r * (dt2/dt)^(1/3);
 S = S(:);
 if calcLcurve
     % Compute L curve rho and eta (without nonnegativity constraint) and its corner
-    [idx_corner,idx_AIC,rho,eta,reg_param] = l_curve_mod(K,L,S,handles.fit_rms_value);
+    [idx_corner,idx_AIC,idx_GCV,rho,eta,reg_param] = l_curve_mod(K,L,S,handles.fit_rms_value);
     alpha = reg_param(idx_corner);
 else
     % Compute rho and eta for single regularization parameter
@@ -50,16 +50,19 @@ else
     alpha = reg_param(1);
     idx_corner = 1;
     idx_AIC = 1;
+    idx_GCV = 1;
 end
 
 % Solve non-negativity-constrained Tikhonov problem
 %---------------------------------------------------------------
-% solver 1: 2x matrix size, slow
+% solver 1: active-set algorithm FNNLS (Matlab's lsqnonneg)
 %    argmin(||C*x-d||^2) with C = [K;alpha*L] and d = [S;zeros]
-% solver 2: 1x matrix size, fast
+% solver 2: active-set algorithm FNNLS (Matlab's lsqnonneg)
+%    argmin(||S-K*distr||^2+alpha^2*||L*P||^2), with functional multiplied out
+% solver 3: active-set algorithm FNNLS (own implementation)
 %    argmin(||S-K*distr||^2+alpha^2*||L*P||^2), with functional multiplied out
 
-nonnegSolver = 2;
+nonnegSolver = 3;
 switch nonnegSolver
   case 1
     C = [K;alpha*L];
@@ -69,6 +72,11 @@ switch nonnegSolver
     d = [S;zeros(m,1)];
     distr = lsqnonneg(C,d,options);
   case 2
+    options = optimset('Display','off','TolX',1000*eps);
     Q = (K.'*K) + alpha^2*(L.'*L);
-    distr = fnnls(Q,K.'*S);
+    distr = lsqnonneg(Q,K.'*S,options);
+  case 3
+    Q = (K.'*K) + alpha^2*(L.'*L);
+    tol = 1e-8;
+    distr = fnnls(Q,K.'*S,[],tol);
 end
