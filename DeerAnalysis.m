@@ -2516,7 +2516,6 @@ flag=get(handles.select_Tikhonov,'Value');
 if flag
 	handles.Tikh_nfp_vector=[];
 	handles=fit_Tikhonov_new(handles);
-	% handles=fit_Tikhonov(handles);
 	handles.saved=0;
     handles.model_updated=0;
     handles.Tikh_updated=1;
@@ -3010,18 +3009,6 @@ function text_download_ButtonDownFcn(hObject, eventdata, handles)
 
 web('http://www.epr.ethz.ch/software.html','-browser');
 
-
-
-% --- Executes on button press in pushbutton_Tikhonov_noise_averaged.
-function pushbutton_Tikhonov_noise_averaged_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_Tikhonov_noise_averaged (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles=fit_Tikhonov_noise_average(handles);
-
-guidata(hObject, handles);
-update_DA(handles);
 
 
 % --- Executes on button press in checkbox_model_fit_depth.
