@@ -61,6 +61,8 @@ end
 %    argmin(||S-K*distr||^2+alpha^2*||L*P||^2), with functional multiplied out
 % solver 3: active-set algorithm FNNLS (own implementation)
 %    argmin(||S-K*distr||^2+alpha^2*||L*P||^2), with functional multiplied out
+% solver 4: block principal pivoting (own implementation)
+%    argmin(||S-K*distr||^2+alpha^2*||L*P||^2), with functional multiplied out
 
 nonnegSolver = 3;
 switch nonnegSolver
@@ -79,4 +81,8 @@ switch nonnegSolver
     Q = (K.'*K) + alpha^2*(L.'*L);
     tol = 1e-8;
     distr = fnnls(Q,K.'*S,[],tol);
+  case 4
+    Q = (K.'*K) + alpha^2*(L.'*L);
+    KtS = K.'*S;
+    distr = nnls_bpp(Q,KtS,Q\KtS);
 end
