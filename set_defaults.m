@@ -105,7 +105,7 @@ set(handles.DDS_filter,'String',pstr);
 
 set(handles.select_deernet,'Value',0);
 set(handles.select_Tikhonov,'Value',0);
-set(handles.select_L_curve,'Value',0);
+set(handles.select_L_curve,'Value',1);
 handles.regpars=1;
 
 set(handles.select_model,'Value',0);
