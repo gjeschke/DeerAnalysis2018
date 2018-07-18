@@ -875,6 +875,10 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
 %         for k=1:length(r)
 %             plot([r(k) r(k)],sc_dist*[dlow(k) dhigh(k)],'Color',[0.65 0.65 0.65],'Linewidth',0.5);
 %         end;
+        [mr,nr] = size(r);
+        if mr > nr
+            r = r';
+        end
         hunc = fill([r fliplr(r)],sc_dist*[dlow fliplr(dhigh)],[0.6,0.6,0.6]);
         set(hunc,'EdgeColor','none','FaceAlpha',0.75);
         plot(r,sc_dist*handles.mean_distr,'k','LineWidth',1.5);

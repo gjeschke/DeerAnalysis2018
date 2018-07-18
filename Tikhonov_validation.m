@@ -63,9 +63,9 @@ handles.dens=main_handles.bckg_dens;
 handles.mod_depth=main_handles.A_depth;
 handles.hom_dim=main_handles.hom_dim;
 defaults=load('validation_defaults.dat');
-if defaults(19)>main_handles.cutoff,
+if defaults(19)>main_handles.cutoff
     defaults(9)=main_handles.cutoff;
-end;
+end
 handles.ghost_suppression = get(main_handles.checkbox_ghost,'Value');
 handles.spins_per_object = main_handles.spins_per_object;
 handles.constraint_level=defaults(13);
@@ -119,9 +119,12 @@ handles.mod_depth_max=defaults(8);
 pstr=sprintf('%5.3f',handles.mod_depth_max);
 set(handles.max_mod_depth,'String',pstr);
 handles.auto_save=defaults(15);
+dt = main_handles.texp(2)-main_handles.texp(1);
+defaults(18) = 1000*dt*round(0.2*max(main_handles.texp)/dt); % adapts to data length
 handles.min_bckg_start=defaults(18);
 pstr=sprintf('%i',handles.min_bckg_start);
 set(handles.edit_bckg_start_min,'String',pstr);
+defaults(19) = 1000*dt*round(0.6*max(main_handles.texp)/dt); % adapts to data length
 handles.max_bckg_start=defaults(19);
 pstr=sprintf('%i',handles.max_bckg_start);
 set(handles.edit_bckg_start_max,'String',pstr);
@@ -130,10 +133,10 @@ handles.distr_std=0*distr0;
 set(handles.status_line,'String',sprintf('%s%6.3f%s%6.3f','Initial density: ',main_handles.bckg_dens*handles.calib_density,', Initial depth: ',main_handles.A_depth));
 
 handles.theor=main_handles.theor;
-if handles.theor,
+if handles.theor
     handles.th_distr=main_handles.th_distr;
     handles.th_r=main_handles.th_r;
-end;
+end
 
 figname=sprintf('%s%s','Tikhonov validation with regularization parameter ',num2str(main_handles.regpar)); % tell user, which file is current
 set(handles.Tikhonov_validation,'Name',figname);
@@ -177,7 +180,7 @@ function noise_factor_Callback(hObject, eventdata, handles)
 [v,handles]=edit_update(handles,hObject,1,10,2,'%5.2f',0);
 if v~=handles.factor_noise
 	handles.factor_noise=v;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 
@@ -246,7 +249,7 @@ function bckg_min_Callback(hObject, eventdata, handles)
 v=v/handles.calib_density;
 if v~=handles.min_bckg
 	handles.min_bckg=v;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 
@@ -276,7 +279,7 @@ function bckg_max_Callback(hObject, eventdata, handles)
 v=v/handles.calib_density;
 if v~=handles.max_bckg
 	handles.max_bckg=v;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 
@@ -305,7 +308,7 @@ function bckg_trials_Callback(hObject, eventdata, handles)
 [v,handles]=edit_update(handles,hObject,1,50,5,'%d',1);
 if v~=handles.trials_bckg
 	handles.trials_bckg=v;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_trials(handles);
@@ -345,7 +348,7 @@ function dim_trials_Callback(hObject, eventdata, handles)
 [v,handles]=edit_update(handles,hObject,1,50,5,'%d',1);
 if v~=handles.trials_dim
 	handles.trials_dim=v;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 update_trials(handles);
@@ -374,7 +377,7 @@ function dim_min_Callback(hObject, eventdata, handles)
 [v,handles]=edit_update(handles,hObject,1,handles.max_dim,3,'%5.2f',0);
 if v~=handles.min_dim
 	handles.min_dim=v;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 
@@ -403,7 +406,7 @@ function dim_max_Callback(hObject, eventdata, handles)
 [v,handles]=edit_update(handles,hObject,handles.min_dim,4,3,'%5.2f',0);
 if v~=handles.max_dim
 	handles.max_dim=v;
-end;
+end
 % Update handles structure
 guidata(hObject, handles);
 
@@ -435,7 +438,7 @@ if ~get(handles.noise_test,'Value')
     handles.factor_noise=1;
     msg=sprintf('%5.2f',handles.factor_noise);
     set(handles.noise_factor,'String',msg);
-end;
+end
 nlev_vec=handles.factor_noise*ones(1,ntrials);
 btrials=handles.trials_bckg;
 if ~get(handles.background_density,'Value')
@@ -443,28 +446,28 @@ if ~get(handles.background_density,'Value')
     btrials=1;
 else
     dens_vec=linspace(handles.min_bckg,handles.max_bckg,btrials);
-end;
+end
 ltrials=handles.trials_depth;
 if ~get(handles.vary_depth,'Value')
     depth_vec=main_handles.A_depth;
     ltrials=1;
 else
     depth_vec=linspace(handles.mod_depth_min,handles.mod_depth_max,ltrials);
-end;
+end
 dtrials=handles.trials_dim;
 if ~get(handles.background_dim,'Value')
     dim_vec=handles.hom_dim;
     dtrials=1;
 else
     dim_vec=linspace(handles.min_dim,handles.max_dim,dtrials);
-end;
+end
 strials=handles.trials_bckg_start;
 if ~get(handles.checkbox_bckg_start,'Value')
     bckg_start_vec=main_handles.bckg_start;
     strials=1;
 else
     bckg_start_vec=linspace(handles.min_bckg_start,handles.max_bckg_start,strials);
-end;
+end
 t_cutoff=main_handles.cutoff;
 texp=main_handles.texp;
 handles.texp=texp;

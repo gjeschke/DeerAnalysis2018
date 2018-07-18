@@ -13,6 +13,7 @@ function [bckg,handback]=fit_bckg(handles,texp,t_fit,data_fit)
 % t_fit     time range for background fit
 % data_fit  time-domain data over t_fit
 
+back_model = 1;
 man_bckg_flag=get(handles.manual_bckg,'Value');
 
 polynomialBckg = get(handles.bckg_poly,'Value');
@@ -32,6 +33,11 @@ if homogeneousBg
     if man_bckg_flag
         back_model=5;
     end
+end
+if back_model == 1
+    handles.hom_dim = 3;
+    set(handles.bckg_fit_dim,'Value',0);
+    set(handles.manual_bckg,'Value',0);
 end
 userBckg=get(handles.bckg_exp,'Value');
 if userBckg
