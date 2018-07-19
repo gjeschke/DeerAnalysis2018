@@ -72,59 +72,74 @@ rms_bckg=handles.bckg_rms_value;
 rmin=handles.rmin;
 rmax=handles.rmax;
 
-if ~isempty(distr),
+if ~isempty(distr)
 	% Moment analysis for range of interest
 	% Cutout of distance distribution between cursors
-	if rmin<min(r), rmin=min(r); end;
-	if rmax>max(r), rmax=max(r); end;
+	if rmin<min(r), rmin=min(r); end
+	if rmax>max(r), rmax=max(r); end
 	rnum=round((rmax-rmin)/0.02);
 	rcut=linspace(rmin,rmax,rnum);
 	distcut=interp1(r,distr,rcut,'pchip',0);
 	mom_roi=moment_analysis_vec(rcut,distcut);
 	
 	% Moment analysis of full distribution, if different from range of interest
-	if abs(rmin-min(r))>0.05 || abs(max(r)-rmax)>0.05,
+	if abs(rmin-min(r))>0.05 || abs(max(r)-rmax)>0.05
         mom_full=moment_analysis_vec(r,distr);
-	end;
+    end
 
-end;
+end
 
 % Normalize simulated dipolar evolution function, dipolar spectrum, and distance distribution
-if ~isempty(bckg),
+if ~isempty(bckg)
 	data2=[texp' real(vexp') bckg' -imag(vexp')];
 	save(fname_bckg,'data2','-ascii');
-end;
-if ~isempty(sim),
+end
+if ~isempty(sim)
 	modsim=ones(size(sim))-sim;
 	modexp=ones(size(dipevo))-dipevo;
 	sc=sum(modexp.*modexp)/sum(modsim.*modexp);
     sim=ones(size(modsim))-sc*modsim;
 	data3=[tdip' dipevo' sim'];
-    if sum(handles.mask)<length(handles.mask),
+    if sum(handles.mask)<length(handles.mask)
         data3 = [data3 handles.mask_sim'];
-    end;
+    end
 	save(fname_fit,'data3','-ascii');
-end;
-if ~isempty(simspc),
+end
+if ~isempty(simspc)
     sc0=sum(spc.*spc)/sum(simspc.*spc);
     simspc=sc0*simspc;
 	data4=[ny' spc' simspc'];
 	save(fname_spc,'data4','-ascii');
-end;
-if ~isempty(distr),
+end
+if ~isempty(distr)
 	sc_dist=(handles.n_spins-1)/sum(distr); % scaling factor for distance distribution 
 	distr=sc_dist*distr;
-	data1=[r' distr'];
-    if length(dlow)==length(distr) && length(dhigh)==length(distr),
+    [md,nd] = size(r);
+    if md > nd
+        r = r';
+    end
+    [md,nd] = size(distr);
+    if md > nd
+        distr = distr';
+    end
+    [md,nd] = size(dlow);
+    if md > nd
+        dlow = dlow';
+    end
+    [md,nd] = size(dhigh);
+    if md > nd
+        dhigh = dhigh';
+    end
+    if length(dlow)==length(distr) && length(dhigh)==length(distr)
         dlow=sc_dist*dlow;
         dhigh=sc_dist*dhigh;
         data1=[r' distr' dlow' dhigh'];
-    end;
-    if sum(handles.mask)<length(handles.mask),
+    end
+    if sum(handles.mask)<length(handles.mask)
         data1 = [data1 (distr.*handles.mask)'];
-    end;
+    end
     save(fname_distr,'data1','-ascii');
-end;
+end
 
 m=length(handles.regpars);
 if m>1 % if L_curve exists

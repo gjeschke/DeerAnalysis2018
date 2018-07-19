@@ -501,6 +501,7 @@ else
     trial_cluster=zeros(total_trials,length(tdip));
     trial_distr=zeros(total_trials,1024);
     trial_sim=zeros(total_trials,length(tdip));
+    trial_sim0=zeros(total_trials,length(tdip));
     rms_vec=zeros(1,total_trials);
     dens_vals=zeros(1,total_trials);
     depth_vals=zeros(1,total_trials);
@@ -537,7 +538,7 @@ else
                             % Background simulation
                             v1=[dens (1-mod_depth)];
                             bckg=decaynD(v1,texp,hom_dim);
-                        end;
+                        end
                         % bckg=(1-main_handles.man_depth)*bckg;
                         if handles.interactive
                             axes(handles.axes1);
@@ -547,7 +548,7 @@ else
                             plot(texp,real(bckg),'r');
                             xlabel('t (µs)');
                             axis([min(texp),max(texp),min([min(bckg) min(real(vexp))]),1.1*max([max(bckg) 1.1*max(real(vexp))])]);
-                        end;
+                        end
                         dipevo=real(vexp)+noise-bckg;
                         cluster=real(vexp)+noise;
                         dipevo=dipevo./bckg; % divide by background, eqn [13]
@@ -555,7 +556,7 @@ else
                         if handles.ghost_suppression
                             cluster=cluster.^(1/(handles.spins_per_object-1));
                             dipevo=cluster-ones(size(cluster));
-                        end;                        
+                        end                        
                         cluster=cluster/max(cluster);
                         dipevo=dipevo(ztpoi:pcutoff);
                         cluster=cluster(ztpoi:pcutoff);
@@ -587,12 +588,13 @@ else
                                 axis([min(A_r),max(A_r),-0.1*max(distr),1.1*max(distr)]);
                                 xlabel('r (nm)');
                                 drawnow
-                            end;
+                            end
                             trial_bckg(poi,:)=bckg;
                             trial_dipevo(poi,:)=dipevo;
                             trial_cluster(poi,:)=cluster;
                             trial_distr(poi,1:length(distr))=distr;
                             trial_sim(poi,:)=sim1;
+                            trial_sim0(poi,:)=sim;
                             rms_vec(poi)=rms;
                             dens_vals(poi)=dens_vec(kb);
                             depth_vals(poi)=depth_vec(kl);
@@ -600,43 +602,44 @@ else
                             dim_vals(poi)=dim_vec(kd);
                             start_vals(poi)=bckg_start_vec(ks);
                             sc_vals(poi)=sc;
-                        end;
-                        if ~get(handles.statusbar_off,'Value'),
+                        end
+                        if ~get(handles.statusbar_off,'Value')
                             comp_status=status_figure(npoi/total_trials);
                             drawnow;
-                            if ~comp_status, stop_flag=1; else stop_flag=0; end;
+                            if ~comp_status, stop_flag=1; else stop_flag=0; end
                         else
                             stop_flag=0;
-                        end;
-                        if stop_flag==1,
+                        end
+                        if stop_flag==1
                             break;
-                        end;
-                    end;
-                end;
-                if stop_flag==1,
+                        end
+                    end
+                end
+                if stop_flag==1
                     break;
-                end;
-            end;
-            if stop_flag==1,
+                end
+            end
+            if stop_flag==1
                 break;
-            end;
-        end;
-        if stop_flag==1,
+            end
+        end
+        if stop_flag==1
             break;
-        end;
-    end;
-    if ~get(handles.statusbar_off,'Value'),
-        if comp_status, status_figure(1); end;
+        end
+    end
+    if ~get(handles.statusbar_off,'Value')
+        if comp_status, status_figure(1); end
     else
         set(handles.Tikhonov_validation,'Pointer','arrow');
         drawnow;
-    end;
+    end
     handles.successful_trials=poi;
     trial_bckg=trial_bckg(1:poi,:);
     trial_dipevo=trial_dipevo(1:poi,:);
     trial_cluster=trial_cluster(1:poi,:);
     trial_distr=trial_distr(1:poi,1:length(distr));
     trial_sim=trial_sim(1:poi,:);
+    trial_sim0=trial_sim0(1:poi,:);
     rms_vec=rms_vec(1:poi);
     handles.dens_vals=dens_vals(1:poi);
     handles.depth_vals=depth_vals(1:poi);
@@ -645,9 +648,9 @@ else
     handles.start_vals=start_vals(1:poi);
     endtime=toc;
     msg=sprintf('%s%8.1f%s','Total computation time: ',endtime,' s');
-    if stop_flag==1,
+    if stop_flag==1
         msg=sprintf('%s%s%i%s',msg,'. Computation stopped after ',npoi,' trials.');
-    end;
+    end
     set(handles.status_line,'String',msg);
     [min_rms,rpoi]=min(rms_vec);
 %     tz=tz_vals(rpoi);
@@ -674,12 +677,13 @@ else
     handles.A_r=A_r;
     handles.A_tdip=tdip;
     handles.A_distr=trial_distr(rpoi,:);
-    handles.A_sim=trial_sim(rpoi,:);
+    handles.A_sim=trial_sim0(rpoi,:);
     handles.A_cluster=trial_cluster(rpoi,:);
     handles.A_dipevo=trial_dipevo(rpoi,:);
     handles.A_bckg=trial_bckg(rpoi,:);
     handles.trial_distr=trial_distr;
     handles.trial_sim=trial_sim;
+    handles.trial_sim0=trial_sim0;
     handles.trial_cluster=trial_cluster;
     handles.trial_dipevo=trial_dipevo;
     handles.trial_bckg=trial_bckg;
@@ -693,11 +697,11 @@ else
     set(handles.best_rmsd,'String',sprintf('%8.6f',min_rms));
     main_handles.bckg_start=store_bckg_start;
     main_handles.hom_dim=store_hom_dim;
-end;
+end
 if handles.auto_save
     fname=[handles.bas_name '_validation_sets'];
     save(fname,'trial_bckg','trial_dipevo','trial_distr','trial_sim','dens_vals','depth_vals','dim_vals','sc_vals','mean_depth','std_depth');
-end;
+end
 handles.computed=1;
 set(handles.prune,'Enable','on');
 % Update handles structure
@@ -726,7 +730,7 @@ if ~handles.computed % if no result exists, Cancel instead of closing politely
     save validation_result distr_std cancelled
     close(Tikhonov_validation);
     return
-end;
+end
 distr_std=handles.distr_std;
 cancelled=0;
 sel=handles.A_selected;
@@ -735,7 +739,7 @@ A_distr(A_distr<0) = 0;
 dlow = min(handles.trial_distr);
 dhigh = max(handles.trial_distr);
 dlow(dlow<0) = 0;
-A_sim=handles.trial_sim(sel,:);
+A_sim=handles.trial_sim0(sel,:);
 A_r=handles.A_r;
 tdip=handles.A_tdip;
 bckg=handles.trial_bckg(sel,:);

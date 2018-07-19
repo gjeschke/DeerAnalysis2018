@@ -28,35 +28,35 @@ set(handles.manual_bckg,'Value',0);
 handles.locked_loaded=false;
 
 flag=get(handles.reset_on_load,'Value');
-if flag, handles=set_defaults(handles); end; % set all status variables to defaults
+if flag, handles=set_defaults(handles); end % set all status variables to defaults
 
 data_format=get(handles.format_winepr,'Value'); % 0 for Elexsys or ASCII, 1 for WINEPR
 flag=get(handles.format_ascii,'Value');
-if flag, data_format=2; end;
-if get(handles.radiobutton_DeerAnalysis,'Value'),
+if flag, data_format=2; end
+if get(handles.radiobutton_DeerAnalysis,'Value')
     data_format=3;
-end;
-switch data_format,
-    case 0, % Elexsys
+end
+switch data_format
+    case 0 % Elexsys
         ext='*.DTA;';
-    case 1, % WINEPR
+    case 1 % WINEPR
         ext='*.spc;';
-    case 2, % ASCII
+    case 2 % ASCII
         ext='*.txt;*.asc;*.dat';
-    case 3, % DeerAnalysis
+    case 3 % DeerAnalysis
         ext='*.txt;*.dat';
-end;
+end
 [fname,pname]=uigetfile(ext,'Load experimental dataset');
-if isequal(fname,0)||isequal(pname,0),
+if isequal(fname,0)||isequal(pname,0)
     handback=handles;
     return; 
-end;
+end
 cd(pname);
 
 % separate filename from extension
 dots=findstr('.',fname);
 ext_pos=length(fname);
-if ~isempty(dots), ext_pos=dots(length(dots))-1; end;
+if ~isempty(dots), ext_pos=dots(length(dots))-1; end
 bas_name=fname(1:ext_pos); % name without extension
 extension=fname(ext_pos+2:length(fname)); % only extension
 pfname=[pname fname]; % pathname
@@ -68,27 +68,27 @@ handles.bas_name=bas_name;
 handles.source_file=[pname fname];
 
 success=true;
-switch data_format,
-    case 0, % Elexsys
+switch data_format
+    case 0 % Elexsys
         [x,y,z,vb]=get_elexsys(bas_name);
-    case 1, % WINEPR
+    case 1 % WINEPR
         [x,y,z,vb]=get_WINEPR(bas_name);
-    case 2, % ASCII
+    case 2 % ASCII
         dset=load(fname,'-ascii');
         [mtest,ntest]=size(dset); % determine size of loaded data array
         x=dset(:,handles.ASCII_t_column);
         x=x';
         z=dset(:,handles.ASCII_real_column);
-        if ntest>=handles.ASCII_imag_column,
+        if ntest>=handles.ASCII_imag_column
             z=z+1i*dset(:,handles.ASCII_imag_column);
-        end;
+        end
         z=real(z')-1i*imag(z');
         %z=z';
         y=[];
         vb=[];
         % check, if test data set and, if so, load and store theoretical
         % distribution
-        if exist(thname,'file'),
+        if exist(thname,'file')
             % disp('Test data set');
             dset2=load(thname,'-ascii');
             handles.th_r=dset2(:,1);
@@ -96,29 +96,29 @@ switch data_format,
             handles.theor=1;
         else
             handles.theor=0;
-        end;
+        end
     case 3
         % determine true basis name
         success=false;
         pos=strfind(bas_name,'_');
-        if ~isempty(pos),
+        if ~isempty(pos)
             bas_name=bas_name(1:pos(end)-1);
-        end;
+        end
         % check if all files exist
         success=true;
         bckg_file=strcat(bas_name,'_bckg.dat');
-        if ~exist(bckg_file,'file'),
+        if ~exist(bckg_file,'file')
             success=false;
-        end;
+        end
         fit_file=strcat(bas_name,'_fit.dat');
-        if ~exist(fit_file,'file'),
+        if ~exist(fit_file,'file')
             success=false;
-        end;
+        end
         distr_file=strcat(bas_name,'_distr.dat');
-        if ~exist(distr_file,'file'),
+        if ~exist(distr_file,'file')
             success=false;
-        end;
-        if success,
+        end
+        if success
             dset=load(bckg_file,'-ascii');
             x=dset(:,1);
             x=x';
@@ -130,50 +130,50 @@ switch data_format,
             handles.loaded_ff=dset(:,2)';
             handles.loaded_sim=dset(:,3)';
             dset=load(distr_file,'-ascii');
-            [md,nd]=size(dset);
+            [~,nd]=size(dset);
             handles.loaded_rax=dset(:,1)';
             handles.loaded_distr=dset(:,2)';
-            if nd>3,
+            if nd>3
                 handles.loaded_distr_lower=dset(:,3)';
                 handles.loaded_distr_upper=dset(:,4)';
-            end;
+            end
             vb=[];
-        end;
-end;
-if ~success,
+        end
+end
+if ~success
     set(handles.status_line,'String','Complete set of DeerAnalysis output files not available.');
     return
-end;
+end
 figname=['DeerAnalysis 2018 - ' fname]; % tell user, which file is current
 set(handles.main_figure,'Name',figname);
 dx=x(2)-x(1);
 % correct usec time axis to ns, if required
-if dx<0.1,
+if dx<0.1
     x=1000*x;
-end;
-if ~get(handles.checkbox_no_analysis,'Value'),
+end
+if ~get(handles.checkbox_no_analysis,'Value')
     x=x-x(1)*ones(size(x));
 else
     handles.locked_loaded=true;
-end;
-[mtest,ntest]=size(z); % determine size of loaded data array
-if mtest==2,
+end
+[mtest,~]=size(z); % determine size of loaded data array
+if mtest==2
     handles.ctvt=1;
     dtype='Variable-time DEER. ';
 else
     handles.ctvt=0;
     dtype='Constant-time DEER. ';
-end;
+end
 cflag=round(1000*sum(abs(imag(z)))/sum(abs(real(z)))); % Determine, if imaginary part is significant
-if cflag,
+if cflag
     handles.cmplx=1;
     dform=' complex ';
 else
     handles.cmplx=0;
     dform=' real ';
-end;
+end
 nexp=length(x);
-msg=sprintf('%s%d%s%s',dtype,nexp,dform,'data points.');
+% msg=sprintf('%s%d%s%s',dtype,nexp,dform,'data points.');
 handles.t_orig=x;
 handles.v_orig=z;
 
@@ -193,9 +193,9 @@ handles.A_vexp=vexp;
 handles.A_vb=vb;
 
 reset_flag=get(handles.reset_on_load,'Value');
-if reset_flag,
+if reset_flag
     handles=set_defaults(handles);
-end;
+end
 
 % Update handles structure
 guidata(handles.main_figure, handles);
@@ -206,12 +206,12 @@ set(handles.zt_edit,'String',zt_string);
 handles.zerotime=zt;
 
 phaseflag=get(handles.autophase,'Value');
-if ~phaseflag,
+if ~phaseflag
     vexp=vexp/max(real(vexp));
     handles.A_vexp=vexp;
     phi=0;
     imo=0;
-end;
+end
 handles.phase=phi;
 handles.imo=imo;
 pstr=sprintf('%6.1f',phi*180/pi);

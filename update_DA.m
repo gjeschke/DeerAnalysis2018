@@ -246,6 +246,7 @@ if ~handles.validation_mode && ~handles.bckg_request_d
             handles.bckg_fct=bckg;
             handles.bckg_rms_value=rms;
             plot(texp,bckg,'r:','LineWidth',1.5);
+            handles.bckg_fct = bckg;
             set(handles.title_original,'ForegroundColor','k');
         end
         plot(texp,real(vexp),'k');
