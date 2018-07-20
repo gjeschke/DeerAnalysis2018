@@ -7,9 +7,10 @@
 
 \begin{document}
 
-\title{DeerAnalysis2018 User Manual}
+\title{DeerAnalysis User Manual - Version 2018}
 
-\author{G. Jeschke \\ ETH Z\"urich \\ Wolfgang-Pauli-Str. 10, 8093 Z\"urich, Switzerland \\ Gunnar.Jeschke@phys.chem.ethz.ch \\ http://www.epr.ethz.ch/software/index}
+\author{G. Jeschke, ETH Z\"urich; gjeschke@ethz.ch \\ S. Stoll, University of Washington, Seattle; stst@uw.edu \\ http://www.epr.ethz.ch/software/index}
+
 
 \maketitle 
 
@@ -17,22 +18,22 @@
 \section{Purpose of the program}
 \label{purpose}
 
-The program DeerAnalysis2018 can extract distance distributions from dead-time free pulse ELDOR data (constant-time and variable-time four-pulse DEER) \cite{pannier2000,jeschke2004b}. Furthermore, it can be used for direct comparison of primary data of similar samples \cite{jeschke2004a}. With some caution \cite{jeschke2001} the program may also be applied to the analysis of dead-time free double-quantum coherence EPR experiments \cite{borbat1999}. It should not be used for data from experiments that have a significant dead time,
+The program DeerAnalysis can extract distance distributions from dead-time free pulse ELDOR data (constant-time and variable-time four-pulse DEER) \cite{pannier2000,jeschke2004b}. Furthermore, it can be used for direct comparison of primary data of similar samples \cite{jeschke2004a}. With some caution \cite{jeschke2001} the program may also be applied to the analysis of dead-time free double-quantum coherence EPR experiments \cite{borbat1999}, SIFTER experiments \cite{jeschke2000}, RIDME, \cite{kulik2001,milikisyants2009} experiments on spins $S = 1/2$. For RIDME experiments on spins $S > 1/2$, the companion program OvertoneAnalysis \cite{keller2017} should be employed. It should not be used for data from experiments that have a significant dead time,
 %
 \begin{equation}
 	t_{d}> 2 r^{3} \mathrm{ns} \ \mathrm{nm}^{-3} ,
 \end{equation}
 where $r$ is the shortest distance in the distribution.
 
-Except for fits of two user-defined models for three-spin systems \ref{fit_existing}, the program assumes isolated spin pairs. If more than two spins are coupled (e.g. spin-labeled protein oligomers), distance distributions are only approximate with artifact contributions at both short and long distances \cite{jeschke2009}. DeerAnalysis2018 allows for an approximate correction of these contributions by the 'ghost suppression' feature.
-
-The statistics information provided by earlier versions of DeerAnalysis if the statistics toolbox was available, is not longer provided due to a change in the used Tikhonov regularization routine.
+Except for fits of two user-defined models for three-spin systems (Section \ref{fit_existing}), the program assumes isolated spin pairs. If more than two spins are coupled (e.g. spin-labeled protein oligomers), distance distributions are only approximate with artifact contributions at both short and long distances \cite{jeschke2009}. DeerAnalysis allows for an approximate correction of these contributions by the 'ghost suppression' feature. The program also assumes that the spin-spin vectors of excited spin pairs are uniformly distributed with respect to the magnetic field (no orientation selection) and that all dipolar frequencies can be excited by the pump and observer pulses.
 
 The underlying mathematical problem is (moderately) ill-posed, i.e., quality of the analyzed data is very crucial. Pre-processing tools are implemented to correct for experimental imperfections (phase errors, displacements of the time origin of the modulation) and to separate the intramolecular distances of interest from the intermolecular background contribution. Furthermore, the program provides several independent approaches for extracting the distance distribution, which helps to get a feeling for the reliability of the distribution. Characterization of the distance distribution in terms of its mean value $\left\langle r \right\rangle$ and width (standard deviation $\sigma_{r}$) is usually reliable \cite{jeschke2004a} and is therefore a standard output. The performance of the different approaches for data analysis depends on the type of distance distribution (narrow or broad peaks or both) and was discussed in some detail in Ref. \cite{jeschke2004a}.
 
-DeerAnalysis2018 features a module for validation of distance distributions obtained by Tikhonov regularization. With this module a systematic error analysis can be performed that may consider experimental noise, uncertainties in background correction for a given dimensionality of the background and uncertainties in the dimensionality of the background. This analysis can provide error bars for the points in the distance distribution. Without such Monte Carlo validation, realistic error bars are not accessible. Display of error bars without validation that existed in earlier versions has been disabled.
+DeerAnalysis features a module for validation of distance distributions obtained by Tikhonov regularization. With this module a systematic error analysis can be performed that may consider experimental noise, uncertainties in background correction for a given dimensionality of the background and uncertainties in the dimensionality of the background. This analysis can provide error bars for the points in the distance distribution. Without such Monte Carlo validation, realistic error bars are not accessible. Display of error bars without validation that existed in earlier versions has been disabled.
 
-DeerAnalysis2018 is based on experience with earlier programs DeerFit, DeerTrafo, and in particular DeerAnalysis2004-2016 as well as with model-specific fitting of data \cite{jeschke2003b,hinderbe2004,godt2006}. It supersedes the earlier programs with respect to reliability and functionality. At the present time, DeerAnalysis2018 is released only as source code that can be run within MATLAB but not as a stand-alone application. In contrast to DeerAnalysis2004-2015, DeerAnalysis2018 no longer relies on calling the external compiled Fortran program FTIKREG.
+With DEERNet (neural network) processing (Section \ref{sec:DEERNet}), uncertainty estimates are obtained by using an ensemble of independently trained neural networks.
+
+DeerAnalysis is based on experience with earlier programs DeerFit and DeerTrafo as well as with model-specific fitting of data \cite{jeschke2003b,hinderbe2004,godt2006}. It supersedes these earlier programs with respect to reliability and functionality. At the present time, DeerAnalysis is released only as source code that can be run within MATLAB (versions 2014b or newer) but not as a stand-alone application. In contrast to DeerAnalysis2004-2015, DeerAnalysis2018 no longer relies on calling the external compiled Fortran program FTIKREG. With older Matlab versions, you can use previous versions of DeerAnalysis that are still available at www.epr.ethz.ch/software/deer-analysis-older-version.html.
 
 \section{Citations}
 
@@ -59,6 +60,13 @@ T. H. Edwards, S. Stoll.
 \emph{J.~Magn.~Reson.} {\bf 2018}, 288, 58-68.
 \end{itemize}
 
+If you use DEERNet, the neural network module, please cite \cite{worswick2018}
+\begin{itemize}
+\item
+S. G. Worswick, J. A. Spencer, G. Jeschke, I. Kuprov.
+\emph{Sci.~Adv.} {\bf 2018}, accepted
+\end{itemize}
+
 \section{History of changes}
 \subsection{Changes in DeerAnalysis2018 with respect to DeerAnalysis2016}
 \label{changes_2018}
@@ -69,15 +77,21 @@ DeerAnalysis2018 improves speed and implements several new methods for DEER data
 \item
 DeerAnalysis2018 uses a faster implementation of constrained Tikhonov regularization using a dedicated implementation of the FNNLS algorithm. Also, it uses Fresnel integrals to calculate the kernel, with significant speedups compared to the previous versions, which used numerical powder averaging.
 \item
-DeerAnalysis2018 implements a new method for DEER data processing based on deep neural networks.
+DeerAnalysis2018 implements a new method for DEER data processing based on deep neural networks (DEERNet) that includes an uncertainty estimate.
 \item
 For the selection of the regularization parameter, DeerAnalysis2010 now offers three methods: the L-curve corner method (as in previous versions), the Akaike information criterion (AIC), and the generalized cross-validation (GCV). The L-curve corner method tends to oversmooth. AIC and GCV are less prone to oversmoothing, but tend to undersmooth and can fail when the tail of the DEER trace contains non-DEER signals is not properly truncated.
+\item
+Validation defaults are now related to data set length and include noise and background fit validation. If a DEERNet computation was performed before, the validation window is skipped and Tikhonov validation is performed with an ensemble of reconstructed background models from DEERNet.
+\item
+The graphical user interface window is scalable. 
 \end{itemize}
 
 \subsection{Changes in DeerAnalysis2016 with respect to DeerAnalysis2015}
 \label{changes_2016}
 
 DeerAnalysis2016 uses a faster implementation of Tikhonov regularization, based on the \texttt{regtools} toolbox for Matlab by Per Christian Hansen for L curve computation and unconstrained Tikhonov regularization and on non-negative least-squares optimization for regularization under the constraint $P(r) > 0$. Except for the case where data sets with much less than 512 data points are processed in validation with large regularization parameters $\alpha$, computation time savings are substantial without sacrificing quality. L curves are more finely graded and of better quality. 
+
+The statistics information provided by earlier versions of DeerAnalysis, if the statistics toolbox was available, is no longer provided due to a change in the used Tikhonov regularization routine. We suggest validation instead on relying on statistical measures, which are questionable for an ill-posed problem. 
 
 \subsection{Changes in DeerAnalysis2015 with respect to DeerAnalysis2013.2}
 \label{changes_2015}
@@ -166,8 +180,8 @@ $\bullet$ & user-defined models with up to six parameters can be fitted\\
 \section{Installation}
 \label{install}
 
-DeerAnalysis2018 requires Matlab 7.6 (R2008a) or higher and was tested in Windows, Linux, and Mac
-environments (Mac test by Glenn Millhauser). If you have an earlier Matlab version, please use DeerAnalysis2006. Most tests were performed under Matlab 2008a on Windows. Design of the user interface may not be optimum for Linux or Mac. The
+DeerAnalysis2018 requires Matlab R2014b or higher and is platform independent. Use of the DEERNet module requires the Matlab Neural Network Toolbox. With earlier versions of Matlab back to R2008a (7.6), DeerAnalysis2013 is the recommended version. It was tested in Windows, Linux, and Mac
+environments (Mac test by Glenn Millhauser). If you have an even earlier Matlab version, please use DeerAnalysis2006. Most tests were performed under Matlab 2017a on Windows. Design of the user interface may not be optimum for Linux or Mac, but the scalable GUI should work there. The
 Windows package can be installed by unpacking the ZIP file DeerAnalysis2018.zip into a directory of your choice. Linux installation is the same. 
 
 Please note that the DeerAnalysis directory must not be write protected if the validation tool is used.
@@ -177,7 +191,7 @@ Please note that the DeerAnalysis directory must not be write protected if the v
 \section{The user interface}
 \label{features}
 
-To run the program, start Matlab, change to the directory where it is installed
+To run the program, start Matlab, change to the directory where it is installed (unless this directory is already on the Matlab path)
 (e.g., by {\ttfamily cd(''c:/Program Files/DeerAnalysis2018''))} and call it by typing
 {\ttfamily DeerAnalysis} at the Matlab prompt  
 
@@ -187,7 +201,7 @@ The graphical user interface shown in Fig. \ref{fig:manfig1} opens, of course fi
  	\begin{center}
   \includegraphics[width=0.95\textwidth]{fig1.pdf}
 	\end{center}
-	\caption{Graphical user interface of DeerAnalysis 2013.}
+	\caption{Graphical user interface of DeerAnalysis2018.}
 	\label{fig:manfig1}
 \end{figure}
 
@@ -196,7 +210,7 @@ The user interface has been programmed with the following ideas in mind
 \begin{tabular}{ll}
 \noalign{\smallskip}
 $\bullet$ & no {\em unnecessary} complexity \\
-$\bullet$ & no hidden functionality (no menus) \\
+$\bullet$ & a minimum hidden functionality (no menus) \\
 $\bullet$ & default behavior should give reasonable results for most data \\
 $\bullet$ & experienced users can easily override default behavior. \\
 \end{tabular}
@@ -262,12 +276,12 @@ title of the DeerAnalysis main window and is also shown in line {\ttfamily A:} o
 From version 2013 on, data saved by DeerAnalysis can be reloaded, when the {\ttfamily DeerAnalysis} radiobutton in the {\ttfamily Data sets} panel is activated. By default this activates the {\ttfamily Locked} checkbox in the same panel. Any of the DeerAnalysis output files (e.g. {\ttfamily ...\_bckg.dat}) can be selected, data from all files are loaded. The same feature allows for loading output data from the DEER window of MMM, provided that a comparison of experimental data with a simulated distance distribution was performed in MMM. In {\ttfamily Locked} mode any automatic processing is switched off, data and results are displayed in the form found in the saved files. The {\ttfamily Locked} checkbox can be deactivated to allow for data processing. Note however that not the full information from the primary data set is available after such reloading. Only the real part of the primary data, starting at the zero time determined by DeerAnalysis or by the user is saved and can be reloaded. In other words, phase correction and zero time determination should not be changed in such data sets.
 
 \subsection{Determining zero time}
-The time origin of the dipolar evolution function corresponds to $\tau_1 = \tau_2$ (see
-Fig. \ref{fig:manfig2}). Because pulse lengths are finite, the relation between this equation and actual delays in the pulse sequence may not be trivial. We therefore suggest
+The time origin of the dipolar evolution function corresponds to the position of the $pi$ pump pulse coinciding with the unobserved first echo. (see
+Fig. \ref{fig:manfig2}). Because pulse lengths are finite, the relation between this condition and actual delays in the pulse sequence may not be trivial. We therefore suggest
 determination of the time origin (zero time) from experimental data with a good
 signal-to-noise ratio (SNR) for the pulse lengths and $\tau_1$ delay that you actually
-use. To obtain a precise value a standard sample with a short distance should be used. If you later measure on the same spectrometer with the \emph{same} pulse lengths
-and $\tau_1$ you can use the same value. Knowing this value is important for data
+use. To obtain a precise value, a standard sample with a short distance should be used. If you later measure on the same spectrometer with the \emph{same} pulse lengths
+and $\tau_1$, you can use the same value. Knowing this value is important for data
 with poor SNR where automatic determination is likely to fail.
 Automatic determination of zero time $t_0$ is based on the expectation that
 the real part of the signal should be symmetric about the time origin. For the
@@ -276,7 +290,7 @@ $t_0$ should thus be zero. In a first step, the program approximates zero time b
 the time $t_{\mathrm{max}}$ at which the real part is maximum. Then the first moment is
 determined in a window $t_x<t_{\mathrm{max}}/2$, where $t_x$ is shifted through the whole data
 set. The optimum value of $t_0$ is the time $t_x$ where the first moment is minimum. This procedure is performed with a time resolution of 1 ns, obtained by interpolation of the experimental data. Such enhanced time resolution improves results for very short distances, where it may be important that the true zero time may fall in between two experimental data points. Zero time is influenced by pulse lengths \cite{maryasov2000,milov2004}. This
-algorithm should work well for good SNR an distances up to $\approx5$ nm. If it fails
+algorithm should work well for good SNR and distances up to $\approx5$ nm. If it fails
 under such conditions, $\tau_1$ is too short (expected symmetry of the data is spoiled
 by interference between adjacent microwave pulses). The algorithm may fail
 for very long distances where data close to the maximum are pretty flat. For
@@ -331,20 +345,17 @@ the check box {\ttfamily Autophase} in the {\ttfamily Data sets} panel.
 
 In some measurements of weak samples with some spectrometers we found that automatic phase correction did not work and that after a manual phase correction that brought all modulation into the real part, a flat non-zero imaginary part remained. Apparently the problem comes from overload of the videoamplifier during the pulse. Small residual constant offsets of the imaginary part may also result if the phase drifted significantly during the measurement. Such data are less reliable than data with zero offset in the imaginary part, in particular with respect to background correction, as there may also be an offset in the real part. However, if the hardware problem cannot be fixed, it may still be warranted to process the data and interpret them (with caution), in particular, as for weak samples the background may be flat, so that an offset in the real part does not pose a problem.
 
-DeerAnalysis2018 automatically fits an offset in the imaginary part if the checkbox \texttt{Offset corr.} (below the \texttt{Load} button) is activated. The fitting happens on file load (if the checkbox \texttt{Reset} is also activated) and on clicking the \texttt{Phase($^{\circ}$) !} button in the \texttt{Original data} panel. The fit criterion is \emph{flatness} of the imaginary part in the last 87.5\% of the data points. The first 12.5\% are excluded to allow for early-time artifacts as shown in Fig. \ref{fig:manfig3}. Alternatively, you can use manual phase correction to flatten the imaginary part "by eyes". The offset of the imaginary part is displayed as a magenta dotted line. If you obtain large offsets or visible offsets even for strong samples, please fix your spectrometer.
-
 \subsection{Cutting data}
 For several reasons, you may want to exclude points at the end of
 your data set from analysis. First, some people prefer to acquire data up to
 delays $t$, where the pump pulse starts to interfer with the last observer pulse
 or even overlaps with it. In this case, the last data points are spoiled. Second,
 if at maximum $t$ the signal has decayed to a very small value (say 0.1 times
-maximum intensity), the dipolar eveolution function after background correction
+maximum intensity), the dipolar evolution function after background correction
 will be rather noisy, as correction involves division by the background decay.
-Third, SNR in variable-time DEER data increases with $t$ even before background
-correction. It may be wise to cut the data at a time where noise is still tolerable.
+Third, and most important, overlap of pump and observer excitation bands cause a "2+1" artefact at the end of the trace.
 
-By default no data points are cut off at the end, but a suggestion for cutoff is displayed as an orange vertical cursor in the {\ttfamily Dipolar evolution} plot (see Fig. \ref{fig:manfig4}). This suggestion is derived from the difference $D$ between the experimental dipolar evolution function and its fit by the APT result. The mean square deviation $M_k$ of eleven consecutive points $D_{k-5}\ldots D_{k+5}$ around the $k$th data point is computed for all indices $k$. The minimum of $M$ is a measure for the noise level. An acceptable noise level of $6\mathrm{min}(M)$ is assumed. The programm then searches for a range of consecutive points at the end of the data set that \emph{all} fulfil the condition $M(k)>6\mathrm{min}(m)$. If such a range of points exists, the program suggests to cut it off. Otherwise the orange cutoff cursor is set to the end (right border) of the trace.
+By default no data points are cut off at the end, but a suggestion for cutoff is displayed as an orange vertical cursor in the {\ttfamily Dipolar evolution} plot (see Fig. \ref{fig:manfig4}). This suggestion is derived from the difference $D$ between the experimental dipolar evolution function and its fit by the APT result. The mean square deviation $M_k$ of eleven consecutive points $D_{k-5}\ldots D_{k+5}$ around the $k^\mathrm{th}$ data point is computed for all indices $k$. The minimum of $M$ is a measure for the noise level. An acceptable noise level of $6 \mathrm{min}(M)$ is assumed. The program then searches for a range of consecutive points at the end of the data set that \emph{all} fulfil the condition $M(k)> 6 \mathrm{min}(m)$. If such a range of points exists, the program suggests to cut it off. Otherwise the orange cutoff cursor is set to the end (right border) of the trace.
 
 \begin{figure}[ht]
  	\begin{center}
@@ -355,7 +366,7 @@ fit (red) by a distance distribution obtained with APT after cutting the data at
 	\label{fig:manfig4}
 \end{figure}
 
-The suggestion can be accepted by clicking on the {\ttfamily !} button of the {\ttfamily Cutoff} controls in the {\ttfamily Original data} panel. Note that this may in turn improve the fit, thus leading to a smaller value $\mathrm{min}(M)$ and a new cutoff suggestion. Therefore, it is advisable to click on the {\ttfamily !} button several time to iteratively approach the optimum cutoff. Furthermore, the cutoff suggestion depends on correct settings of other parameters (zero time, phase). For instance, for the variable-time DEER data set shown in Fig. \ref{fig:manfig4} the zero time must be zero, while the program automatically determines 96 ns. If this is not corrected, not good fit is obtained and unnecesserily many data points are cut off. Note also that this data set with relatively poor SNR was intentionally selected for explanation of data cutoff. For many data sets, no cutoff at all may be required and DeerAnalysis2018 immediately sets the cutoff cursor to the right border.
+The suggestion can be accepted by clicking on the {\ttfamily !} button of the {\ttfamily Cutoff} controls in the {\ttfamily Original data} panel. Note that this may in turn improve the fit, thus leading to a smaller value $\mathrm{min}(M)$ and a new cutoff suggestion. Therefore, it is advisable to click on the {\ttfamily !} button several times to iteratively approach the optimum cutoff. Furthermore, the cutoff suggestion depends on correct settings of other parameters (zero time, phase). For instance, for the variable-time DEER data set shown in Fig. \ref{fig:manfig4} the zero time must be zero, while the program automatically determines 96 ns. If this is not corrected, not good fit is obtained and unnecessarily many data points are cut off. Note also that this data set with relatively poor SNR was intentionally selected for explanation of data cutoff. For many data sets, no cutoff at all may be required and DeerAnalysis immediately sets the cutoff cursor to the right border.
 
 Generally, cutting off a significant amount of data will suppress noise but will also cause a suppression of long distances by background correction. Proper background correction may
 become more difficult. 
@@ -386,7 +397,7 @@ becomes challenging for distances between 4 and 6 nm, and near to impossible
 for distances longer than 6 nm, unless protons around the spin labels can be
 strongly diluted by deuteration \cite{jeschke2004b}. Note that one can still get a quite reliable estimate of a distance of closest approach if separation fails. However, the
 width and shape of the distance distribution should not be discussed in such 
-a situation. 
+a situation (see also Fig. \ref{fig:reliability}). 
 
 In simple cases (short distances and homogeneous distribution of the nanoobjects
 in three dimensions), separation depends only weakly on the choice of parameters.
@@ -423,7 +434,7 @@ correct background correction is zero at the maximum detectable distance. This
 can be checked by approximate Pake transformation (APT, see below). APT is
 sufficiently fast to be applied at all possible choices of the starting time for the
 background fit. For any selected background model, this search for the optimum
-starting time can be initiated by clicking on the blue {\ttfamily !} button in
+starting time can be initiated by clicking on the blue {\ttfamily !} button near {\ttfamily Backgr. (ns)} in
 the {\ttfamily Original data} panel. Depending on the length of your data set and the
 speed of your computer, this optimization can take up to a few minutes.
 
@@ -439,13 +450,17 @@ correction} radiobutton in the {\ttfamily Background model} panel. In this modus
 modus is intended for compatibility with external pre-processing programs,
 for polynomial fitting of single-label data to derive an experimental background
 function (see below), or for fitting by a user model that explicitly contains the background contribution. User models consisting of a single Gaussian peak with 3D homogeneous background ({\ttfamily Gaussian\_hom}) or of two Gaussian peaks with 3D homogeneous background ({\ttfamily 
-Two\_Gaussians\_hom}) are already included in DeerAnalysis2018. However, we strongly discourage fitting background and distance distribution simultaneously, as such fits are very likely to end up in local minima of the error hypersurface. Whenever a separation of the background contribution from the contribution of the nanoobject can be performed with some confidence, it should be done before analysis of the distance distribution.
+Two\_Gaussians\_hom}) are already included in DeerAnalysis. However, we strongly discourage fitting background and distance distribution simultaneously, as such fits are very likely to end up in local minima of the error hypersurface, especially for those cases, where previous background correction is difficult. Whenever a separation of the background contribution from the contribution of the nanoobject can be performed with some confidence, it should be done before analysis of the distance distribution.
 
 For long distances, the intramolecular contribution may be significant throughout the whole time range. In such cases, any fit of a background function to the data is biased. If independent information on expected modulation depth and concentration (density) is available, e.g. from other double mutants of the same protein, it may be better to directly input these estimates instead of fitting. This can be done by selecting the option {\ttfamily Form factor based fit}. This option is displayed red when the program estimates from the preliminary distance distribution that fitting would be more reliable and is displayed green if the program expects problems with background fitting. 
 
 It is also possible to systematically vary modulation depth and density and search for the values that lead to the best fit of the form factor. The rational behind this algorithm is that the background contribution cannot be fitted by a distribution of distances with an upper limit. Incomplete background correction or overcorrection will thus lead to a deterioration of the fit of the form factor. This algorithm works well for data with very high signal-to-noise ratio, but is easily mislead by noise. It should thus be used with caution. The search for optimum modulation depth and density can be started by selecting the option {\ttfamily Form factor based fit} and then clicking on the {\ttfamily !} button in the {\ttfamily Form factor based fit} subpanel.
 
-If there are uncertainties about the parameters of background correction, the result of Tikhonov regularization should be checked by using the {\ttfamily Validation} module. 
+To test for uncertainties in parameters of background correction, the result of Tikhonov regularization should always be checked by using the {\ttfamily Validation} module.
+
+DEERNet (Section \ref{sec:DEERNet}) analyzes background and distance distribution simultaneously without fitting background explicitly in only a limited range of the data. This appears to work better in cases where the trace is not sufficiently long. DEERNet uncertainty estimates include background uncertainty.
+
+By default, the previous background fit is displayed in the {\ttfamily Original data} panel in green color if background model or parameters were changed. The mode of the previous background fit is displayed at the bottom of the {\ttfamily Background model} panel, where you also find a checkbox that can be deactivated to suppress display of the previous fit.
 
 In the following we shortly discuss the possible choices for the spatial distribution
 of nanoobjects. They can be selected by checking the corresponding radiobutton in the {\ttfamily Background model} panel.
@@ -457,12 +472,12 @@ This model is strongly suggested for all cases where you do not have experimenta
 \end{equation}
 where $k$ depends on the density of the spins and the pump pulse inversion efficiency, and $d$ is the dimensionality of the homogeneous distribution. Unless there is a confinement on length scales below 10 nm, the distribution is homogeneous in $d=3$ dimensions. This case applies to most solutions. Membrane proteins in a liposome may be confined to $d=2$ dimensions. If possible, such confinement should be established by control measurements on singly labelled proteins, for which $d=2$ is expected give a better fit than $d=3$. For labels attached to a stretched polymer chain, $d=1$ may be appropriate. Note also that a choice of $d=6$ corresponds to a Gaussian background decay, as it has been observed with the single-frequency SIFTER experiment \cite{sifter}. The dimension is not necessarily an integer number- if experimental data of a singly labelled sample can be nicely fitted with a fractal dimension, it is advisable to use the same fractal dimension for background correction of the corresponding doubly labelled sample.
 
-When the {\ttfamily Fit dimensionality} checkbox is selected, both $k$ and $d$ are fitted. This mode is suggested only for determining the fractal dimension of purely homogeneous (singly-labelled) samples. In this case the {\ttfamily Bckg.} control in the {\ttfamily Original data} panel should be set to zero (green and blue cursors coincide), as the early decay of the data is most sensitive to the parameter $d$.   
+When the {\ttfamily Fit dimensionality} checkbox is selected, both $k$ and $d$ are fitted. This mode is suggested only for determining the fractal dimension of purely homogeneous (singly-labelled) samples or for high-quality data where a sufficiently long part of the trace is dominated by background. For fitting purely homogeneous background of a single label, the {\ttfamily Bckg.} control in the {\ttfamily Original data} panel should be set to zero (green and blue cursors coincide), as the early decay of the data is most sensitive to the parameter $d$.   
 
 \subsubsection{Polynomial}
 Short distances are underrepresented in the intermolecular distance distribution, ff the spin labels are attached to nanoobjects that cannot penetrate each other. As a result, the intermolecular contribution decays more slowly at early times than would be expected for a homogeneous distribution. If singly labelled objects are available, the intermolecular part can be measured separately and an experimental background function can be derived. Directly using the noisy experimental data set of the singly labelled sample would introduce significant statistical errors. It is therefore prudent to use a smooth fit function for that purpose.
 
-Almost any intermolecular decay can be reproduced by fitting a polynomial to the \emph{logarithm} of the original data. DeerAnalysis2018 allows for polynomials with an order of up to 15, but note that the lowest order should be selected that still gives a good fit (flat trace in the {\ttfamily Dipolar evolution} plot. Polynomial fits are mainly implemented for deriving and afterwards saving experimental background functions from singly labelled samples, not for direct background correction.
+Almost any intermolecular decay can be reproduced by fitting a polynomial to the \emph{logarithm} of the original data. DeerAnalysis allows for polynomials with an order of up to 15, but note that the lowest order should be selected that still gives a good fit (flat trace in the {\ttfamily Dipolar evolution} plot. Polynomial fits are mainly intended for deriving and afterwards saving experimental background functions from singly labelled samples, not for direct background correction.
 
 \subsubsection{Experimental}
 Once experimental background functions have been derived from singly labelled samples, they can be used for correcting the background in corresponding doubly labelled samples. In this mode, the relative magnitudes of the polynomial coefficients are kept fixed. The background model is given by
@@ -491,7 +506,7 @@ experiment, which extends to approximately 10-20 nm for the background.
 Measurements of local concentrations can be calibrated with a solution of an
 appropriate spin label (e.g., protonated or deuterated TEMPOL) in toluene.
 An example data set from our own calibration (CT\_DEER\_tempol\_2500uM) is
-provided. This data set was acquired with a 2mM TEMPOL solution in toluene,
+provided. This data set was acquired with a 2 mM TEMPOL solution in toluene,
 which corresponds to a concentration of 2.5 mM at 80 K, as toluene shrinks to
 approximately 80\% of its room temperature volume when freeze-quenched in
 liquid nitrogen.
@@ -509,13 +524,13 @@ modulation due to matrix protons. At X-band frequencies, such proton modulation
 corresponds to a distance of approximately 1.5 nm. By restricting the distance range for analysis to (1.75, 8) nm, contributions by nuclear modulation can be suppressed. However, as computation of distance distribution is an ill-posed problem, an out-of-range artifact may
 still influence the result within the range of interest. Very strong proton modulations,
 as they are sometimes encountered for membrane proteins in liposomes
-or detergent micelles, should thus be eliminated by filtering.
+or detergent micelles, should thus be eliminated by filtering. Note, however, that it is preferable to eliminate such nuclear modulation experimentally by averaging traces with different $\tau_1$ values.
 
 This can be achieved by completely eliminating contributions above a certain
 maximum frequency, which roughly corresponds to suppressing distances
 below a certain minimum distance. Such complete suppression was described in
 Ref. \cite{jeschke2004b}. For broad distance distributions with contributions both below and above 1.75 nm, complete suppression may introduce an artificial hole at $t = 0$ into the time-domain data and may thus replace the nuclear modulation artifact with a suppression
-artifact. To avoid this, filtering in DeerAnalysis2018 is performed by fitting a third-order polynomials to the real and imaginary parts of the frequency-domain data between
+artifact. To avoid this, filtering in DeerAnalysis is performed by fitting a third-order polynomials to the real and imaginary parts of the frequency-domain data between
 the cut-off frequency and the Nyquist frequency. The frequency-domain data
 in this range are then replaced by the polynomial. This suppresses the sharp
 nuclear modulation peak as well as high-frequency noise, while keeping the high frequency
@@ -546,6 +561,8 @@ ways of doing this, which all have one feature in common: one tries to find a
 resolution in distance domain at which a good fit of the experimental data is
 obtained without introducing strong noise artifacts into the distance distribution.
 
+In order to facilitate comparison of different approaches to computing the distance distribution, the result of the previous computation is shown in green color in the {\ttfamily Distance distribution} panel. The type of previous analysis is displayed at the bottom of the {\ttfamily Distance analysis} panel, where you also find a checkbox that can be deactivated in order to suppress display of the previous distribution.
+
 \subsection{Reliability of distance distributions}
 \label{reliability}
 The reliability of distance distributions depends strongly on the maximum dipolar evolution time. 
@@ -564,18 +581,18 @@ reliable up to a distance of 4 nm (reliable width limit), whereas the mean dista
 	\label{fig:reliability}
 \end{figure}
 
-DeerAnalysis2018 displays reliability ranges by color-coding the background of the distance distribution plot. The pale green range
+DeerAnalysis displays reliability ranges by color-coding the background of the distance distribution plot. The pale green range
 corresponds to a reliable shape of the distribution, the pale yellow range to reliable mean distance and width, the pale orange range to 
 reliable mean distance (but not width), and the red range to recognition of a long-distance contribution that cannot be quantified. The computed distribution is displayed only up to the distance recognition limit.
 
-This new feature is intended to caution users against overinterpretation of data. For preparing figures of distance distributions for papers it may be required to suppress these background colors. This can be achieved by deactivating the checkbox {\ttfamily Guidance}.
+This feature is intended to caution users against overinterpretation of data. For preparing figures of distance distributions for papers it may be required to suppress these background colors. This can be achieved by deactivating the checkbox {\ttfamily Guidance}.
 
 \subsection{Approximate Pake Transformation (APT)}
 A very fast algorithm relies on an approximate integral transformation to
 dipolar frequency domain, subsequent correction of cross-talk artifacts, and
 mapping to distance domain (APT) \cite{jeschke2001}. Ill-posedness is moderated by proper
 discretization in dipolar frequency domain. If SNR is too small, the distance
-distribution may still be influence by strong noise artifacts. A better
+distribution may still be influenced by strong noise artifacts. A better
 compromise between reliability of the distribution and resolution can then be
 achieved by distance-domain smoothing, i.e., by giving up resolution in favor
 for a smoother distribution. As APT is very fast, it can also be used to generate
@@ -583,7 +600,7 @@ starting values for fit procedures. The disadvantage of APT with respect
 to other techniques is that it cannot incorporate the constraint $P(r) > 0$ (for
 all $r$). This disadvantage, however, is significant, as the constraint strongly
 stabilizes the solution. For this reason, several other approaches for data analysis
-are incorporated into DeerAnalysis2018.
+are incorporated into DeerAnalysis.
 
 \subsection{Tikhonov regularization}
 
@@ -603,7 +620,7 @@ with
 \end{equation}
 The case of non-ideal pulses is discussed in Section \ref{bandwidth}.
 
-The most elegant response to ill-posedness is Tikhonov regularization. In this approach, the compromise between smoothness (artifact suppression) and resolution of the distance distribution is quantified by a regularization parameter $\alpha$. The optimum distance distribution $P(r)$ is found by minimizing the objective function
+The most widely used approach to ill-posedness is Tikhonov regularization. In this approach, the compromise between smoothness (artifact suppression) and resolution of the distance distribution is quantified by a regularization parameter $\alpha$. The optimum distance distribution $P(r)$ is found by minimizing the objective function
 \begin{equation}
 	G_{\alpha} \left( P \right) = \left\| S \left( t \right) - D \left( t \right)  \right\|^2 + \alpha \left\| \frac{\mathrm{d}^2}{\mathrm{d}r^2} P \left( r \right) \right\|^2
 	\label{eq:regul}
@@ -624,35 +641,50 @@ the smoothness. For well behaved data (good signal-to-noise ratio, relatively na
  	\begin{center}
   \includegraphics[width=1.0\textwidth]{fig6.pdf}
 	\end{center}
-	\caption{Tikhonov L curves. The red data points correspond to the optimum regularization parameter. The insets show the distance distribution obtained with this parameter. a) Data set dOTP\_5nm, $\alpha = 1$. b) Data set CT\_DEER\_broad, $\alpha = 100$.}
+	\caption{Tikhonov L curves. The red data points correspond to the optimum regularization parameter selected by GCV. The insets show the distance distribution obtained with this parameter. a) Data set dOTP\_5nm, $\alpha = 7.94$. b) Data set CT\_DEER\_broad, $\alpha = 398$.}
 	\label{fig:manfig6}
 \end{figure}
 
-In DeerAnalysis2018 the L curve criterion is implemented for unconstrained Tikhonov regularization, which allows for very fast computation of the L curve. Initially, constrained Tikhonov regularization is computed only at the automatically detected corner of the L curve (red circles in Fig. \ref{fig:manfig6}). The user can click on other points in the curve and constrained Tikhonov regularization is then recomputed for the corresponding regularization parameter. For regularization parameters that do not correspond to the automatically detected corner, a blue circle is shown.
+In DeerAnalysis, the L curve criterion is implemented for unconstrained Tikhonov regularization, which allows for very fast computation of the L curve. Initially, constrained Tikhonov regularization is computed only at the automatically detected corner of the L curve (red circles in Fig. \ref{fig:manfig6}). The user can click on other points in the curve and constrained Tikhonov regularization is then recomputed for the corresponding regularization parameter. For regularization parameters that do not correspond to the automatically detected corner, a blue circle is shown.
 
 Tikhonov regularization is performed by clicking on the corresponding {\ttfamily Fit} button in the {\ttfamily Distance analysis} panel. By default, L curve computation is enabled, since the shape of the L curve contains information about the quality of the data, and because the extended $\alpha$ is needed for the automatic selection methods (L-curve corner, AIC, GCV - see below) to work. If it is too time consuming for a particular dataset, it can be switched off, which is however not recommended. The regularization parameter (default: 1) can be changed in the corresponding edit field in the {\ttfamily Distance distribution} panel. The distance range for Tikhonov regularization is determined by the blue and magenta start and end values in the {\ttfamily Distance distribution} panel, which can also be edited. Computation of the L curve can be requested by clicking on the {\ttfamily L curve} checkbox in the {\ttfamily Distance analysis} panel and subsequently clicking on the {\ttfamily Compute} button. The status line indicates the progress of the L-curve calculation. After the computation, the L curve is automatically displayed instead of the {\ttfamily Distance distribution} plot with the automatically derived selection of the L-curve corner highlighted in red and the corresponding regularization parmeter shown in the {\ttfamily Reg. par.} control. The selection of the regularization parameter can be shifted with the {\ttfamily +} and {\ttfamily -} buttons of the {\ttfamily Reg. par.} controls. Such changes update the fit in the {\ttfamily Dipolar evolution} panel and the r.m.s. value in the {\ttfamily Distance analysis} panel. The distance distributions for different regularization parameters can be inspected in the same way after unselecting the {\ttfamily L curve} checkbox in the {\ttfamily Distance distribution} panel.
 
-Automatic L curve corner recognition selects the regularization parameter that has the shortest distance from the lower left corner in a log-log plot of square norm of the second derivative of $P(r)$ vs. mean square deviation of the simulated from the experimental form factor (new algorithm since DeerAnalysis2009). The lower left corner is defined by the minimum square norm of the second derivative of $P(r)$ and the minimum mean square deviation among all regularization parameters for which Tikhonov regularization was performed. Note that L curves can be misshaped if there are problems with background correction or if data are very noisy. In such cases the automatically determined choice of the regularization parameter may not be reasonable. If you have any information on the expected width of the distribution (or of the most narrow features in the distribution) from data other than the one being analyzed, it is usually best to select the regularization parameter manually. The optimum choice is the one that just does not cause undue broadening of expected narrow features.
+Automatic L curve corner recognition selects the regularization parameter that has the shortest distance from the lower left corner in a log-log plot of square norm of the second derivative of $P(r)$ vs. mean square deviation of the simulated from the experimental form factor (new algorithm since DeerAnalysis2009). The lower left corner is defined by the minimum square norm of the second derivative of $P(r)$ and the minimum mean square deviation among all regularization parameters for which Tikhonov regularization was performed. Note that L curves can be misshaped if there are problems with background correction, if data are very noisy, or if the distribution cotains both very broad and very narrow features. In such cases the automatically determined choice of the regularization parameter may not be reasonable. If you have any information on the expected width of the distribution (or of the most narrow features in the distribution) from data other than the one being analyzed, it is usually best to select the regularization parameter manually. The optimum choice is the one that just does not cause undue broadening of expected narrow features.
 
-Beside the L-cruve corner, DeerAnalysis2018 offers two additional methods for selecting an appropriate value of the regularization parameter $\alpha$, the Akaike information criterion (AIC) and the generalized cross-validaton (GCV)\cite{edwards2018}. Both can be obtained by clicking on the respective buttons labeled {\ttfamily AIC} and {\ttfamily GCV} next to the edit box for the regularization parameter. The L-curve corner value can be obtained again by pressing the button labeled {\ttfamily Lc}. The AIC method treats the solutions determined with different values for $\alpha$ as different models and determines the value that corresponds to the most parsimonious model. The GCV method drops one datapoint from the dataset at a time and determines $\alpha$ that generates a fit from the remaining datapoints that best recovers this dropped datapoint. This procedure is repeated for every datapoint in the DEER time trace. Whereas the L-curve corner method  tends to over-broaden the distance distributions, the AIC and GCV typically result in much sharper distributions, with a tendency to underbroaden. They also can fail of the tail of the DEER trace is not properly cropped.
+Beside the L-cruve corner, DeerAnalysis2018 offers two additional methods for selecting an appropriate value of the regularization parameter $\alpha$, the Akaike information criterion (AIC) and the generalized cross-validaton (GCV)\cite{edwards2018}. Both can be obtained by clicking on the respective buttons labeled {\ttfamily AIC} and {\ttfamily GCV} next to the edit box for the regularization parameter. The L-curve corner value can be obtained again by pressing the button labeled {\ttfamily Lc}. The AIC method treats the solutions determined with different values for $\alpha$ as different models and determines the value that corresponds to the most parsimonious model. The GCV method drops one datapoint from the dataset at a time and determines $\alpha$ that generates a fit from the remaining datapoints that best recovers this dropped datapoint. This procedure is repeated for every datapoint in the DEER time trace. Whereas the L-curve corner method  tends to over-broaden the distance distributions, the AIC and GCV typically result in much sharper distributions, with a tendency to underbroaden. They also can fail if the tail of the DEER trace is not properly cropped.
 
 After a Tikhonov regularization has been performed, the {\ttfamily Validation} button becomes accessible. An error analysis with respect to noise and uncertainties in background correction can now be performed (see Section \ref{validation}).
 
+\subsection{DEERNet (neural network ensemble}
+\label{sec:DEERNet}
+
+DEERNet provides a solution to the ill-posed inverse problem that does not rely on a single regularization parameter and that can thus recover both narrow and broad features at the same time. Furthermore, this approach, based on neural network ensembles trained on a large number of simulated data sets, does not rely on a background separation that requires fitting of the background model to part of the data. Rather, the neural networks have learned the different patterns of dipolar evolution functions of isolated spin pairs and of homogeneous background. This makes DEERNet an alternative approach that works better for some complicated cases \cite{worswick2018}.
+
+Since the neural network ensembles are large, they are not included in the downloadable version of DeerAnalysis. Upon first use, DeerAnalysis connects to the internet and downloads the networks. This can take several minutes, but happens only once. DEERNet requires the Neural Network Toolbox of Matlab and uses parallel computing for speedup.
+
+Four network ensembles are available, which can be selected in the popup menu in the {\ttfamily Distance analysis} panel. If unsure, use the generic one, which is also the default. Special networks are available for distributions with only narrow or only broad peaks and for cases where a fixed exchange coupling is observed on top of a distance distribution.
+
+Computation is started by clicking on the {\ttfamily Compute} button and returns an ensemble of solutions, from which DeerAnalysis derives a mean and an uncertainty estimate. DEERNet does not \emph{per se} return a background function, a fit to the original data, or an estimate of modulation depth. This information is reconstructed by simulating the form factor from the distance distribution and fitting modulation depth, fractal dimension, and decay constant for a stretched exponential background model. There is no strict mathematical reason for this being valid, but for the problem at hand, the approach works, because DEERNet was trained with stretched exponential background functions and appears to implicitly model background by such functions most of the time. Failure of this reconstruction would be apparent by the simulation in the {\ttfamily Form factor} panel not fitting the experimental data.
+
+After a DEERNet fit, uncertainty of the reconstructed background is visualized in the {\ttfamily Original data} panel by plotting the mean background in red colour and the background functions reconstructed for the individual neural networks in the ensemble in pink colour. Furthermore, the mean DEERNet reconstructed background can be used for further analysis by other approaches and the background ensemble is used in validation of Tikhonov data, unless a new background analysis is performed in between.    
+
 \subsection{User models}
-Generally, the solution of an ill-posed problem can be stabilized by introducing additional constraints. A distance distribution $P(r)$ that conforms to a simple model with only a few parameters, for example a distribution consisting of one or two Gaussian peaks, is strongly constrained. Fitting of the data by a model distribution can thus improve reliability of the analysis. Furthermore, by comparing the parameters for a series of related samples trends can be easily recognized. This approach is offered in DeerAnalysis2018 by an interface for fitting pre-processed data by user-defined models for the distance distribution $P(r)$. Model functions with one and two Gaussian peaks are already implemented. The model library can be extended by the user as described below.
+Generally, the solution of an ill-posed problem can be stabilized by introducing additional constraints. A distance distribution $P(r)$ that conforms to a simple model with only a few parameters, for example a distribution consisting of one or two Gaussian peaks, is strongly constrained. Fitting of the data by a model distribution can thus improve reliability of the analysis. Furthermore, by comparing the parameters for a series of related samples trends can be easily recognized. This approach is offered in DeerAnalysis by an interface for fitting pre-processed data by user-defined models for the distance distribution $P(r)$. Model functions with one and two Gaussian peaks are already implemented. The model library can be extended by the user as described below.
 
 In applying this approach one should be aware that a model can impose constraints that do not apply to the true distance distribution and may thus suppress information contained in the original data. For instance, the example data set {\ttfamily dOTP\_5nm} can be fitted relatively well by a distance distribution consisting of a single Gaussian peak, but this imposes a symmetry on the peak that is not a feature of the true distribution. The true distribution decays more steeply towards high distances than towards low distances as seen in the inset in Fig. \ref{fig:manfig6}a (and the reason for this asymmetry is well understood). It is thus advisable to perform a model-independent analysis by Tikhonov regularization first. From a set of distance distributions for the same class of samples, it is then often possible to derive a model function that does not impose undue constraints but does make use of additional information on the sample that comes from other characterization techniques.
 
 \subsubsection{Fitting with existing models}
 \label{fit_existing}
-When DeerAnalysis2018 starts, the program checks the subdirectory {\ttfamily models} for existing Matlab scripts (extension {\ttfamily .m}). The current distribution contains the scripts 
+When DeerAnalysis starts, the program checks the subdirectory {\ttfamily models} for existing Matlab scripts (extension {\ttfamily .m}). The current distribution contains the scripts 
 \begin{itemize}
+	\item {\ttfamily Chechik2.m} \\ Biradicals and monoradicals on a sphere surface. Single Gaussian peak with mean distance $\left\langle r \right\rangle$ and standard deviation $\sigma(r)$ superimposed on the distribution of objects on the surface of a sphere (triangular) with a Gaussian distribution of sphere diameters $ds$ with standard deviation $s(ds)$. Parameter $p1$ quantifies the relative distribution of the single Gaussian peak.
 	\item {\ttfamily Gaussian.m} \\ Single Gaussian peak with mean distance $\left\langle r \right\rangle$ and standard deviation $\sigma(r)$.
 	\item {\ttfamily Gaussian\_hom.m} \\ Single Gaussian peak with mean distance $\left\langle r \right\rangle$ and standard deviation $\sigma(r)$. and homogeneous 3D background. To be used with {\bf Background model} {\ttfamily No correction} and only with great care.
 	\item {\ttfamily random\_coil.m}. \\ Random-coil model for a polymer chain or an unfolded protein or an unfolded domain of a protein. $N$ is the number of amino acid residues between the two labels including both labeled
  residues. $\nu$ is the scaling exponent (0.602 for good solvents, expected for soluble proteins in water, 0.5 for $\theta$-solvent, less than 0.5 for poor solvents).
  	\item {\ttfamily Rice3d.m} \\ Single Rice peak \cite{koehler2011} with mean distance $\left\langle \nu\right\rangle$ and standard deviation $\sigma$ in three dimensions. Note that for the Gaussian limit of the Rice distribution, the standard deviation $\sigma$ is by a factor $\sqrt{2}$ smaller than the value of $\sigma$ in the Gaussian distribution as implemented in DeerAnalysis.
 \item {\ttfamily Sphere\_Surface.m}. \\ Homogeneous distribution of spin labels on the surface of a sphere. The sphere diameter $d_s$ has a Gaussian distribution with standard deviation $\sigma(d_s)$. 
+	\item {\ttfamily Three\_Gaussians.m} \\ Three Gaussian peaks with mean distances $\left\langle r_1 \right\rangle$, $\left\langle r_2 \right\rangle$, and $\left\langle r_3 \right\rangle$ and standard deviations $\sigma(r_1)$, $\sigma(r_2)$, and $\sigma(r_3)$. The populations of the first and second peak (integrals) are $p_1$ and $p_2$, the one of the third peak is $1-p_1 - p2$. Tends to be unstable.
   \item {\ttfamily Triangle\_DGauss.m} \\ Assumes a three-spin system (equilateral triangle) with double Gaussian distribution of the center-vertex distance (two Gaussian peaks). Useful for homotrimers with two distinct conformations or significantly non-Gaussian distance distributions. Pair- and three-spin contributions to the form factor are considered, based on \cite{jeschke2009} with a correction in the fraction of two-spin contributions. The total modulation depth $\Delta$ (\texttt{Delta}) and the number of Monte Carlo trials (\texttt{nmc}) are fixed parameters, whereas $\Delta$  should be set to the modulation depth obtained with background fitting.  
   \item {\ttfamily Triangle\_Gauss.m} \\ Assumes a three-spin system (equilateral triangle) with Gaussian distribution of the distance between the center and the vertices. Useful for homotrimers. Pair- and three-spin contributions to the form factor are considered, based on \cite{jeschke2009} with a correction in the fraction of two-spin contributions. The total modulation depth $\Delta$ (\texttt{Delta}) and the number of Monte Carlo trials (\texttt{nmc}) are fixed parameters, whereas $\Delta$  should be set to the modulation depth obtained with background fitting.
 	\item {\ttfamily Two\_Gaussians.m} \\ Two Gaussian peaks with mean distances $\left\langle r_1 \right\rangle$ and $\left\langle r_2 \right\rangle$ and standard deviations $\sigma(r_1)$ and $\sigma(r_2)$. The population of the first peak (integral) is $p_1$, the one of the second peak $1-p_1$.
@@ -664,7 +696,7 @@ When DeerAnalysis2018 starts, the program checks the subdirectory {\ttfamily mod
 \end{itemize}
 These models, and any models implemented by the user, are included in the {\ttfamily model fit} popupmenu of the {\ttfamily Distance analysis} panel. On selecting an entry of this menu, the parameter definitions, default values and limits of the corresponding model are read and the parameter controls in the {\ttfamily model fit} subpanel are updated. A model can have up to eight parameters. If it has less, superfluous parameter controls are disabled.
 
-Models with Gaussian peaks that also included homogeneous background, which were available in DeerAnalysis2006, have been discontinued. Their fitting behaviour was found to be too unstable.
+Models with Gaussian peaks that also include homogeneous background, are strongly discouraged. Their fitting behaviour was found to be rather unstable.
 
 Before fitting, select the {\ttfamily model fit} radiobutton in the {\ttfamily Data analysis} panel. The {\ttfamily Distance distribution} plot now shows the APT result as a black dotted narrow line and the distance distribution corresponding to the current model and parameter values as a red dotted bold line. The {\ttfamily Dipolar evolution} plot displays the experimental data (black line) and the data simulated with the current model (red dotted line). You may now edit the starting values of the fit parameters in the {\ttfamily model fit} subpanel until you obtain a reasonable agreement between experimental and simulated data. Of course, this step can be skipped and fitting can be started immediately, but by first improving your starting values you decrease the probability to get stuck in a local minimum of the error hypersurface. Before fitting you can also decide whether you want to fit all parameters (default behavior) or whether you want to keep some parameters fixed at their starting values. To fix a parameter, unselect the corresponding checkbox.
 
@@ -676,9 +708,9 @@ Model fitting considers the distance distribution in the range between 1 and 10 
 \label{new_model}   
 The interface between DeerAnalysis2018 and the model scripts was designed to allow for writing model scripts without knowledge on the inner working of the main program. A model script has two input variables, a vector of distances {\ttfamily r0} at which values of the distance distribution have to be computed and a vector of parameters {\ttfamily par}. The only output parameter is the distance distribution, which is a vector of the same length as {\ttfamily r0}. 
 
-Note that the integral of the distance distribution can be arbitrary, as DeerAnalysis2018 internally renormalizes the distribution to an integral of 0.01 for simulations and later computes the number of coupled spins from the modulation depth of the experimental data. This means that no amplitude parameter is needed. Only if the distribution corresponds of more than one contribution (for instance two Gaussian peaks), a parameter for the relative amplitude of an additional component with respect to the first component has to be defined. Consequently, a Gaussian distribution is defined by only two parameters, the mean distance $\left\langle r \right\rangle$ and the width (standard deviation) $\sigma_r$. A distribution consisting of two Gaussian peaks thus has the parameters $\left\langle r(1), \right\rangle$, $\sigma_{r(1)}$, the relative contribution of the first peak $p(1)$, and $\left\langle r(2), \right\rangle$, $\sigma_{r(2)}$. It is convenient to define the relative contributions so that they relate to the integral of the peaks (number of spins) and that $p(1)+p(2)=1$. The model script {\ttfamily Two\_Gaussians.m} is written this way.
+Note that the integral of the distance distribution can be arbitrary, as DeerAnalysis internally renormalizes the distribution to an integral of 0.01 for simulations and later computes the number of coupled spins from the modulation depth of the experimental data. This means that no amplitude parameter is needed. Only if the distribution corresponds of more than one contribution (for instance two Gaussian peaks), a parameter for the relative amplitude of an additional component with respect to the first component has to be defined. Consequently, a Gaussian distribution is defined by only two parameters, the mean distance $\left\langle r \right\rangle$ and the width (standard deviation) $\sigma_r$. A distribution consisting of two Gaussian peaks thus has the parameters $\left\langle r(1), \right\rangle$, $\sigma_{r(1)}$, the relative contribution of the first peak $p(1)$, and $\left\langle r(2), \right\rangle$, $\sigma_{r(2)}$. It is convenient to define the relative contributions so that they relate to the integral of the peaks (number of spins) and that $p(1)+p(2)=1$. The model script {\ttfamily Two\_Gaussians.m} is written this way.
 
-A model script needs to declare its parameters to DeerAnalysis2018 and provide default values as well as lower and upper limits for them. This is done in a comment section. As an example consider the script {\ttfamily Gaussian.m}:
+A model script needs to declare its parameters to DeerAnalysis and provide default values as well as lower and upper limits for them. This is done in a comment section. As an example consider the script {\ttfamily Gaussian.m}:
 \vspace{10pt}
 
 {\ttfamily \small
@@ -712,9 +744,9 @@ distr=exp(-gauss0.\^\,2);
 
 \vspace{10pt}
 
-The first line is the function declaration, which is the same for all user models except for the function name (here {\ttfamily Gaussian}). The following lines, which start with the \% character, are all comment lines, as far as Matlab is concerned. However, when the model is selected, DeerAnalysis2018 scans these comment lines in the source file for parameter declarations. A parameter declaration line begins with the \% character, followed by at least one space and the parameter name. Valid parameter names are {\ttfamily par(1)}, {\ttfamily par(2)}, {\ttfamily par(3)}, {\ttfamily par(4)}, {\ttfamily par(5)}, and {\ttfamily par(6)}. Only as many parameters have to be declared as are needed for the model (here 2). The parameter name is followed by at least one space and then by the parameter symbol. The symbol consists of at least one non-space character. It is shown as identification of the parameter control in the {\ttfamily model fit} subpanel. A symbol of up to five non-space characters can always be displayed, longer symbols are completely displayed only if some of the characters are narrow. The symbol is followed by at least one space and then the default value of this parameter. The default value is displayed in the edit field of this parameter and is the starting value for the fit if the user does not make any input before clicking on the {\ttfamily Fit} button. A good set of starting values provide for a distribution that is mainly confined between 1.5 and 8 nm and that clearly exhibits all relevant features of the model. The default value is followed by at least one space and the lower limit. No input samller than this value is accepted by the edit field. Likewise, the value is used as a lower boundary in parameter fitting. The lower limit is followed by at least one space and the upper limit, which is analogous to the lower limit. Note that definition of the default values and limits is \emph{mandatory}. Program response is undefined if the parameter line is incomplete.    
+The first line is the function declaration, which is the same for all user models except for the function name (here {\ttfamily Gaussian}). The following lines, which start with the \% character, are all comment lines, as far as Matlab is concerned. However, when the model is selected, DeerAnalysis2018 scans these comment lines in the source file for parameter declarations. A parameter declaration line begins with the \% character, followed by at least one space and the parameter name. Valid parameter names are {\ttfamily par(1)}, {\ttfamily par(2)}, {\ttfamily par(3)}, {\ttfamily par(4)}, {\ttfamily par(5)}, {\ttfamily par(6)}, {\ttfamily par(7)}, and {\ttfamily par(8)}. Only as many parameters have to be declared as are needed for the model (here 2). The parameter name is followed by at least one space and then by the parameter symbol. The symbol consists of at least one non-space character. It is shown as identification of the parameter control in the {\ttfamily model fit} subpanel. A symbol of up to five non-space characters can always be displayed, longer symbols are completely displayed only if some of the characters are narrow. The symbol is followed by at least one space and then the default value of this parameter. The default value is displayed in the edit field of this parameter and is the starting value for the fit if the user does not make any input before clicking on the {\ttfamily Fit} button. A good set of starting values provide for a distribution that is mainly confined between 1.5 and 8 nm and that clearly exhibits all relevant features of the model. The default value is followed by at least one space and the lower limit. No input smaller than this value is accepted by the edit field. Likewise, the value is used as a lower boundary in parameter fitting. The lower limit is followed by at least one space and the upper limit, which is analogous to the lower limit. Note that definition of the default values and limits is \emph{mandatory}. Program response is undefined if the parameter line is incomplete.    
 
-Extended models can return both the distance distribution and the background corrected DEER trace including the constant offset part to DeerAnalysis. This is required when accounting for multi-spin effects. Declaration of such functions requires the keyword {\ttfamily \#extended\#} in the comment section. In both extended and standard user functions it is possible to limit the number of parameters that are fitted by default by using the keyword {\ttfamily \#enable\#} in the comment section. In multi-spin fits it may be necessary to switch off automatic modulation depth scaling between experimental and simulated traces in the display of DeerAnalysis. A checkbox in the {\ttfamily Model fit} panel is provided for that purpose.
+Extended models can return both the distance distribution and the background corrected DEER trace including the constant offset part to DeerAnalysis. This is required when accounting for multi-spin effects. Declaration of such functions requires the keyword {\ttfamily \#extended\#} in the comment section. In both extended and standard user functions it is possible to limit the number of parameters that are fitted by default by using the keyword {\ttfamily \#enable\#} in the comment section. In multi-spin fits it may be necessary to switch off automatic modulation depth scaling between experimental and simulated traces in the display of DeerAnalysis. This feature has been disabled as it confused users of simpler models. If you need a private version that includes it, please contact gjeschke@ethz.ch.
 
 {\ttfamily \small
 function [deer,distr]=Triangle\_Gauss(r0,t0,par)
@@ -779,7 +811,7 @@ so that effects of finite pulses length can be accounted for without much additi
 	\label{fig:manfig7}
 \end{figure}
 
-However, simulations of the dipolar evolution function from a distance distribution, as they are required in model fits or at the end of Tikhonov regularization, can be performed with a pre-computed kernel for the expression given by eqn (\ref{eq:ideal_kernel}, while the kernel must be computed "on-the-fly" for the expression given by eqn (\ref{eq:real_kernel}. This is because the latter expression depends on an additional variable parameter $\Delta \omega$ and, furthermore, does not allow for scaling. In the former expression, a scaling of the $t$ axis by a factor $x$ can be compensated by scaling of the distance axis by a factor $x^{1/3}$. Without bandwidth correction, DeerAnalysis2018 uses fast computations with a pre-computed ideal kernel. Therefore, bandwidth correction considerably slows down simulations and model fits and is thus not selected as default behavior of the program. It can be activated by selecting the {\ttfamily Exci. bandwidth} checkbox in the {\ttfamily Dipolar evolution} panel.
+However, simulations of the dipolar evolution function from a distance distribution, as they are required in model fits or at the end of Tikhonov regularization, can be performed with a pre-computed kernel for the expression given by eqn (\ref{eq:ideal_kernel}, while the kernel must be computed "on-the-fly" for the expression given by eqn (\ref{eq:real_kernel}. This is because the latter expression depends on an additional variable parameter $\Delta \omega$ and, furthermore, does not allow for scaling. In the former expression, a scaling of the $t$ axis by a factor $x$ can be compensated by scaling of the distance axis by a factor $x^{1/3}$. Without bandwidth correction, DeerAnalysis uses fast computations with a pre-computed ideal kernel. Therefore, bandwidth correction considerably slows down simulations and model fits and is thus not selected as default behavior of the program. It can be activated by selecting the {\ttfamily Exci. bandwidth} checkbox in the {\ttfamily Dipolar evolution} panel.
 
 The effect of excitation bandwidth correction is illustrated in Fig. \ref{fig:manfig7} for data set {\ttfamily deer\_bi\_oligo\_n8\_50K} from the {\ttfamily calibdepth} subdirectory. Data were cut off at 1504 ns to improve the background fit. Without correction (blue distributions) distances below 1.75 nm are strongly suppressed. With correction they are recovered. The r.m.s. deviation improves from 0.000320 without correction to 0.000286 with correction in Tikhonov regularization and from 0.000396 without correction to 0.000335 with correction for a Gaussian fit. An improvement in the r.m.s. value may not always be found. The mean distance obtained with Tikhonov regularization changes from 1.97 to 1.85 nm. For a slightly longer flexible biradical (data set {\ttfamily deer\_bi\_oligo\_n10\_50K}), the correction is somewhat smaller, as the mean distance changes from 2.07 to 1.98 nm (data not shown). Note also that the Gaussian fits do not account very nicely for the true shape of the distribution in this case.
 
@@ -789,7 +821,7 @@ If more than two spin labels are present in a nanoobject, sum and difference com
 
 
 \subsection{Test data sets}
-DeerAnalysis2018 has a subdirectory {\ttfamily simulated} with Matlab scripts for generating test data with artificial noise and artificial background. The directory also contains a number of such test data sets: Gaussian distributions, distributions with two Gaussian peaks, a boxcar distribution, and a sawtooth distribution. These data sets are intended for test and training purposes.
+DeerAnalysis has a subdirectory {\ttfamily simulated} with Matlab scripts for generating test data with artificial noise and artificial background. The directory also contains a number of such test data sets: Gaussian distributions, distributions with two Gaussian peaks, a boxcar distribution, and a sawtooth distribution. These data sets are intended for test and training purposes.
 
 Test data sets are loaded by selecting the {\ttfamily ASCII} subpanel of the {\ttfamily Data sets} panel. The default column assignment (Time 1, Real 2, Imaginary 3) applies. These data sets can be processed in the same way as experimental data sets. In the {\ttfamily Distance distribution} plot of the main window and of the validation tool the distance distribution used for generating these data sets is displayed in cyan color.
 
@@ -797,15 +829,15 @@ Precomputed test data sets are a series of Gaussian distributions with fixed rat
 
 \section{Error analysis (validation) of distance distributions}
 \label{validation}
-For an ill-posed problem the relation between noise in the input data and uncertainty of the output data is difficult to predict. Furthermore, background deconvolution is not exact for experimental data, which also introduces an error in the form factor. Often this error due to imperfect background correction even dominates the error in distance distribution.
+For an ill-posed problem, the relation between noise in the input data and uncertainty of the output data is difficult to predict. Furthermore, background deconvolution is not exact for experimental data, which also introduces an error in the form factor. Often this error due to imperfect background correction even dominates the error in distance distribution.
 
 While error propagation in Tikhonov regularization cannot be predicted analytically, there is an obvious numerical approach for such a prediction. Assume that the uncertainties of background correction can be modelled by variation of the starting time for the background fitting within certain bounds and of the dimensionality of the spatial distribution within certain bounds. Background correction can now be performed for a sufficiently large number $n_\mathrm{trials}$ of parameter sets within these bounds and the form factors obtained can be subjected to Tikhonov regularization. This provides $n_\mathrm{trials}$ distance distributions that can be statistically analyzed. Thus, a lower and upper limit, a mean value, and a standard deviation are obtained for each point in the distance distribution.
 
-Alternatively, uncertainty of background parameters can be given in terms of lower and upper bounds for the density (proportional to concentration), the modulation depth, and the background dimensionality. This approach was followed until DeerAnalysis2010 and is still available for backward compatibility. This old approach does not consider that the uncertainties in the background parameters may be correlated. Thus it tends to overestimate the error. It is more advisable to vary the starting time for the background fit and, if necessary, background dimensionality.
+Alternatively, uncertainty of background parameters can be given in terms of lower and upper bounds for the density (proportional to concentration), the modulation depth, and the background dimensionality. This approach was followed until DeerAnalysis2010 and is still available for backward compatibility. This old approach does not consider that the uncertainties in the background parameters may be correlated. Thus it tends to overestimate the error. It is more advisable to vary the starting time for the background fit and, if necessary, background dimensionality. Default behaviour is validation with respect to background fit range (start at 0.2 to 0.6 times the maximum length) and to white noise (adding 50\% of the original noise level) with 110 individual runs. If you also vary dimensionality, you may want to reduce the number of noise trials from 10 to 2 or 3.
 
-Still, some combinations of dimensionality and starting time may result to poor fits of the form factor. A poor fit can be defined as a fit whose root mean square deviation from the experimental data exceeds the root mean square deviation (r.m.s.d.) of the best fit by a factor $L_\mathrm{prune}$ (prune level). DeerAnalysis2018 suggests a prune level of 1.15, but users can define this value according to their own experience. Parameter combinations that lead to fits with r.m.s.d. > \emph{prune level} $\cdot$ min(r.m.s.d.) are excluded from statistical analysis. 
+If dimensionality is also varied, some combinations of dimensionality and fit starting time may result to poor fits of the form factor. A poor fit can be defined as a fit whose root mean square deviation from the experimental data exceeds the root mean square deviation (r.m.s.d.) of the best fit by a factor $L_\mathrm{prune}$ (prune level). DeerAnalysis suggests a prune level of 1.15, but expert users can define this value according to their own experience. Parameter combinations that lead to fits with r.m.s.d. $>$ \emph{prune level} $\cdot$ min(r.m.s.d.) are excluded from statistical analysis. 
 
-The influence of noise on the distance distribution can be estimated in a similar way as the influence of uncertainties in background parameters. In this case noise is artificially enhanced by adding pseudorandom numbers so that the noise level is increased by a certain factor $L_\mathrm{noise}$. Errors are probably overestimated when taking $L_\mathrm{noise}=2$. A value $L_\mathrm{noise}=1.5$ is suggested. The tests for noise and background influence can be combined to obtain a total error estimate.
+The influence of noise on the distance distribution can be estimated in a similar way as the influence of uncertainties in background parameters. In this case noise is artificially enhanced by adding pseudorandom numbers so that the noise level is increased by a certain factor $L_\mathrm{noise}$. Errors are somewhat overestimated when taking $L_\mathrm{noise}=2$. A value $L_\mathrm{noise}=1.5$ is suggested and is also the default. Tests for noise and background influence are by default combined to obtain a total error estimate.
 
 \begin{figure}[ht]
  	\begin{center}
@@ -829,6 +861,8 @@ Separate Matlab figures of all plots (for copying, saving or printing) are obtai
 
 After returning to the main window, the mean distance distribution from all trials is displayed. If the {\ttfamily error est.} option in the {\ttfamily Distance distribution} panel is selected, the lower and upper error bounds (two times standard deviation) are displayed as grey error bars.
 
+If a DEERNet computation was performed before Tikhonov regularization and the background model was not changed in between, behaviour of the {\ttfamily Validation} button changes. The validation window does not open anymore. Instead, the DEERNet reconstructed background functions are combined with 5 noise realizations each. This mode is also available for validating fits of parametrized models (user models), except for the ones that also fit homogeneous background.
+
 \section{Post-processing}
 \label{postprocess}
 For many cases, one wants to quantify the distance distribution in terms of a few
@@ -848,18 +882,6 @@ at the short or long end of the distance range (due to nuclear modulations or
 errors in background correction), you may change the range for analysis using
 the {\ttfamily +} and {\ttfamily -} buttons for the blue and magenta cursor in the {\ttfamily Distance distribution} panel or direct input into the corresponding edit fields. This option can also be used for extending the distance range if very long distances have been measured or for selecting only a single peak in a multimodal distance distribution and determining its mean distance and width.  When the {\ttfamily Expand} checkbox is selected, the distance distribution is displayed only between the cursors. 
 
-\subsection{Checking for the relevance of small peaks}
-With Tikhonov regularization, one sometimes observes small peaks in the distance distribution that may be related to noise, to errors in background correction, or to genuine small contributions to the distance distribution. It is instructive to check the contribution of such peaks to the simulated dipolar evolution function or dipolar spectrum. To suppress such peaks, move the blue and magenta cursors so that they include them (see Fig. \ref{fig:manfig8}) and click on the green {\ttfamily Suppress} button. The distance distribution without these peaks is shown as a green curve and the corresponding fit of the experimental data is displayed in the {\ttfamily Dipolar evolution} plot also as a green curve. In the case illustrated in Fig. \ref{fig:manfig8}, the small peaks are obviously artifacts. The original (red) fit has a slightly better r.m.s. value, but is not perfect (see first minimum of the oscillation). The green fit is better at the first minimum but worse at the second maximum. In this case, the small peaks should thus be disregarded in interpretation.
-
-\begin{figure}[ht]
- 	\begin{center}
-  \includegraphics[width=1.0\textwidth]{fig8.pdf}
-	\end{center}
-	\caption{Suppressing small peaks in data set {\ttfamily deer\_bi\_36\_50K} from the {\ttfamily calibdepth} subdirectory. a) Distance distribution obtained by Tikhonov regularization (black) and after suppressing the peaks between the blue and magenta cursor by clicking on the green {\ttfamily Suppress} button (green). b) Experimental duipolar evolution function (black), fit by Tikhonov regularization (red), and fit after suppressing the two small peaks between the blue and magenta cursor.}
-	\label{fig:manfig8}
-\end{figure}
-
-
 \subsection{Number of coupled spins}
 \label{numspins}
 The number of spins within a nanoobject can be derived from the (calibrated)
@@ -872,13 +894,13 @@ of the background decay \cite{jeschke2004a}. The total modulation depth is given
 \end{equation}
 where $\left\langle n \right\rangle$ is the average number of spins in the observed nanoobjects.
  
-To use this information, DeerAnalysis2018
+To use this information, DeerAnalysis
 therefore retains information on the modulation depth in the dipolar evolution function. Quantification requires knowledge of the modulation depth parameter $\lambda$, which depends strongly on the excitation position, length, and flip angle of the pump pulse and weakly on line broadening
 in the nitroxide spectrum and shape of the resonator mode. Reliable
 quantification therefore requires a calibration with known samples and proper
 adjustment of the flip angle of the pump pulse (see Section \ref{experimental}). Spectra from our own
-series of calibration samples (six biradicals and one triradical) are provided in
-the folder calibdepth. They correspond to 12 ns $\pi$ pump pulses irradiated at the
+series of calibration samples (six biradicals and one triradical) and typical X-band 4-pulse DEER settings are provided in
+the folder {\ttfamily calibdepth}. They correspond to 12 ns $\pi$ pump pulses irradiated at the
 maximum of the nitroxide spectrum (see Fig. \ref{fig:manfig2}) using a Bruker 3mm split-ring
 resonator. Note that not all example spectra in other folders were measured
 under the same conditions. To calibrate modulation depths for your own applications,
@@ -904,7 +926,7 @@ If the two data sets differ considerably in their modulation depth, but have sim
 \section{Output}
 \subsection{Saving data}
 \label{output}
-Unlike its early predecessor version, DeerAnalysis2018 does not automatically save results, except as an option during processing series of data sets (see Section \ref{series}). On attempt to close the program after time-consuming fits (Tikhonov regularization, model fits) without saving results, the user is reminded. The whole set of data including background correction, experimental and fitted dipolar evolution function and spectrum, distance distribution, processing parameters, results of moment analysis and fitted parameters and L curve (if available) are saved together with the same basis file name, but into different ASCII files. 
+Unlike some of its predecessor versions, DeerAnalysis does not automatically save results, except as an option during processing series of data sets (see Section \ref{series}). On attempt to close the program after time-consuming fits (Tikhonov regularization, model fits) without saving results, the user is reminded. The whole set of data including background correction, experimental and fitted dipolar evolution function and spectrum, distance distribution, processing parameters, results of moment analysis and fitted parameters and L curve (if available) are saved together with the same basis file name, but into different ASCII files. 
 
 After clicking on the {\ttfamily Save} button, the user is asked for the file name. The last extension and, if present, a suffix {\ttfamily \_res} are removed to derive the basis name {\ttfamily \emph{basname}} (this is useful for overwriting old results by selecting their name in the diplayed file list). The following files are then saved:
 
@@ -948,6 +970,8 @@ The three current plots of DeerAnalysis2018 can be copied into individual Matlab
 
 \section{Processing a series of similar data sets}
 \label{series}
+
+\textbf{This feature has not been tested in combination with recently introduced features of DeerAnalysis. Be careful if you use it and apply consistency checks.} 
 
 A global analysis of several data sets is useful when measurements on the same sample have been reproduced or when samples have been prepared under slightly different conditions and one wants to check whether structural changes have occurred (see also Section \ref{dual_display}). The first case requires computation of an average distance distribution that takes into account the signal-to-noise ratio of the individual data sets. In the second case the comparison should be performed for modulation-depth normalized primary data rather than for distance distributions as it is difficult to estimate what degree of change in the distance distribution is significant \cite{jeschke2004a}. For both tasks a text file {\ttfamily \emph{listname}.txt} has to be prepared that contains a list of filenames (without extension) of all the data sets that are to be processed together (for an example, see the file {\ttfamily series.txt} in the subdirectory {\ttfamily example$\backslash$series}).
 
@@ -1119,7 +1143,28 @@ G. Jeschke, M. Sajid, M. Schulte, A. Godt,
 
 \bibitem{edwards2018}
 T.~H.~Edwards, S.~Stoll
-{\em J.~Magn.~Reson.} {\bf 288} (2018) 58-68.
+{\em J.~Magn.~Reson.} {\bf 288} (2018) 58--68.
+
+\bibitem{jeschke2000}
+G.~Jeschke, M.~Pannier, A.~Godt, H.~W.Spiess
+{\em Chem.~Phys.~Lett.} {\bf 331} (2000) 243--52.
+
+\bibitem{kulik2001}
+L.~V.~Kulik, S.~A.~Dzuba, I.~A.~Grigoryev, Y.~D.~Tsvetkov 
+{\em Chem. Phys. Lett.} {\bf 343} (2001) 315-–24.
+
+\bibitem{milikisyants2009}
+S.~Milikisyants, F.~Scarpelli, M.~G.~Finiguerra, M.~Ubbink, M.~Huber 
+{\em J. Magn. Reson.} {\bf 201} (2009) 48-–56
+
+\bibitem{keller2017}
+K.~Keller, V.~Mertens, M.~Qi, A.~I.~Nalepa, A.~Godt, A.~Savitsky, G.~Jeschke, M.~Yulikov 
+{\em Phys. Chem. Chem. Phys.} {\bf 19} (2017) 17856--17876
+
+\bibitem{worswick2018} 
+S.~G.~Worswick,~J.~A.~Spencer, G.~Jeschke, I.~Kuprov
+{\em Sci. Adv.} {\em accepted}
+
 
 \end{thebibliography}
 

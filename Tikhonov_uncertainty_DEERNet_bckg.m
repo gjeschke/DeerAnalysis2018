@@ -12,7 +12,7 @@ function handles = Tikhonov_uncertainty_DEERNet_bckg(handles)
 % G. Jeschke, 31.3.2018
 
 num_noise = 5;
-nfac = 1; % noise level 
+nfac = 0.5; % noise level 
 
 tdip0 = handles.A_tdip;
 dipevo0 = handles.A_dipevo;
