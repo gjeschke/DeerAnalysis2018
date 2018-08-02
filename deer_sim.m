@@ -11,7 +11,7 @@ function [S,scale] = deer_sim(r,distr,t,exci)
 %    S      time-domain DEER signal
 %    scale  scaling factor
 
-bwlimit = isvar('exci');
+bwlimit = exist('exci','var');
 
 ny0 = 52.04; % dipolar frequency at 1 nm (MHz)
 threshold = 1e-3*max(distr); % minimimum level for simulation of a point
@@ -35,7 +35,7 @@ for k = 1:length(r)
             mdepth = mdepth + weight*distr(k);
         end
         fdepth = fdepth + distr(k);
-        S = S + distr(k)*cos(2*pi*nyac*t)*weight; % add contribution to deer signal
+        S = S + distr(k)*cos(2*pi*nyac(m)*t)*weight; % add contribution to deer signal
     end
 end
 if bwlimit
