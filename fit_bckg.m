@@ -35,7 +35,6 @@ if homogeneousBg
     end
 end
 if back_model == 1
-    handles.hom_dim = 3;
     set(handles.bckg_fit_dim,'Value',0);
     set(handles.manual_bckg,'Value',0);
 end
@@ -73,7 +72,7 @@ switch back_model
         density=v1(1);
         handles.bckg_dens=density;
     case 2
-		    bckg=exp(polyval(poly,abs(texp))); % background is exponential of that
+		bckg=exp(polyval(poly,abs(texp))); % background is exponential of that
         density=v0(1);
         handles.bckg_dens=density;
     case 3
