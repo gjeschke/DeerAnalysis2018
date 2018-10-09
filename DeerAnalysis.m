@@ -100,6 +100,8 @@ handles.margin = 30; % margin for detached plots in pixels
 handles.add_margin = 30; % additional margin for axes labels
 handles.regpar_edit_strformat = '%0.2e'; % string format for reg.param. display
 
+handles.time_grain = 4; % smallest allowed time increment in nanoseconds
+
 % all data sets are empty on new start
 handles.A_texp=linspace(0,1600,201); % time axis experimental data set A
 handles.A_vexp=[]; % complex time-domain data set A
@@ -2698,7 +2700,7 @@ function dt_minus_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
-dt=handles.dt-8;
+dt=handles.dt-handles.time_grain;
 if dt>=handles.min_dt
     handles.dt=dt;
 end
@@ -2712,7 +2714,7 @@ function dt_plus_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if ~isfield(handles,'source_file'), set(handles.status_line,'String','### Load data file ###'); return; end
-dt=handles.dt+8;
+dt=handles.dt+handles.time_grain;
 if dt<=handles.max_dt
     handles.dt=dt;
 end

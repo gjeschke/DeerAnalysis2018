@@ -4,7 +4,7 @@ function [texp,vexp,zt,phi,imo,dt,renorm]=pre_process(t0,v0,phi,imo,zt,dt)
 % 
 % pre-processed data are phase-corrected, shifted on the time axis to make
 % the maximum coincide with time zero, have a time increment that is a
-% positive integer multiple of 8 ns, and have a maximum of 2048 data points
+% positive integer multiple of 4 ns, and have a maximum of 2048 data points
 %
 % when data reduction is required, information from all primary data points
 % is included by smoothing, if requested data points fall in between
@@ -23,13 +23,16 @@ function [texp,vexp,zt,phi,imo,dt,renorm]=pre_process(t0,v0,phi,imo,zt,dt)
 %       the maximum
 % dt    time increment of the pre-processed data, must be a positive
 %       multiple of eight (optional), defaults to the lowest positive
-%       multiple of eight that leads to a data set with at most 1024 points
+%       multiple of eight that leads to a data set with at most 2048 points
 % renorm    renormalization factor for maximum determination with
 %           polynomial smoothing
 %
 % Additional output parameters:
 % texp  zero-shift corrected experimental time axis
 % vexp  phase corrected data
+
+max_points = 2048; % maximum number of data points
+t_grain = 4; % minimum time increment, should coincide with handles.time_grain in DeerAnalysis.m
 
 add_noise = 0; % tweak for adding noise on loading, only for test purposes
 
@@ -136,21 +139,21 @@ dt0=t0(2)-t0(1);
 % get dt if not provided
 if nargin<6
     dt=dt0;
-    if dt<8, dt=8; end
-    if mod(dt,8)~=0
-        dt=8*ceil(dt/8);
+    if dt<t_grain, dt=t_grain; end
+    if mod(dt,t_grain)~=0
+        dt=t_grain*ceil(dt/t_grain);
     end
 end
 redfac0=dt/dt0; % data reduction factor for requested dt
 
-max_nexp=2048; % no more than 2048 data points
+max_nexp=max_points; % no more than the specified maximum number of data points
 if n>max_nexp
     redfac=ceil(n/max_nexp);
     if redfac>redfac0 % requested dt is too small
         dt=redfac*dt0;
     end
-    if mod(dt,8)~=0 % next multiple of eight
-        dt=8*ceil(dt/8);
+    if mod(dt,t_grain)~=0 % next multiple of eight
+        dt=t_grain*ceil(dt/t_grain);
     end
     redfac=round(dt/dt0);
     % Data reduction with smoothing

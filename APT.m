@@ -1,4 +1,4 @@
-function [r,distr,sim]=APT(handles,tdip,dipevo),
+function [r,distr,sim]=APT(handles,tdip,dipevo)
 %
 % Pake transformation
 %
@@ -20,9 +20,9 @@ spc2=zeros(1,m); % initialize distribution
 td=zeros(1,n);
 td(1:length(tdip))=dipevo;
 tdx=td.*t; % eqn [21]
-for k=1:m, % sum in eqn [21]
+for k=1:m % sum in eqn [21]
   spc2(k)=spc2(k)+sum(base(k,:).*tdx)/trcnorm(k); 
-end;
+end
 spc3=crosstalk\spc2'; % crosstalk correction, eqn [22]
 
 ny2r=ny; % initialize distance axis (mapping of dipolar frequencies to distances)
