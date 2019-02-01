@@ -27,7 +27,12 @@ if mod(frame_length,2)==0
     frame_length=frame_length+1;
 end
 if frame_length>=3
-    deer_trace=sgolayfilt(deer_trace,2,frame_length);
+    if exist('sgolayfilt','file') % sgolayfilt is from Signal Processing Toolbox
+        deer_trace=sgolayfilt(deer_trace,2,frame_length);
+    else
+        % TODO: replace with toolbox-free implementation of Savitzky-Golay filter
+        deer_trace=sgolayfilt(deer_trace,2,frame_length);
+    end
 end
 
 % Symmetrise and shift data
@@ -36,7 +41,11 @@ data_shift=deer_trace(1);
 deer_trace=deer_trace-data_shift;
 
 % Run the resampling
-deer_trace=resample(deer_trace,(out_pts*2),numel(deer_trace));
+if exist('resample','file') % resample is from Signal Processing Toolbox
+    deer_trace=resample(deer_trace,(out_pts*2),numel(deer_trace));
+else
+    deer_trace = interp1(1:numel(deer_trace),deer_trace,1:out_pts*2).';
+end
 
 % Desymmetrise data and shift back
 deer_trace=deer_trace((end/2+1):end);

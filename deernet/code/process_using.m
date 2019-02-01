@@ -43,6 +43,14 @@ if size(checkpoint.net.IW{1},2)~=size(deer_traces,1)
     error([net_file_name 'input layer size does not match data size.']);
 end
 
+% Define transfer functions if Deep Learning Toolbox is not installed
+if ~exist('tansig','file') % tansig is from Deep Learning Toolbox
+  tansig = @(n) 2./(1+exp(-2*n))-1;
+end
+if ~exist('logsig','file') % logsig is from Deep Learning Toolbox
+  logsig = @(n) 1./(1+exp(-n));
+end
+
 % Apply the input layer
 answers=tansig(checkpoint.net.IW{1}*deer_traces+checkpoint.net.b{1});
     
