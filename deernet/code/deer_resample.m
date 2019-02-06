@@ -30,8 +30,7 @@ if frame_length>=3
     if exist('sgolayfilt','file') % sgolayfilt is from Signal Processing Toolbox
         deer_trace=sgolayfilt(deer_trace,2,frame_length);
     else
-        % TODO: replace with toolbox-free implementation of Savitzky-Golay filter
-        deer_trace=sgolayfilt(deer_trace,2,frame_length);
+        deer_trace=savgolfilt(deer_trace,2,frame_length);
     end
 end
 
@@ -44,7 +43,7 @@ deer_trace=deer_trace-data_shift;
 if exist('resample','file') % resample is from Signal Processing Toolbox
     deer_trace=resample(deer_trace,(out_pts*2),numel(deer_trace));
 else
-    deer_trace = interp1(1:numel(deer_trace),deer_trace,1:out_pts*2).';
+    deer_trace = interp1(linspace(0,1,numel(deer_trace)),deer_trace,linspace(0,1,out_pts*2)).';
 end
 
 % Desymmetrise data and shift back
@@ -63,6 +62,34 @@ if (~isnumeric(out_pts))||(~isreal(out_pts))||...
    (out_pts<1)||(mod(out_pts,1)~=0)
     error('out_pts must be a non-negative real integer.');
 end
+end
+
+% Savitzky-Golay filtering (taken from EasySpin)
+function y_filtered = savgolfilt(y,PolyOrder,m)
+
+X = repmat((-m:m).',1,PolyOrder+1).^repmat(0:PolyOrder,2*m+1,1);
+F = pinv(X);
+Weights = F(1,:);
+
+isRowVec = isrow(y);
+if isRowVec
+  y = y.';
+end
+
+% Enlarge vector at beginning and end.
+yend = y(end);
+y_expanded = [y(ones(m,1)); y; yend(ones(m+1,1))];
+
+% Apply filter.
+y_filtered = filter(Weights,1,y_expanded);
+
+% Chop to right size.
+y_filtered = y_filtered(2*m+1:end-1,:);
+
+if isRowVec
+  y_filtered = y_filtered.';
+end
+
 end
 
 % A notable American commentator, Charles Krauthammer, once 
