@@ -63,8 +63,8 @@ T. H. Edwards, S. Stoll.
 If you use DEERNet, the neural network module, please cite \cite{worswick2018}
 \begin{itemize}
 \item
-S. G. Worswick, J. A. Spencer, G. Jeschke, I. Kuprov.
-\emph{Sci.~Adv.} {\bf 2018}, accepted
+S. G. Worswick, J. A. Spencer, G. Jeschke, I. Kuprov,
+\emph{Science Advances} {\bf 2018}, 4, eaat5218.
 \end{itemize}
 
 \section{History of changes}
@@ -791,17 +791,18 @@ function [deer,distr]=Triangle\_Gauss(r0,t0,par)
 \label{bandwidth}
 Analysis of DEER distance measurements is usually based on analytical expressions, such as eqn (\ref{eq:ideal_kernel}), that assume ideal pulses. Past versions of our analysis programs accounted for this by suggestion a lower limit of 1.75 nm for the reliability of the distribution. Maryasov and Tsvetkov \cite{maryasov2000} first suggested to use corrected expressions to get more reliable results for short distances. Their approach considered the full Hamiltonian during the pulse, except for the pseudosecular contribution of the dipole-dipole coupling. They still assumed that the observed spins are not excited by the pump pulse and the pumped spins are not excited by the observer pulse. With these remaining assumptions, which are however not very well fulfilled, they could still obtain analytical expressions for the three-pulse DEER experiment. Based on these expressions, the effect of finite pulse lengths on determining distance distributions was assessed in a later contribution by Milov et al. \cite{milov2004}.
 
-To relax the remaining assumptions and extend the approach to four-pulse DEER, we examined the dependence of the modulation depth $\lambda$ on the dipolar frequency $\omega_{\mathrm{dd}}$ for typical lengths of the observer and pump pulses. Numerical density matrix computations of the full pulse sequence were performed for this purpose. Details will be published elsewhere. The dependence of $\lambda$ on $\omega_{\mathrm{dd}}$ can be aproximated quite nicely by a Gaussian function
+To relax the remaining assumptions and extend the approach to four-pulse DEER, we examined the dependence of the modulation depth $\lambda$ on the dipolar frequency $\omega_{\mathrm{dd}}$ for typical lengths of the observer and pump pulses. Numerical density matrix computations of the full pulse sequence were performed for this purpose. Details will be published elsewhere. The dependence of $\lambda$ on $\omega_{\mathrm{dip}}$ can be approximated quite nicely by a Gaussian function
 \begin{equation}
-	\lambda \left( \omega_{\mathrm{dd}} \right) = \exp \left( - \frac{\omega_{\mathrm{dd}}^2}{\Delta \omega ^2} \right) \; ,
+	\lambda \left( \omega_{\mathrm{dd}} \right) = \exp \left( - \frac{\omega_{\mathrm{dip}}^2}{\Delta \omega ^2} \right) \; ,
 	\label{eq:bandwidth}
 \end{equation}
-where $\Delta \omega$ is an effective excitation bandwidth with respect to dipolar frequencies. For a four-pulse DEER experiments with a pulse length of 24 ns for all pump and observer pulses and for an experiment with a 12 ns pump pulse and 32 ns observer pulses, we find the same excitation bandwidth of 16 MHz. For a four-pulse DEER experiments with a pulse length of 24 ns for all pump and observer pulses the excitation bandwidth is 12 MHz. The expression in eqn (\ref{eq:bandwidth}) can be used as a correction of the kernel function, eqn (\ref{eq:ideal_kernel}):
+where $\Delta \omega$ is an effective excitation bandwidth with respect to dipolar frequencies. For a four-pulse DEER experiments with a pulse length of 24 ns for all pump and observer pulses and for an experiment with a 12 ns pump pulse and 32 ns observer pulses, we find the same excitation bandwidth of 16 MHz. For a four-pulse DEER experiments with a pulse length of 32 ns for all pump and observer pulses the excitation bandwidth is 12 MHz. The expression in eqn (\ref{eq:bandwidth}) can be used as a correction of the kernel function, eqn (\ref{eq:ideal_kernel}):
 \begin{equation}
-	K \left( t, r; \Delta \omega \right) = \int _0 ^1 \exp \left( - \frac{\omega_{\mathrm{dd}}^2}{\Delta \omega ^2} \right) \cos \left[ \left( 3x^2-1 \right) \omega_{\mathrm{dd}} t \right] \mathrm{d}x \; ,
+	K \left( t, r; \Delta \omega \right) = \int _0 ^1 \exp \left( - \frac{\left[ \left( 3x^2-1 \right) \omega_{\mathrm{dd}}\right]^2}{\Delta \omega ^2} \right) \cos \left[ \left( 3x^2-1 \right) \omega_{\mathrm{dd}} t \right] \mathrm{d}x \; ,
 	\label{eq:real_kernel}
 \end{equation}
 so that effects of finite pulses length can be accounted for without much additional computational effort if the kernel is anyway computed during fitting, as DeerAnalysis2018 does it during Tikhonov regularization. 
+
 
 \begin{figure}[ht]
  	\begin{center}

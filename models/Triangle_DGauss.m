@@ -16,7 +16,7 @@ function [deer,distr]=Triangle_DGauss(r0,t0,par)
 % par(2)  s(v)   0.5     0.02        5          std. dev. of vertex position
 % par(3)  p1     0.5     0.05        0.95       population of 1st component
 % par(4)  <rv2>  1.5     0.5         10         2nd mean distance
-% par(5)  s(v2)  0.5     0.02        5          szd. dev of 2nd vertex pos.
+% par(5)  s(v2)  0.5     0.02        5          std. dev of 2nd vertex pos.
 % par(6)  Delta    1     0.1         1          total modulation depth
 % par(7)  nmc    2500    1000        100000     number of Monte Carlo trials
 
@@ -53,17 +53,17 @@ for k=1:nmc
     poi12=1+round(nr*(d12-ra)/(re-ra)); % pointer into distance distribution
     if poi12>0 && poi12<=nr+1
         distr(poi12)=distr(poi12)+pop1;
-    end;
+    end
     d13=norm(p1-p3); % side length 1,3
     poi13=1+round(nr*(d13-ra)/(re-ra)); % pointer into distance distribution
     if poi13>0 && poi13<=nr+1
       distr(poi13)=distr(poi13)+pop1;
-    end;
+    end
     d23=norm(p2-p3); % side length 1,2
     poi23=1+round(nr*(d23-ra)/(re-ra)); % pointer into distance distribution
     if poi23>0 && poi23<=nr+1
       distr(poi23)=distr(poi23)+pop1;
-    end;
+    end
     fi2=2*pi*rand;
     cth2=rand;
     sth2=sqrt(1-cth2^2);
@@ -93,17 +93,17 @@ for k=1:nmc
     poi12=1+round(nr*(d12-ra)/(re-ra)); % pointer into distance distribution
     if poi12>0 && poi12<=nr+1
         distr(poi12)=distr(poi12)+pop2;
-    end;
+    end
     d13=norm(p1-p3); % side length 1,3
     poi13=1+round(nr*(d13-ra)/(re-ra)); % pointer into distance distribution
     if poi13>0 && poi13<=nr+1
       distr(poi13)=distr(poi13)+pop2;
-    end;
+    end
     d23=norm(p2-p3); % side length 1,2
     poi23=1+round(nr*(d23-ra)/(re-ra)); % pointer into distance distribution
     if poi23>0 && poi23<=nr+1
       distr(poi23)=distr(poi23)+pop2;
-    end;
+    end
     fi2=2*pi*rand;
     cth2=rand;
     sth2=sqrt(1-cth2^2);
@@ -119,7 +119,7 @@ for k=1:nmc
     mod3=cos(wd3*t0);
     pair=pair+pop2*(mod1+mod2+mod3)/3;
     triple=triple+pop2*(mod1.*mod2+mod1.*mod3+mod2.*mod3)/3;
-end;
+end
 
 distr=distr/sum(distr); % normalization
 deer=2*lambda*(1-lambda)*pair+lambda^2*triple;

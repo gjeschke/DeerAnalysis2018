@@ -24,7 +24,7 @@ sigr=par(3);
 dr=r0(2)-r0(1);
 rshift=4;
 shift=round((rshift-min(r0))/dr);
-garg=(r0-rshift)/sigr;
+garg=(r0-rshift)/(sqrt(2)*sigr);
 gauss_part=exp(-garg.^2);
 
 kappa=Lp/L;

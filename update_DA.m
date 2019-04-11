@@ -6,6 +6,8 @@ function handback=update_DA(handles)
 %  *Added display of RMS, model type, and distance constraints to workspace
 %  *Added call to new function 'stats_analysis' to get F-test results
 
+DEERNet_flag=get(handles.select_deernet,'Value');
+
 bmode = get_bckg_mode(handles);
 if strcmp(bmode,'d')
     set(handles.pushbutton_validate_model,'Enable','on');
@@ -264,6 +266,7 @@ if ~handles.validation_mode && ~handles.bckg_request_d
         else
             dipevo=cluster;
         end
+
         dipevo=dipevo/max(dipevo);
         cluster=cluster/max(cluster);
     else
@@ -382,6 +385,11 @@ elseif handles.bckg_request_d
     if ~isempty(handles.A_deernet_bckg)
         cluster = handles.A_deernet_vexp./handles.A_deernet_bckg;
         cluster = cluster/max(cluster);
+        tdip = handles.A_deernet_t;
+        plen = round(length(cluster)/10);
+        p = polyfit(tdip(1:plen),cluster(1:plen),5);
+        fit = polyval(p,tdip(1:plen));
+        cluster = cluster/max(fit);
         my_offset = 1-handles.A_depth;
         if ghost_suppression
             cluster=cluster.^(1/(handles.spins_per_object-1));
@@ -389,7 +397,11 @@ elseif handles.bckg_request_d
         end
         dipevo = cluster - my_offset;
         dipevo = dipevo/max(dipevo);
-        tdip = handles.A_deernet_t;
+        plen = round(length(dipevo)/10);
+        p = polyfit(tdip(1:plen),dipevo(1:plen),5);
+        fit = polyval(p,tdip(1:plen));
+        dipevo = dipevo/max(fit);
+
         if see_uncertainty_bckg
             delete(hvexp);
             [me,~] = size(handles.deernet_ensemble_bckg);
@@ -598,9 +610,14 @@ if exist('dipevo','var')
     set(handles.distr_range,'String',pstr);
 
     sim0=sim-0.99*ones(size(sim)); % standard modulation depth 1 %
+    
+    if DEERNet_flag && handles.updated
+        deernet_dipevo = handles.A_deernet_ff - handles.A_deernet_bckg(1);
+        sim0 = 0.01*deernet_dipevo/max(deernet_dipevo);
+    end
 
     spcflag=get(handles.dip_spectrum,'Value');
-    if handles.updated && ~handles.bckg_request_d
+    if handles.updated % && ~handles.bckg_request_d
         if ~full_depth
             modsim=ones(size(sim))-sim;
             modexp=ones(size(cluster))-cluster;
@@ -653,7 +670,7 @@ if exist('dipevo','var')
                 maxd=max(residual)+0.1*scs;
             end
             axis([fmin/handles.zoom,fmax/handles.zoom,mind,maxd]);
-        else
+        elseif ~handles.bckg_request_d
             if sum(handles.mask)<length(handles.mask)
                 plot(tdip,handles.mask_sim,'g','LineWidth',1.5);
                 difference=handles.mask_sim-cluster;

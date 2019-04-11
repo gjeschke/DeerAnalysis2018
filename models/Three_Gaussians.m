@@ -24,13 +24,13 @@ function distr = Three_Gaussians(r0,par)
 % par(8)  p2     0.3     0           1          fraction of pairs at 2nd
 %                                               distance
 
-gauss1=(r0-par(1)*ones(size(r0)))/(2*par(2));
+gauss1=(r0-par(1)*ones(size(r0)))/(sqrt(2)*par(2));
 gauss1=exp(-gauss1.^2);
 intg1=sum(gauss1);
-gauss2=(r0-par(3)*ones(size(r0)))/(2*par(4));
+gauss2=(r0-par(3)*ones(size(r0)))/(sqrt(2)*par(4));
 gauss2=exp(-gauss2.^2);
 gauss2=gauss2*intg1/sum(gauss2);
-gauss3=(r0-par(5)*ones(size(r0)))/(2*par(6));
+gauss3=(r0-par(5)*ones(size(r0)))/(sqrt(2)*par(6));
 gauss3=exp(-gauss3.^2);
 gauss3=gauss3*intg1/sum(gauss3);
 distr=par(7)*gauss1+par(8)*gauss2+(1-par(7)-par(8))*gauss3;

@@ -13,7 +13,7 @@ function distr=Sphere_Surface(r0,par)
 % par(2)  s(ds)  0.3     0.05        5              standard dev. of sphere radius
 
 rstart=min(r0);
-gauss2=(r0-par(1)*ones(size(r0)))/par(2);
+gauss2=(r0-par(1)*ones(size(r0)))/(sqrt(2)*par(2));
 gauss2=exp(-gauss2.^2);
 minr=par(1)-3*par(2);
 minarg=r0-minr*ones(size(r0));
@@ -31,7 +31,7 @@ for k=mipoi:mapoi
     [~,poi]=min(abs(triarg));
     triarg=linspace(ha,he,poi);
     triangle(1:poi)=triangle(1:poi)+gauss2(k)*triarg;
-end;
+end
 distr=triangle;
 
 

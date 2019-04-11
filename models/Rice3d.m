@@ -18,8 +18,8 @@ nu=par(1);
 sigma=par(2);
 
 distr=r0/nu/(sigma*sqrt(2*pi)).*( ...
-    exp(-.5*((r0-nu)/sigma).^2) ...
-    - exp(-.5*((r0+nu)/sigma).^2));
+    exp(-.5*((r0-nu)/(sqrt(2)*sigma)).^2) ...
+    - exp(-.5*((r0+nu)/(sqrt(2)*sigma)).^2));
 % The next line effectively multiplies the above with the heaviside
 % step function. The Rice distribution is zero for negative values.
 distr(distr<0)=0;

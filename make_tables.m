@@ -1,4 +1,4 @@
-function void=make_tables(),
+function make_tables()
 % Compute and save 2^n kernels for the DEER Transformation program
 %
 % G. Jeschke, 2002

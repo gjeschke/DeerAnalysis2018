@@ -20,6 +20,13 @@ ttemp = handles.texp - handles.cutoff*ones(size(handles.texp))/1000;
 time_axis = handles.texp(ztpoi:pcutoff).';
 deer_trace = real(handles.vexp(ztpoi:pcutoff)).';
 deer_trace = deer_trace/max(deer_trace);
+if handles.renormalize.Value
+    plen = round(length(deer_trace)/10);
+    p = polyfit(time_axis(1:plen),deer_trace(1:plen),5);
+    fit = polyval(p,time_axis(1:plen));
+    deer_trace = deer_trace/max(fit);
+end
+
 deer_trace0 = deer_trace;
 
 ghost_suppression=get(handles.checkbox_ghost,'Value');
@@ -47,6 +54,8 @@ handles.A_tdip =  time_axis.';
 handles.A_deernet_vexp = deer_trace0.';
 [handles.A_deernet_sim,handles.A_deernet_ff,handles.A_deernet_bckg,dim,dens] = fit_deernet_primary(handles,rexp,distr,time_axis.',deer_trace.');
 handles.A_depth = 1 - handles.A_deernet_bckg(1);
+
+% handles.A_sim = handles.A_deernet_ff;
 handles.bckg_dens = dens;
 set(handles.bckg_dim_edit,'String',sprintf('%5.2f',dim));
 handles.hom_dim = dim;

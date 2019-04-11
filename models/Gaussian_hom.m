@@ -14,7 +14,7 @@ function distr=Gaussian_hom(r0,par)
 % par(2)  s(r)   0.5     0.05        5
 % par(3)  c      0.1     0           10
 
-gauss0=(r0-par(1)*ones(size(r0)))/(2*par(2));
+gauss0=(r0-par(1)*ones(size(r0)))/(sqrt(2)*par(2));
 distr=exp(-gauss0.^2);
 r2=r0.^2;
 fac=sum(distr)/1e3; % normalization factor for hom. background rel to Gaussian

@@ -36,15 +36,15 @@ sigma2=par(4);
 p1=par(5);
 
 distr1=r0/nu1/(sigma1*sqrt(2*pi)).*( ...
-    exp(-.5*((r0-nu1)/sigma1).^2) ...
-    - exp(-.5*((r0+nu1)/sigma1).^2));
+    exp(-.5*((r0-nu1)/(sqrt(2)*sigma1)).^2) ...
+    - exp(-.5*((r0+nu1)/(sqrt(2)*sigma1)).^2));
 % The next line effectively multiplies the above with the heaviside
 % step function. The Rice distribution is zero for negative values.
 distr1(distr1<0)=0;
 
 distr2=r0/nu2/(sigma2*sqrt(2*pi)).*( ...
-    exp(-.5*((r0-nu2)/sigma2).^2) ...
-    - exp(-.5*((r0+nu2)/sigma2).^2));
+    exp(-.5*((r0-nu2)/(sqrt(2)*sigma2)).^2) ...
+    - exp(-.5*((r0+nu2)/(sqrt(2)*sigma2)).^2));
 % The next line effectively multiplies the above with the heaviside
 % step function. The Rice distribution is zero for negative values.
 distr2(distr2<0)=0;

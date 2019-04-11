@@ -32,10 +32,10 @@ function distr=Two_Gaussians_hom(r0,par)
 % par(7)  kmin   1.00    0           Inf        <r2>/<r1> minimum ratio   
 % par(8)  kmax   2.00    0           Inf        <r2>/<r1> maximum ratio
 
-gauss1=(r0-par(1)*ones(size(r0)))/par(2);
+gauss1=(r0-par(1)*ones(size(r0)))/(sqrt(2)*par(2));
 gauss1=exp(-gauss1.^2);
 intg1=sum(gauss1);
-gauss2=(r0-par(3)*ones(size(r0)))/par(4);
+gauss2=(r0-par(3)*ones(size(r0)))/(sqrt(2)*par(4));
 gauss2=exp(-gauss2.^2);
 gauss2=gauss2*intg1/sum(gauss2);
 distr=par(5)*gauss1+(1-par(5))*gauss2;

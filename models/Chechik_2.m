@@ -19,10 +19,10 @@ function distr=Chechik_2(r0,par)
 % par(5)  s(ds)  0.3     0.02        5
 
 rstart=min(r0);
-gauss1=(r0-par(1)*ones(size(r0)))/par(2);
+gauss1=(r0-par(1)*ones(size(r0)))/(sqrt(2)*par(2));
 gauss1=exp(-gauss1.^2);
 intg1=sum(gauss1);
-gauss2=(r0-par(4)*ones(size(r0)))/par(5);
+gauss2=(r0-par(4)*ones(size(r0)))/(sqrt(2)*par(5));
 gauss2=exp(-gauss2.^2);
 minr=par(4)-3*par(5);
 minarg=r0-minr*ones(size(r0));
@@ -40,7 +40,7 @@ for k=mipoi:mapoi
     [~,poi]=min(abs(triarg));
     triarg=linspace(ha,he,poi);
     triangle(1:poi)=triangle(1:poi)+gauss2(k)*triarg;
-end;
+end
 triangle=triangle*intg1/sum(triangle);
 distr=par(3)*gauss1+(1-par(3))*triangle;
 distr = distr/mean(distr);

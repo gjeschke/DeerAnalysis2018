@@ -21,26 +21,27 @@ r=linspace(rmin,rmax,dimension); % distance axis in nm
 m=length(r); % length of distance axis
 wd=zeros(1,m); % vector dipolar frequencies as a function of distance
 kernel=zeros(m,n); % data array for kernel
+fprintf(1,'Computing Tikhonov kernel');
 fprintf(1,'%i data points in time domain\n',n);
 fprintf(1,'%i data points in distance domain\n',m);
 tic, % initialize computation time clock
-for k=1:m,
+for k=1:m
    rk=r(k); % current distance
    wdd=w0/rk^3; % current dipolar angular frequency
    wd(k)=wdd/(2*pi); % current dipolar frequency
-   if mod(k,10)==0,
+   if mod(k,10)==0
         fprintf(1,'%5.1f%% of fit table done.\n',100*k/m);
-   end;
-   for l=0:1000, % 1000 averages over cos(theta) angle (powder average)
+   end
+   for l=0:1000 % 1000 averages over cos(theta) angle (powder average)
       x=l/1000; % current theta angle
       ww=wdd*(3*x^2-1); % dipolar frequency at current theta angle
       kernel(k,:)=kernel(k,:)+cos(ww*t); % add kernel contribution
-   end;
-end;
+   end
+end
 toc, % output of computation time required
-for k=1:m, % loop form kernel normalization
+for k=1:m % loop form kernel normalization
    kernel(k,:)=kernel(k,:)/kernel(k,1); % normalize dipolar time evolution traces
-end;
+end
 L = get_l(length(r),2); % differential operator matrix for second derivative
 [U,sm,X,V] = cgsvd(kernel',L);
 save('pake_base_tikh_512.mat','kernel','r','t','U','sm','X','V','L'); % save kernel data

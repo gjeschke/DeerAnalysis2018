@@ -29,17 +29,17 @@ for pp=1:length(rn)
         fac=2*kappa/(4*pi);
         for k=1:terms
             G=G+fac*pi^2*k^2*(-1)^(k+1)*exp(-kappa*pi^2*k^2*(1-rn(pp)));
-        end;
+        end
     elseif crit>0
         fac=kappa/(4*pi*2*sqrt(pi));
         for l=1:terms
             harg=(l-1/2)/sqrt(kappa*(1-rn(pp)));
             h2=4*harg^2-2;
             G=G+fac*1/(kappa*(1-rn(pp)))^(3/2)*exp(-(l-1/2)^2/(kappa*(1-rn(pp))))*h2;
-        end;
-    end;
+        end
+    end
     distr(pp)=G;
-end;
+end
 
 distr = distr/sum(distr);
 

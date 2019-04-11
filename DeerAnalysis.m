@@ -66,8 +66,43 @@ function DeerAnalysis_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for DeerAnalysis
 handles.output = hObject;
 
-figname='DeerAnalysis 2018 - [no data]'; % tell user, which file is current
+figname='DeerAnalysis 2019 - [no data]'; % tell user, which file is current
 set(handles.main_figure,'Name',figname);
+
+whereami = which('DeerAnalysis.m');
+mypath = fileparts(whereami);
+tabexist = true;
+if ~exist(fullfile(mypath,'pake_base40.mat'),'file')
+    tabexist = false;
+end
+if ~exist(fullfile(mypath,'kernel64.mat'),'file')
+    tabexist = false;
+end
+if ~exist(fullfile(mypath,'kernel128.mat'),'file')
+    tabexist = false;
+end
+if ~exist(fullfile(mypath,'kernel256.mat'),'file')
+    tabexist = false;
+end
+if ~exist(fullfile(mypath,'kernel512.mat'),'file')
+    tabexist = false;
+end
+if ~exist(fullfile(mypath,'kernel1024.mat'),'file')
+    tabexist = false;
+end
+if ~exist(fullfile(mypath,'kernel2048.mat'),'file')
+    tabexist = false;
+end
+if ~exist(fullfile(mypath,'pake_base_tikh_512.mat'),'file')
+    tabexist = false;
+end
+if ~tabexist
+    getback = pwd;
+    cd(mypath);
+    make_tables;
+    make_bas_Tikh;
+    cd(getback);
+end
 
 % check window size and screen size and resize if required
 
