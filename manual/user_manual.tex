@@ -7,7 +7,7 @@
 
 \begin{document}
 
-\title{DeerAnalysis User Manual - Version 2018}
+\title{DeerAnalysis User Manual - Version 2019}
 
 \author{G. Jeschke, ETH Z\"urich; gjeschke@ethz.ch \\ S. Stoll, University of Washington, Seattle; stst@uw.edu \\ http://www.epr.ethz.ch/software/index}
 
@@ -37,7 +37,7 @@ DeerAnalysis is based on experience with earlier programs DeerFit and DeerTrafo 
 
 \section{Citations}
 
-If you use DeerAnalysis2018 in your research, please cite \cite{jeschke2006}:
+If you use DeerAnalysis2019 in your research, please cite \cite{jeschke2006}:
 \begin{itemize}
 \item G. Jeschke, V. Chechik, P. Ionita, A. Godt, H. Zimmermann, J. Banham, C. R. Timmel, D. Hilger, H. Jung, \emph{Appl. Magn. Reson.} {\bf 2006}, 30, 473--498.
 \end{itemize}
@@ -68,6 +68,36 @@ S. G. Worswick, J. A. Spencer, G. Jeschke, I. Kuprov,
 \end{itemize}
 
 \section{History of changes}
+
+\subsection{Changes in DeerAnalysis2019 with respect to DeerAnalysis2018}
+\label{changes_2019}
+
+DeerAnalysis2019 is mainly a bug fix of DeerAnalysis2018. However, two changes were made that influence behavior of the program.
+
+\begin{itemize}
+\item
+DeerAnalysis comes for download in a slim version without kernel tables. Kernel tables are computed once when the program is first started. This takes a few minutes, but only on first start.
+\item
+The checkboxes {\ttfamily Noisy} in the {\ttfamily Original data} panel and {\ttfamily Renormalize} in the {\ttfamily Form factor} panel are now activated by default. This causes DeerAnalysis to normalize data for background fitting and for processing of dipolar evolution data with noise smoothing. This usually works and if it does, is better. However, we have seen cases where it fails spectacularly. Such cases are easy to recognize (maximum amplitude nowhere near 1) and then the checkbox(es) should be deactivated.
+\end{itemize}
+
+The following bugs were fixed
+
+\begin{itemize}
+\item
+The checkbox {\ttfamily Renormalize} in the {\ttfamily Form factor} panel now also affects DEERNet neural network processing.
+\item
+With neural network processing, saving of some output data went wrong in DeerAnalysis2018. Now the proper simulated data is saved and the (mean) DEERNet background is saved. Since the latter is not defined at negative times, NaN (not a number) is output for $t < 0$. Display and saving of the simulated dipolar spectrum was added for DEERNet.
+\item
+After computing with DEERNet, following computations in DeerAnalysis2018 displayed the DEERNet-simulated form factor instead of the newly simulated form factor. This was fixed.
+\item
+Support for data sets with more than 1024 points did not extend to model-based fits. This was fixed, but note that it is extremely rare that more than 1024 data points are needed (only if both very short and very long distances are present). Using an unnecessarily fine time resolution does not help and increases computation time substantially. 
+\item
+The $\sigma$ parameters of Gaussian (and Rice) distributions were generally not standard deviations and were not consistent between different models. All affected model functions now define $\sigma$ as the standard deviation.
+\end{itemize}
+
+I thank Katharina Keller, Andreas Scherer, and Dennis B\"ucker for reporting bugs and suggesting some of the bug fixes.
+
 \subsection{Changes in DeerAnalysis2018 with respect to DeerAnalysis2016}
 \label{changes_2018}
 

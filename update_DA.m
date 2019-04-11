@@ -478,7 +478,7 @@ if exist('dipevo','var')
 
     flag=get(handles.dip_time_domain,'Value');
     if flag
-        if handles.bckg_request_d && exist('cluster','var')
+        if handles.bckg_request_d && exist('cluster','var') && handles.select_deernet.Value
             plot(tdip,real(cluster),'k');
             set(gca,'FontSize',8);
             scd = max(real(cluster))-min(real(cluster));
@@ -670,7 +670,7 @@ if exist('dipevo','var')
                 maxd=max(residual)+0.1*scs;
             end
             axis([fmin/handles.zoom,fmax/handles.zoom,mind,maxd]);
-        elseif ~handles.bckg_request_d
+        elseif ~handles.select_deernet.Value
             if sum(handles.mask)<length(handles.mask)
                 plot(tdip,handles.mask_sim,'g','LineWidth',1.5);
                 difference=handles.mask_sim-cluster;
