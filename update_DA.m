@@ -834,7 +834,7 @@ end
 
 if print
     figure(3); clf;
-    set(gca,'FontSize',24);
+    set(gca,'FontSize',12);
 else
 	axes(handles.distance_distribution);
     set(handles.distance_distribution,'NextPlot','replace');
@@ -860,12 +860,12 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
     else
         sc_dist=1;
     end
-    sc=max(distr)-min(distr);
-	minv=min(distr)-0.1*sc;
-	maxv=max(distr)+0.1*sc;
+    sc0=max(distr)-min(distr);
+	minv=min(distr)-0.1*sc0;
+	maxv=max(distr)+0.1*sc0;
     if error_flag && length(handles.A_low)==length(distr) && length(handles.A_high)==length(distr)
-        minv = min(handles.A_low)-0.1*sc;
-        maxv = max(handles.A_high)+0.1*sc;
+        minv = min(handles.A_low)-0.1*sc0;
+        maxv = max(handles.A_high)+0.1*sc0;
     end
     maxt=max(tdip);
     sc=(maxt/2)^(1/3);
@@ -873,32 +873,43 @@ if ~isempty(r) && ~isempty(distr) && handles.updated && ~LC_flag
     rel_mean_width=sc*4;
     rel_mean=sc*5;
     recognize=sc*6;
+    guide_level = sc_dist*(minv+0.05*sc0);
+    hold on
+    title(sprintf('Mod. depth %5.3f',handles.A_depth));
     if guidance
-        rectangle('Position',[min(r),sc_dist*minv,rel_shape-min(r),sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[0.9,1,0.9]);
-        set(gca,'FontSize',8);
-        rectangle('Position',[rel_shape,sc_dist*minv,rel_mean_width-rel_shape,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,1,0.8]);
-        rectangle('Position',[rel_mean_width,sc_dist*minv,rel_mean-rel_mean_width,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.9,0.7]);
-        rectangle('Position',[rel_mean,sc_dist*minv,recognize-rel_mean,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.8,0.8]);
+        plot([min(r),rel_shape],[guide_level,guide_level],'Color',[0,0.6,0],'LineWidth',4);
+        plot([rel_shape,rel_mean_width],[guide_level,guide_level],'Color',[0.8,0.8,0],'LineWidth',4);
+        plot([rel_mean_width,rel_mean],[guide_level,guide_level],'Color',[0.8,0.6,0],'LineWidth',4);
+        plot([rel_mean,recognize],[guide_level,guide_level],'Color',[0.6,0,0],'LineWidth',4);
+        % rectangle('Position',[min(r),sc_dist*minv,rel_shape-min(r),sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[0.9,1,0.9]);
+        if ~print
+            set(gca,'FontSize',8);
+        end
+%         rectangle('Position',[rel_shape,sc_dist*minv,rel_mean_width-rel_shape,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,1,0.8]);
+%         rectangle('Position',[rel_mean_width,sc_dist*minv,rel_mean-rel_mean_width,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.9,0.7]);
+%         rectangle('Position',[rel_mean,sc_dist*minv,recognize-rel_mean,sc_dist*(maxv-minv)],'EdgeColor','none','FaceColor',[1,0.8,0.8]);
     end   
     sc=max(distr)-min(distr);
     if sum(handles.mask) ~= length(handles.mask)
         plot(r,sc_dist*handles.mask.*distr,'g','LineWidth',1.5);
-        set(gca,'FontSize',8);
+        if ~print
+            set(gca,'FontSize',8);
+        end
     end
 	hold on;
     
     dlow=handles.A_low;
     dhigh=handles.A_high;
     if error_flag && length(dlow)==length(distr) && length(dhigh)==length(distr)
-%         for k=1:length(r)
-%             plot([r(k) r(k)],sc_dist*[dlow(k) dhigh(k)],'Color',[0.65 0.65 0.65],'Linewidth',0.5);
-%         end;
+        for k=1:length(r)
+            plot([r(k) r(k)],sc_dist*[dlow(k) dhigh(k)],'Color',[0.6 0.6 0.6],'Linewidth',0.5);
+        end
         [mr,nr] = size(r);
         if mr > nr
             r = r';
         end
-        hunc = fill([r fliplr(r)],sc_dist*[dlow fliplr(dhigh)],[0.6,0.6,0.6]);
-        set(hunc,'EdgeColor','none','FaceAlpha',0.75);
+%         hunc = fill([r fliplr(r)],sc_dist*[dlow fliplr(dhigh)],[0.6,0.6,0.6]);
+%         set(hunc,'EdgeColor','none','FaceAlpha',0.75);
         plot(r,sc_dist*handles.mean_distr,'k','LineWidth',1.5);
         sc=max(dhigh)-min(dlow);
         maxv=max(dhigh)+0.1*sc;
@@ -974,7 +985,9 @@ end
 if fit_flag && ~handles.updated && ~LC_flag
     model_distr=handles.model_distr;
     plot(handles.r_APT,handles.APT,'k:','LineWidth',1);
-    set(gca,'FontSize',8);
+    if ~print
+        set(gca,'FontSize',8);
+    end
     hold on;
     model_distr=model_distr*max(handles.APT)/max(model_distr);
     plot(handles.model_r,model_distr,'r:','LineWidth',1.5);

@@ -90,7 +90,7 @@ if nargin<5
     [~,mp]=max(expdat);
     nmp=1;
     % Determine time zero by moment analysis
-    if mp>1 && mp<length(expdat)
+    if mp>1 && mp<3*length(expdat)/4
         dmi=mp-1;
         dma=length(expdat)-mp;
         dm=dmi; if dma<dm, dm=dma; end
